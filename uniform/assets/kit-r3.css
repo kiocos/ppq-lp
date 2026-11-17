@@ -1,0 +1,7 @@
+/* Round 3: phones get portrait motion renders and static fallbacks */
+.m-only { display: none !important; }
+@media (max-width: 860px) {
+  .d-only { display: none !important; }
+  .m-only { display: block !important; }
+  .m-hide { display: none !important; }
+}

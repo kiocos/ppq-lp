@@ -1,0 +1,331 @@
+{
+ "title": "Agentic Infrastructure - Vercel",
+ "bodyBg": "rgb(0, 0, 0)",
+ "bodyColor": "rgb(237, 237, 237)",
+ "pageH": 5930,
+ "fonts": [
+  "Geist Mono 100 900",
+  "GeistSans 100 900"
+ ],
+ "h1": [
+  {
+   "tag": "h1",
+   "text": "Agentic Infrastructure",
+   "font": "GeistSans",
+   "size": "64px",
+   "weight": "400",
+   "lh": "64px",
+   "ls": "-3.84px",
+   "color": "rgb(237, 237, 237)",
+   "w": 444,
+   "y": 328
+  }
+ ],
+ "h2": [
+  {
+   "tag": "h2",
+   "text": "Build agents on infrastructure that thinks like them",
+   "font": "GeistSans",
+   "size": "56px",
+   "weight": "450",
+   "lh": "56px",
+   "ls": "-3.36px",
+   "color": "rgb(237, 237, 237)",
+   "w": 673,
+   "y": 1108
+  },
+  {
+   "tag": "h2",
+   "text": "Ship apps that scale from zero to millions instantly",
+   "font": "GeistSans",
+   "size": "56px",
+   "weight": "450",
+   "lh": "56px",
+   "ls": "-3.36px",
+   "color": "rgb(237, 237, 237)",
+   "w": 921,
+   "y": 1981
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "56px",
+   "weight": "450",
+   "lh": "56px",
+   "ls": "-3.36px",
+   "color": "rgb(237, 237, 237)",
+   "w": 921,
+   "y": 2853
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "56px",
+   "weight": "450",
+   "lh": "56px",
+   "ls": "-3.36px",
+   "color": "rgb(237, 237, 237)",
+   "w": 921,
+   "y": 3678
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "56px",
+   "weight": "450",
+   "lh": "56px",
+   "ls": "-3.36px",
+   "color": "rgb(237, 237, 237)",
+   "w": 638,
+   "y": 4672
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5136
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5136
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5136
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5136
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5136
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5136
+  },
+  {
+   "tag": "h2",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(237, 237, 237)",
+   "w": 212,
+   "y": 5456
+  }
+ ],
+ "h3": [],
+ "p": [
+  {
+   "tag": "p",
+   "text": "Notion powers millions of agent conversations daily on Vercel.",
+   "font": "GeistSans",
+   "size": "24px",
+   "weight": "450",
+   "lh": "32px",
+   "ls": "-0.96px",
+   "color": "rgb(161, 161, 161)",
+   "w": 333,
+   "y": 1380
+  },
+  {
+   "tag": "p",
+   "text": "Zapier serves over 100 million monthly website visits on Vercel.",
+   "font": "GeistSans",
+   "size": "24px",
+   "weight": "450",
+   "lh": "32px",
+   "ls": "-0.96px",
+   "color": "rgb(161, 161, 161)",
+   "w": 333,
+   "y": 2253
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "24px",
+   "weight": "450",
+   "lh": "32px",
+   "ls": "-0.96px",
+   "color": "rgb(161, 161, 161)",
+   "w": 333,
+   "y": 3110
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "24px",
+   "weight": "450",
+   "lh": "26.4px",
+   "ls": "-1.2px",
+   "color": "rgb(237, 237, 237)",
+   "w": 685,
+   "y": 4303
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "400",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 161)",
+   "w": 288,
+   "y": 4335
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "24px",
+   "weight": "450",
+   "lh": "26.4px",
+   "ls": "-1.2px",
+   "color": "rgb(237, 237, 237)",
+   "w": 685,
+   "y": 4003
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "400",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 161)",
+   "w": 288,
+   "y": 4035
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "24px",
+   "weight": "450",
+   "lh": "26.4px",
+   "ls": "-1.2px",
+   "color": "rgb(237, 237, 237)",
+   "w": 685,
+   "y": 4323
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "GeistSans",
+   "size": "14px",
+   "weight": "400",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 161)",
+   "w": 288,
+   "y": 4355
+  },
+  {
+   "tag": "p",
+   "text": "",
+   "font": "Geist Mono",
+   "size": "12px",
+   "weight": "500",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(136, 136, 136)",
+   "w": 108,
+   "y": 5863
+  }
+ ],
+ "sections": [
+  {
+   "tag": "div",
+   "y": 64,
+   "h": 64,
+   "pt": "0px",
+   "pb": "0px",
+   "bg": "rgba(0, 0, 0, 0)"
+  },
+  {
+   "tag": "div",
+   "y": 64,
+   "h": 5020,
+   "pt": "0px",
+   "pb": "0px",
+   "bg": "rgba(0, 0, 0, 0)"
+  }
+ ],
+ "buttons": [
+  {
+   "text": "Skip to content",
+   "bg": "rgb(0, 0, 0)",
+   "color": "rgb(82, 168, 255)",
+   "radius": "6px",
+   "h": 24,
+   "font": "16px/400",
+   "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0"
+  },
+  {
+   "text": "Products",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(161, 161, 161)",
+   "radius": "0px",
+   "h": 32,
+   "font": "14px/400",
+   "shadow": "none"
+  }
+ ]
+}

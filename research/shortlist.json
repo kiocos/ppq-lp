@@ -1,0 +1,177 @@
+{
+  "researchedAt": "2026-11-11",
+  "scope": "Design research, not implementation or a measured conversion audit",
+  "references": [
+    {
+      "slug": "jitter",
+      "name": "Jitter",
+      "image": "jitter.jpg",
+      "role": "Best overall foundation",
+      "award": "Site of the Day",
+      "date": "May 3, 2025",
+      "site": "https://jitter.video/",
+      "focus": "Page structure",
+      "borrow": "Large, clear typography; an obvious first action; product examples that show the result of using the tool.",
+      "ppq": "Lead with model choice and pay-per-use, keep the prompt entry visible, then show one short sequence inside the real PPQ interface.",
+      "limit": "Borrow the hierarchy and purposeful motion. Keep PPQ’s own orange accent and typography.",
+      "version": "The award is for the 2025 version; the current homepage has since added AI positioning.",
+      "areas": [
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "awardUrl": "https://www.awwwards.com/sites/jitter"
+    },
+    {
+      "slug": "weavy",
+      "name": "Weavy → Figma Weave",
+      "image": "weavy.png",
+      "role": "Closest product story",
+      "award": "Site of the Day",
+      "date": "September 28, 2025",
+      "site": "https://weave.figma.com/",
+      "focus": "Many models, one place",
+      "borrow": "Models and tools are presented through a coherent creative workflow, with examples that make the breadth tangible.",
+      "ppq": "Show a single task across PPQ’s model choices, or one prompt with side-by-side answers. Organize secondary examples by Chat, Image, Video and Voice.",
+      "limit": "A node editor would suggest a capability PPQ does not offer. Translate the storytelling into PPQ’s existing interface.",
+      "version": "The winning site was Weavy. Its original domain now redirects to Figma Weave.",
+      "areas": [
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "awardUrl": "https://www.awwwards.com/sites/weavy"
+    },
+    {
+      "slug": "cerebrium",
+      "name": "Cerebrium",
+      "image": "cerebrium.jpg",
+      "role": "Best pricing and API reference",
+      "award": "Site of the Day",
+      "date": "September 10, 2026",
+      "site": "https://cerebrium.ai/",
+      "focus": "Explain the economics",
+      "borrow": "A technically credible narrative, visible use cases, usage-based pricing, and a pricing calculator highlighted in the award entry.",
+      "ppq": "Give users understandable cost examples and a route into the model catalog. Present API access as a concise second path, with integrations and documentation.",
+      "limit": "Adapt the pricing presentation to prompts and model usage. GPU-compute units and an enterprise sales journey would add complexity for PPQ visitors.",
+      "version": "Reviewed the current homepage and pricing page, alongside the 2026 award entry.",
+      "areas": [
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "awardUrl": "https://www.awwwards.com/sites/cerebrium"
+    },
+    {
+      "slug": "reflect",
+      "name": "Reflect",
+      "image": "reflect.png",
+      "role": "Best focused interface presentation",
+      "award": "Honorable Mention",
+      "date": "May 11, 2023",
+      "site": "https://reflect.app/",
+      "focus": "Product detail and trust",
+      "borrow": "The award visual frames the app as the central object. The current page also gives privacy and local storage dedicated space.",
+      "ppq": "Use a legible close-up of the model picker, estimated cost and privacy badges, then explain the privacy choices with a short dedicated section.",
+      "limit": "Keep PPQ’s charcoal and orange. The purple glow is not needed to achieve the same focus. The privacy claims must remain specific to each PPQ tier.",
+      "version": "Honorable Mention, not Site of the Day. The current Reflect product and copy differ from the 2023 entry.",
+      "areas": [
+        1,
+        1,
+        0,
+        0,
+        1
+      ],
+      "awardUrl": "https://www.awwwards.com/sites/reflect"
+    },
+    {
+      "slug": "lumadream-machine",
+      "name": "Luma Dream Machine",
+      "image": "lumadream-machine.jpg",
+      "role": "Best image and video showcase",
+      "award": "Site of the Day",
+      "date": "January 25, 2025",
+      "site": "https://lumalabs.ai/app",
+      "focus": "Show the outcome",
+      "borrow": "A cinematic presentation of generated work makes creative possibilities immediately visible.",
+      "ppq": "Replace generic media feature cards with a small curated gallery made using PPQ. Attach the prompt, model and actual cost where verified.",
+      "limit": "Use this for a contained media section. A full-page video opening would delay PPQ’s chat and pricing story.",
+      "version": "The award-entry URL now redirects to Luma’s newer app marketing page. Study the recorded winning version for this reference.",
+      "areas": [
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "awardUrl": "https://www.awwwards.com/sites/lumadream-machine"
+    },
+    {
+      "slug": "cleo-ai",
+      "name": "Cleo AI",
+      "image": "cleo-ai.png",
+      "role": "Best human tone",
+      "award": "Site of the Day",
+      "date": "May 23, 2026",
+      "site": "https://web.meetcleo.com/",
+      "focus": "Make AI approachable",
+      "borrow": "Conversational language and visible chat exchanges connect AI capabilities to recognizable everyday needs.",
+      "ppq": "Use concrete prompts and short answer examples so a first-time visitor can immediately see what they could do.",
+      "limit": "PPQ should retain a calm, capable voice. Cleo’s persona, financial framing and elaborate scenery are specific to its own product.",
+      "version": "Reviewed the current site and 2026 award-entry imagery.",
+      "areas": [
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "awardUrl": "https://www.awwwards.com/sites/cleo-ai"
+    }
+  ],
+  "recommendation": "Jitter for the structure, Weavy for the model breadth story, Cerebrium for usage-based pricing and developer access",
+  "proposedSections": [
+    [
+      "01",
+      "Promise + immediate start",
+      "Communicate access to many models, usage-based payment and no required registration. Keep a working prompt entry and a clear way to open the app.",
+      "Jitter"
+    ],
+    [
+      "02",
+      "One convincing product demonstration",
+      "Show one prompt, side-by-side model answers, the model selector and cost information. Use real PPQ components and a readable crop.",
+      "Jitter + Weavy + Reflect"
+    ],
+    [
+      "03",
+      "Make payment understandable",
+      "Show how top-up and spending work, with representative examples tied to current model rates and assumptions. Link to the full catalog.",
+      "Cerebrium"
+    ],
+    [
+      "04",
+      "Show the range",
+      "Offer a compact set of Chat, Image, Video and Voice examples. Use generated outputs with model names and measured costs where available.",
+      "Weavy + Luma"
+    ],
+    [
+      "05",
+      "Explain privacy choices",
+      "Distinguish anonymous access, zero data retention and end-to-end encrypted model options. Link to PPQ’s detailed explanation.",
+      "Reflect + PPQ’s own privacy page"
+    ],
+    [
+      "06",
+      "Developer path + proof + close",
+      "A compact API section with recognizable integrations; credible user evidence; a short FAQ; repeat the primary action. Keep Whisper as a connected product link.",
+      "Cerebrium + Jitter"
+    ]
+  ]
+}

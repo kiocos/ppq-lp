@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Chat and build privately</title>
+<meta name="description" content="Your favorite AI models, with privacy you can verify. Pay per message, no subscription.">
+<link rel="icon" href="assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Archivo'; src: url(assets/fonts/Archivo-normal.woff2) format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+  @font-face { font-family: 'Barlow Condensed'; src: url(assets/fonts/BarlowCondensed-600.woff2) format('woff2'); font-weight: 600; font-display: swap; }
+
+  :root {
+    --bg: #0a0a0a; --fg: #ededed; --fg-2: #a1a1a1; --fg-3: #8a8a8a;
+    --panel: #141414; --panel-2: #1c1c1c; --line: rgba(255,255,255,.08);
+    --amber: #f0743f; --amber-hover: #ff8752; --on-amber: #140a04; --on-amber-2: #3b1a09;
+    --f-display: 'Geist', system-ui, sans-serif; --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --display-weight: 600; --display-stretch: 100%; --display-tracking: -0.045em; --display-scale: 1;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px); --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
+  img, video { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul, figure, dl, dd { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 6px; }
+  .skip { position: absolute; left: 12px; top: -60px; padding: 8px 12px; border-radius: 8px; background: var(--fg); color: var(--bg); z-index: 100; }
+  .skip:focus { top: 12px; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: var(--display-tracking); line-height: 1.02; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .mono { font-family: var(--f-mono); }
+  section { scroll-margin-top: 80px; }
+
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 999px; font-size: 15px; font-weight: 500; white-space: nowrap; transition: background-color .2s var(--ease); }
+  .btn-sm { height: 36px; padding: 0 16px; font-size: 14px; }
+  .btn-primary { background: var(--amber); color: var(--on-amber); }
+  .btn-primary:hover { background: var(--amber-hover); }
+  .btn-ghost { background: var(--panel-2); color: var(--fg); }
+  .btn-ghost:hover { background: #262626; }
+  .btn-dark { background: var(--on-amber); color: #fff; }
+  .btn-dark:hover { background: #2a1408; }
+
+  /* nav */
+  .nav { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,.8); backdrop-filter: blur(14px); }
+  .nav .wrap { display: flex; align-items: center; gap: 36px; height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; font-size: 18px; letter-spacing: -0.02em; }
+  .brand img { width: 22px; height: 22px; }
+  .nav-links { display: flex; gap: 26px; font-size: 14px; color: var(--fg-2); }
+  .nav-links a:hover, .nav-side a:not(.btn):hover { color: var(--fg); }
+  .nav-side { margin-left: auto; display: flex; align-items: center; gap: 20px; font-size: 14px; color: var(--fg-2); }
+
+  /* hero: message left, a small real demo right */
+  .hero { padding: 96px 0 0; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 64px; align-items: center; }
+  .hero h1 { font-size: calc(clamp(48px, 6vw, 76px) * var(--display-scale)); }
+  .hero .sub { margin-top: 22px; font-size: 21px; line-height: 1.45; color: var(--fg-2); max-width: 24em; }
+  .hero .ctas { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+  .hero .micro { margin-top: 18px; font-size: 14px; color: var(--fg-3); }
+  .demo { border-radius: 18px; overflow: hidden; background: var(--panel); box-shadow: 0 0 0 1px var(--line), 0 30px 80px -30px rgba(0,0,0,.8); aspect-ratio: 4 / 3; }
+  .demo video { width: 100%; height: 100%; object-fit: cover; }
+  .demo-cap { margin-top: 10px; font-size: 13px; color: var(--fg-3); }
+
+  /* sections */
+  .sec { padding-top: 160px; }
+  .sec h2 { font-size: calc(clamp(34px, 4vw, 52px) * var(--display-scale)); }
+  .sec .lead { margin-top: 16px; font-size: 19px; line-height: 1.5; color: var(--fg-2); max-width: 26em; }
+  .split > *, .hero-grid > *, .price-grid > * { min-width: 0; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+
+  /* the accent block: PPQ orange, used twice on the page, where the answer is */
+  .block { border-radius: 24px; background: var(--amber); color: var(--on-amber); padding: 40px; }
+  .block .k { font-size: 14px; font-weight: 500; color: var(--on-amber-2); }
+  .block .v { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; margin-top: 4px; }
+  .block .row + .row { margin-top: 26px; padding-top: 26px; border-top: 1px solid rgba(20,10,4,.16); }
+
+  /* privacy */
+  .check { margin-top: 40px; }
+  .check-label { font-size: 14px; color: var(--fg-3); }
+  .cmd { position: relative; margin-top: 10px; display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 18px; border-radius: 12px; background: var(--panel); font: 14px/1.4 var(--f-mono); overflow-x: auto; }
+  .cmd code { white-space: nowrap; }
+  .cmd .s { color: var(--fg-3); }
+  .copy { margin-left: auto; flex: none; height: 28px; padding: 0 10px; border-radius: 8px; background: var(--panel-2); font: 500 12px var(--f-body); color: var(--fg-2); }
+  .copy:hover { color: var(--fg); }
+  .proof { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 14px; color: var(--fg-3); }
+  .proof a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+  .proof a:hover { color: var(--fg); }
+  .scope { margin-top: 28px; font-size: 13px; color: var(--fg-3); max-width: 34em; }
+
+  /* models */
+  .center { text-align: center; }
+  .center .lead { margin-left: auto; margin-right: auto; }
+  .models { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: 48px; }
+  .models li { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px 12px 20px; border-radius: 16px; background: var(--panel); font-size: 15px; }
+  .models img { width: 30px; height: 30px; object-fit: contain; }
+  .models .inv { filter: invert(1); }
+  .models .more { justify-content: center; color: var(--fg-2); }
+  .models .more:hover { color: var(--fg); }
+
+  /* api */
+  .code { border-radius: 18px; background: var(--panel); padding: 28px 30px; font: 15px/1.75 var(--f-mono); overflow-x: auto; }
+  .code code { display: block; white-space: pre; }
+  .code .c { color: var(--fg-3); }
+  .code .hl { display: inline-block; margin: 0 -8px; padding: 0 8px; border-radius: 6px; background: rgba(240,116,63,.16); color: #ffa477; }
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 32px; font-size: 14px; color: var(--fg-2); }
+  .tools span { color: var(--fg-3); }
+  .tools a { display: inline-flex; align-items: center; gap: 8px; }
+  .tools a:hover { color: var(--fg); }
+  .tools img { width: 20px; height: 20px; object-fit: contain; border-radius: 5px; }
+  .tools .inv { filter: invert(1); }
+
+  /* pricing */
+  .price-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 56px; align-items: center; margin-top: 48px; }
+  .block .big { font-size: calc(72px * var(--display-scale)); font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: var(--display-tracking); line-height: 1; }
+  .block .big-sub { margin-top: 8px; font-size: 19px; font-weight: 500; }
+  .block .pay { margin-top: 28px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .block .pay i { width: 38px; height: 38px; border-radius: 50%; background: var(--on-amber); display: grid; place-items: center; }
+  .block .pay img { width: 24px; height: 24px; }
+  .block .pay span { font-size: 14px; color: var(--on-amber-2); }
+  .block .btn { margin-top: 32px; }
+  .prices li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 17px; }
+  .prices li:first-child { padding-top: 0; }
+  .prices b { font: 500 17px var(--f-mono); }
+  .prices-cap { margin-top: 14px; font-size: 13px; color: var(--fg-3); }
+
+  /* close */
+  .close { padding: 176px 0 0; text-align: center; }
+  .close h2 { font-size: calc(clamp(40px, 5vw, 64px) * var(--display-scale)); }
+  .close p { margin-top: 16px; font-size: 18px; color: var(--fg-2); }
+  .close .ctas { display: flex; gap: 12px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+
+  /* footer */
+  .foot { padding: 128px 0 48px; font-size: 14px; color: var(--fg-2); }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 32px; }
+  .foot h3 { font-size: 13px; font-weight: 500; color: var(--fg-3); margin-bottom: 12px; }
+  .foot li + li { margin-top: 8px; }
+  .foot a:hover { color: var(--fg); }
+  .foot-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; margin-top: 72px; font-size: 13px; color: var(--fg-3); }
+
+  .m-only { display: none; }
+  @media (max-width: 900px) {
+    .nav-links, .nav-side a:not(.btn) { display: none; }
+    .hero { padding-top: 56px; }
+    .hero-grid, .split, .price-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .models { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .sec { padding-top: 120px; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+    .price-grid .block { order: 2; }
+  }
+  @media (max-width: 860px) { .d-only { display: none; } .m-only { display: block; } .demo { aspect-ratio: 8 / 9; } }
+  @media (max-width: 520px) { .block { padding: 30px 26px; } .block .v { font-size: 23px; } .code { padding: 22px; font-size: 13.5px; } }
+
+  /* type switcher (study tool, not part of the design) */
+  .pair { position: fixed; z-index: 90; right: 16px; bottom: 16px; font: 500 12px/1.3 'Geist', system-ui, sans-serif; color: #eaeaea; }
+  .pair-btn { height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(24,24,24,.9); backdrop-filter: blur(10px); box-shadow: 0 0 0 1px rgba(255,255,255,.12); display: inline-flex; gap: 8px; align-items: center; }
+  .pair-list { position: absolute; right: 0; bottom: 42px; width: 290px; padding: 8px; border-radius: 14px; background: rgba(24,24,24,.96); box-shadow: 0 0 0 1px rgba(255,255,255,.12); display: none; }
+  .pair.open .pair-list { display: block; }
+  .pair-list button { width: 100%; text-align: left; padding: 9px 10px; border-radius: 9px; display: grid; gap: 3px; }
+  .pair-list button:hover, .pair-list button[aria-pressed="true"] { background: rgba(255,255,255,.08); }
+  .pair-list small { color: #9a9a9a; font-weight: 400; }
+  .pair-list .hint { padding: 8px 10px 4px; color: #8a8a8a; font-weight: 400; }
+  @media (max-width: 860px) { .pair-btn .pair-label { display: none; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body data-pairings='[
+  {"name":"Geist + Geist Mono","note":"One family. Quiet, precise, nothing to decode.","vars":{"--f-display":"\"Geist\", sans-serif","--display-weight":"600","--display-stretch":"100%","--display-tracking":"-0.045em","--display-scale":"1"}},
+  {"name":"Archivo Expanded + Geist","note":"Wide headlines with more presence; matches the logo study pick.","vars":{"--f-display":"\"Archivo\", sans-serif","--display-weight":"600","--display-stretch":"125%","--display-tracking":"-0.035em","--display-scale":"0.8"}},
+  {"name":"Barlow Condensed + Geist","note":"Condensed, signage-like headlines over a wide body.","vars":{"--f-display":"\"Barlow Condensed\", sans-serif","--display-weight":"600","--display-stretch":"100%","--display-tracking":"-0.01em","--display-scale":"1.2"}}
+]'>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="PayPerQ home"><img src="assets/flame2.png" alt="">PayPerQ</a>
+    <nav class="nav-links" aria-label="Primary"><a href="#privacy">Privacy</a><a href="#models">Models</a><a href="#api">API</a><a href="#pricing">Pricing</a></nav>
+    <div class="nav-side"><a href="https://ppq.ai/auth">Sign in</a><a class="btn btn-primary btn-sm" href="https://ppq.ai/chat">Start chatting</a></div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <h1 class="display">Chat and build privately.</h1>
+        <p class="sub">Your favorite AI models, with privacy you can verify.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting →</a>
+          <a class="btn btn-ghost" href="https://ppq.ai/api-docs">Get an API key</a>
+        </div>
+        <p class="micro">No account. No subscription. Start with $0.10.</p>
+      </div>
+      <figure>
+        <div class="demo">
+          <video class="d-only" data-inview autoplay muted loop playsinline preload="none" poster="assets/motion/demo-poster.jpg" aria-label="The PayPerQ chat: searching the model picker for Sonnet, switching to Claude Sonnet 5.5, then typing a message served inside the enclave and verified."><source src="assets/motion/demo.mp4" type="video/mp4"></video>
+          <video class="m-only" data-inview autoplay muted loop playsinline preload="none" poster="assets/motion/demo-tall-poster.jpg" aria-hidden="true"><source src="assets/motion/demo-tall.mp4" type="video/mp4"></video>
+        </div>
+        <figcaption class="demo-cap">The PayPerQ chat. Example conversation.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec" id="privacy">
+    <div class="wrap split">
+      <div>
+        <h2 class="display">Your chats stay unreadable to us.</h2>
+        <p class="lead">Every chat runs inside a secure enclave. Your browser checks it before anything is sent.</p>
+        <div class="check">
+          <p class="check-label">Check it yourself</p>
+          <div class="cmd"><code><span class="s">PPQ_API_KEY=sk-…</span> npx ppq-private-mode</code><button class="copy" type="button" data-copy="PPQ_API_KEY=sk-… npx ppq-private-mode">Copy</button></div>
+          <p class="proof"><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Open-source enclave</a><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verifier</a><span class="mono">build v0.75.0</span></p>
+        </div>
+      </div>
+      <div>
+        <div class="block" role="group" aria-label="Who sees what">
+          <div class="row"><p class="k">PayPerQ never sees</p><p class="v">Your prompts and replies</p></div>
+          <div class="row"><p class="k">Model providers never see</p><p class="v">Your IP address</p></div>
+          <div class="row"><p class="k">PayPerQ only sees</p><p class="v">Model, token count, time</p></div>
+        </div>
+        <p class="scope">Covers chat in the app and the API. What a provider can see depends on the model’s privacy label.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec center" id="models">
+    <div class="wrap">
+      <h2 class="display">Choose the model for the task.</h2>
+      <p class="lead">388 chat models from 66 providers, plus image, video and audio. One account.</p>
+      <ul class="models">
+        <li><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT</li>
+        <li><img src="assets/logos/models/claude.svg" alt="">Claude</li>
+        <li><img src="assets/logos/models/gemini.svg" alt="">Gemini</li>
+        <li><img class="inv" src="assets/logos/models/xai.svg" alt="">Grok</li>
+        <li><img src="assets/logos/models/deepseek.svg" alt="">DeepSeek</li>
+        <li><img src="assets/logos/models/qwen.svg" alt="">Qwen</li>
+        <li><img class="inv" src="assets/logos/models/moonshot.svg" alt="">Kimi</li>
+        <li><img class="inv" src="assets/logos/models/zai.svg" alt="">GLM</li>
+        <li><img src="assets/logos/models/mistral.svg" alt="">Mistral</li>
+        <li><img src="assets/logos/models/minimax.svg" alt="">MiniMax</li>
+        <li><img src="assets/logos/models/cohere.svg" alt="">Command</li>
+        <li><a class="more" href="https://ppq.ai/models">See all 388 →</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec" id="api">
+    <div class="wrap split">
+      <div>
+        <h2 class="display">Your models can work beyond this chat.</h2>
+        <p class="lead">One OpenAI-compatible API. Same models, same privacy, same balance.</p>
+        <div class="tools">
+          <span>Works with</span>
+          <a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="assets/logos/tools/claude-code.png" alt="">Claude Code</a>
+          <a href="https://ppq.ai/integrate"><img src="assets/logos/tools/cursor.svg" alt="">Cursor</a>
+          <a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="assets/logos/tools/opencode.png" alt="">OpenCode</a>
+          <a href="https://ppq.ai/integrate"><img src="assets/logos/tools/aider.png" alt="">Aider</a>
+        </div>
+      </div>
+      <div class="code"><code><span class="c"># Use any OpenAI SDK. Change one line.</span>
+client = OpenAI(
+    <span class="hl">base_url="https://api.ppq.ai/v1"</span>,
+    api_key=PPQ_API_KEY,
+)</code></div>
+    </div>
+  </section>
+
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <h2 class="display">Pay per message. Nothing monthly.</h2>
+      <div class="price-grid">
+        <div class="block">
+          <p class="big">$0.10</p>
+          <p class="big-sub">is all you need to start.</p>
+          <div class="pay">
+            <i><img src="assets/logos/pay/bitcoin.svg" alt="Bitcoin"></i>
+            <i><img src="assets/logos/pay/lightning-network.svg" alt="Lightning"></i>
+            <i><img src="assets/logos/pay/monero.svg" alt="Monero"></i>
+            <i><img src="assets/logos/pay/tether.svg" alt="Tether"></i>
+            <span>or card. No email.</span>
+          </div>
+          <a class="btn btn-dark" href="https://ppq.ai/chat">Start chatting →</a>
+        </div>
+        <div>
+          <ul class="prices">
+            <li><span>Claude Haiku 5.5</span><b>$0.002</b></li>
+            <li><span>GPT-6 Luna</span><b>$0.018</b></li>
+            <li><span>Claude Sonnet 5.5</span><b>$0.051</b></li>
+            <li><span>Claude Opus 5.5</span><b>$0.134</b></li>
+          </ul>
+          <p class="prices-cap">Typical cost per message (median, Nov 13, 2026). Long chats cost more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="wrap">
+      <h2 class="display">Chat and build privately.</h2>
+      <p>Start in seconds. No account needed.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting →</a>
+        <a class="btn btn-ghost" href="https://ppq.ai/api-docs">Read the API docs</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><img src="assets/flame2.png" alt="">PayPerQ</a></div>
+      <div><h3>Product</h3><ul><li><a href="https://ppq.ai/chat">Chat</a></li><li><a href="https://ppq.ai/api-docs">API</a></li><li><a href="https://ppq.ai/models">Models</a></li><li><a href="https://ppq.ai/pricing">Pricing</a></li></ul></div>
+      <div><h3>Privacy</h3><ul><li><a href="https://ppq.ai/private-ai">How it works</a></li><li><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verifier</a></li><li><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave source</a></li><li><a href="https://ppq.ai/privacy">Privacy policy</a></li></ul></div>
+      <div><h3>Company</h3><ul><li><a href="https://ppq.ai/blog">Blog</a></li><li><a href="https://ppq.ai/careers">Careers</a></li><li><a href="https://ppq.ai/terms">Terms</a></li></ul></div>
+      <div><h3>For agents</h3><ul><li><a class="mono" href="https://ppq.ai/llms.txt">llms.txt</a></li><li><a class="mono" href="https://api.ppq.ai/v1/models">v1/models</a></li></ul></div>
+    </div>
+    <div class="foot-base"><span>© 2026 PayPerQ</span><span>This page loads no third-party scripts.</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // play videos only while visible; under reduced motion keep the poster and show controls
+  const vids = [...document.querySelectorAll('video[data-inview]')];
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause()), { threshold: 0.3 });
+    vids.forEach((v) => io.observe(v));
+  } else vids.forEach((v) => { v.removeAttribute('autoplay'); v.controls = true; });
+  // copy
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select to copy'; }
+    setTimeout(() => (b.textContent = 'Copy'), 1400);
+  }));
+  // type switcher (study tool): key T cycles pairings
+  const root = document.documentElement, body = document.body;
+  const pairings = JSON.parse(body.dataset.pairings || '[]');
+  const params = new URLSearchParams(location.search);
+  const wrap = document.createElement('div'); wrap.className = 'pair';
+  wrap.innerHTML = `<div class="pair-list" role="group" aria-label="Type pairings"><div class="hint">Type pairings · press T to cycle</div>${pairings.map((p, i) => `<button type="button" data-i="${i}"><span>${i + 1}. ${p.name}</span><small>${p.note}</small></button>`).join('')}</div><button type="button" class="pair-btn" aria-expanded="false"><b>Aa</b><span class="pair-label"></span></button>`;
+  body.appendChild(wrap);
+  const label = wrap.querySelector('.pair-label'), toggle = wrap.querySelector('.pair-btn');
+  const apply = (i) => {
+    Object.entries(pairings[i].vars).forEach(([k, v]) => root.style.setProperty(k, v));
+    root.dataset.pairing = i; label.textContent = pairings[i].name;
+    wrap.querySelectorAll('[data-i]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.i === i)));
+    params.set('type', i + 1); history.replaceState(null, '', '?' + params + location.hash);
+  };
+  toggle.addEventListener('click', () => toggle.setAttribute('aria-expanded', String(wrap.classList.toggle('open'))));
+  wrap.querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => apply(+b.dataset.i)));
+  document.addEventListener('keydown', (e) => { if (e.metaKey || e.ctrlKey || e.altKey) return; if (e.key === 't' || e.key === 'T') apply((+root.dataset.pairing + 1) % pairings.length); if (e.key === 'Escape') wrap.classList.remove('open'); });
+  apply(Math.min(pairings.length, Math.max(1, +params.get('type') || 1)) - 1);
+})();
+</script>
+</body>
+</html>

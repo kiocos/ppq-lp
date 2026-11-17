@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · API section E</title>
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --line: rgba(255,255,255,.08);
+    --brand: #bf3c1b; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px); --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  a { color: inherit; text-decoration: none; }
+  h2, h3, p { margin: 0; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: 6px; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .study { padding-top: 40px; font-size: 13px; color: var(--fg-3); display: flex; gap: 16px; flex-wrap: wrap; }
+  .study a { color: var(--fg-2); }
+
+  .api { padding: 144px 0 120px; }
+  .row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; align-items: center; }
+  .label { margin-bottom: 14px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  h2 { font-size: clamp(28px, 2.6vw, 36px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.12; text-wrap: balance; }
+  .lead { margin-top: 14px; font-size: 17px; color: var(--fg-2); max-width: 26em; text-wrap: pretty; }
+
+  /* the one visual: an agent doing the work through the API */
+  .term { border-radius: 12px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; box-shadow: 0 40px 70px -50px rgba(0,0,0,.95); }
+  .term .bar { display: flex; align-items: center; height: 40px; padding: 0 16px; border-bottom: 1px solid var(--line); font: 12px var(--f-mono); color: var(--fg-3); }
+  .term .bar span:last-child { margin-left: auto; }
+  .term .body { padding: 22px 22px 26px; font: 14px/2 var(--f-mono); color: var(--fg-2);  }
+  .term .you { color: var(--fg); }
+  .term .ok { color: var(--good); }
+  .term .now { color: var(--brand-ink); }
+  .js .term [data-s] { opacity: 0; transition: opacity .4s var(--ease); }
+  .js .term [data-s].on { opacity: 1; }
+
+  /* the action (kept from C) */
+  .fund { position: relative; margin-top: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; padding: 26px 32px; border-radius: 12px; overflow: hidden; background: var(--brand); color: #fff; }
+  .fund::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .18; }
+  .fund > * { position: relative; z-index: 1; }
+  .fund h3 { text-wrap: balance; font-size: 22px; font-weight: 400; letter-spacing: -0.02em; }
+  .btn { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 6px; background: #fff; color: #1a1714; font: 500 15px/1 var(--f-body); white-space: nowrap; transition: background-color .15s; }
+  .btn:hover { background: #efebe6; }
+
+  @media (max-width: 900px) { .row { grid-template-columns: minmax(0, 1fr); gap: 40px; } .api { padding-top: 96px; } }
+  @media (max-width: 600px) { .term .body { font-size: 12.5px; padding: 18px; } .fund { padding: 24px 22px; } }
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<div class="wrap study"><span>API section · E (round 4)</span><a href="v3.html">D</a><a href="index.html">A, B, C</a><a href="../r7/prometheus.html#api">Current (r7)</a></div>
+
+<section class="api" aria-labelledby="api-h">
+  <div class="wrap">
+    <div class="row">
+      <div>
+        <p class="label">API</p>
+        <h2 id="api-h">The chat answers.<br>The API does the work.</h2>
+        <p class="lead">Every model inside Claude Code, Cursor, your agents and your own apps.</p>
+      </div>
+      <div class="term" role="img" aria-label="A coding agent running on PayPerQ fixes a failing test, and all tests pass.">
+        <div class="bar" aria-hidden="true"><span>claude-sonnet-5.5</span><span>api.ppq.ai</span></div>
+        <div class="body" aria-hidden="true">
+          <div data-s>&gt; <span class="you">fix the failing checkout test</span></div>
+          <div data-s>● Edited total.ts</div>
+          <div data-s>● Running tests</div>
+          <div data-s class="ok">✓ 128 passed</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fund">
+      <h3>One key, one balance, every tool.</h3>
+      <a class="btn" href="https://ppq.ai/api-docs">Add credit</a>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const steps = [...document.querySelectorAll('.term [data-s]')];
+  const show = () => steps.forEach((s) => s.classList.add('on'));
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return show();
+  const io = new IntersectionObserver(async ([e]) => {
+    if (!e.isIntersecting) return; io.disconnect();
+    for (const s of steps) {
+      s.classList.add('now', 'on'); await new Promise((r) => setTimeout(r, 900));
+      if (!s.classList.contains('ok')) s.classList.remove('now');
+    }
+    steps.at(-1).classList.remove('now');
+  }, { threshold: 0.5 });
+  io.observe(document.querySelector('.term'));
+})();
+</script>
+</body>
+</html>

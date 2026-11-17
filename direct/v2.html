@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Chat and build privately</title>
+<meta name="description" content="Your favorite AI models, with privacy you can verify. Pay per message, no subscription.">
+<link rel="icon" href="assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Archivo'; src: url(assets/fonts/Archivo-normal.woff2) format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+  @font-face { font-family: 'Barlow Condensed'; src: url(assets/fonts/BarlowCondensed-600.woff2) format('woff2'); font-weight: 600; font-display: swap; }
+
+  :root {
+    --bg: #0a0a0a; --fg: #ededed; --fg-2: #a1a1a1; --fg-3: #8a8a8a;
+    --panel: #141414; --panel-2: #1b1b1b; --line: rgba(255,255,255,.08);
+    --amber: #f0743f; --amber-hi: #ff9a66; --on-amber: #140a04; --on-amber-2: #3b1a09; --good: #5fd39a;
+    --f-display: 'Archivo', system-ui, sans-serif; --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --display-weight: 700; --display-stretch: 112%; --display-tracking: -0.04em; --display-scale: 1;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1); --spring: cubic-bezier(.34,1.4,.64,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img, video { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul, figure { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 8px; }
+  ::selection { background: var(--amber); color: var(--on-amber); }
+  .skip { position: absolute; left: 12px; top: -60px; padding: 8px 12px; border-radius: 8px; background: var(--fg); color: var(--bg); z-index: 100; }
+  .skip:focus { top: 12px; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: var(--display-tracking); line-height: 1; text-wrap: balance; }
+  .hl { color: var(--amber); font-style: normal; }
+  p { text-wrap: pretty; }
+  .mono { font-family: var(--f-mono); }
+  section { scroll-margin-top: 80px; }
+  /* film grain, used on the orange surfaces */
+  .grain::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: url(assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .32; }
+
+  /* ---------- buttons: lit, tactile, with a moving sheen ---------- */
+  .btn { position: relative; isolation: isolate; overflow: hidden; display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 8px 0 24px; border-radius: 999px; font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; transition: transform .25s var(--spring), box-shadow .3s var(--ease), background .3s var(--ease); }
+  .btn .arr { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; transition: transform .35s var(--spring); }
+  .btn .arr svg { width: 15px; height: 15px; }
+  .btn:hover .arr { transform: translateX(3px); }
+  .btn:active { transform: translateY(1px) scale(.985); }
+  .btn::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.5) 48%, transparent 66%); transform: translateX(-130%); transition: transform .8s var(--ease); }
+  .btn:hover::after { transform: translateX(130%); }
+  .btn-primary { color: #1a0b03; background: linear-gradient(180deg, #ff935f 0%, #f0743f 52%, #e5622b 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -2px 0 rgba(120,40,8,.35), 0 1px 2px rgba(0,0,0,.5), 0 12px 30px -10px rgba(240,116,63,.8); }
+  .btn-primary .arr { background: #1a0b03; color: #ffb48a; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 0 rgba(120,40,8,.35), 0 2px 4px rgba(0,0,0,.5), 0 18px 44px -10px rgba(240,116,63,1); }
+  .btn-ghost { padding: 0 24px; color: var(--fg); background: linear-gradient(180deg, #1d1d1d, #141414) padding-box, linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.05)) border-box; border: 1px solid transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 8px 20px -12px rgba(0,0,0,.9); }
+  .btn-ghost::after { background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.12) 48%, transparent 66%); }
+  .btn-ghost:hover { transform: translateY(-2px); background: linear-gradient(180deg, #222, #161616) padding-box, linear-gradient(180deg, rgba(240,116,63,.95), rgba(240,116,63,.15)) border-box; }
+  .btn-ghost .key { font: 500 12px var(--f-mono); color: var(--fg-3); padding: 3px 7px; border-radius: 6px; background: rgba(255,255,255,.06); margin-right: -8px; }
+  .btn-dark { color: #fff; background: linear-gradient(180deg, #2a1a10, #140a04); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 10px 24px -10px rgba(20,10,4,.9); }
+  .btn-dark .arr { background: var(--amber); color: #1a0b03; }
+  .btn-dark:hover { transform: translateY(-2px); }
+  .btn-sm { height: 38px; padding: 0 6px 0 16px; font-size: 14px; gap: 8px; }
+  .btn-sm .arr { width: 26px; height: 26px; }
+  .btn-sm .arr svg { width: 12px; height: 12px; }
+
+  /* ---------- nav ---------- */
+  .nav { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,.78); backdrop-filter: blur(14px) saturate(1.3); }
+  .nav .wrap { display: flex; align-items: center; gap: 36px; height: 66px; }
+  .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; font-size: 18px; letter-spacing: -0.02em; }
+  .brand img { width: 22px; height: 22px; }
+  .nav-links { display: flex; gap: 26px; font-size: 14px; color: var(--fg-2); }
+  .nav-links a { transition: color .2s; }
+  .nav-links a:hover, .nav-side a:not(.btn):hover { color: var(--fg); }
+  .nav-side { margin-left: auto; display: flex; align-items: center; gap: 20px; font-size: 14px; color: var(--fg-2); }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; padding: 88px 0 0; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 560px); gap: 56px; align-items: center; }
+  .hero h1 { font-size: calc(min(76px, (100vw - 696px) / 7.3) * var(--display-scale)); }
+  .nw { white-space: nowrap; }
+  .hero .sub { margin-top: 24px; font-size: 21px; line-height: 1.45; color: var(--fg-2); max-width: 22em; }
+  .hero .ctas { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+  .hero .micro { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--fg-3); }
+  .hero .micro span::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: var(--amber); vertical-align: 2px; }
+  /* the stage: a warm, grainy orange panel the real app sits on */
+  .stage { position: relative; aspect-ratio: 56 / 50; border-radius: 28px; overflow: hidden; background: #f0743f; box-shadow: 0 40px 100px -40px rgba(240,116,63,.6); }
+  .stage .glow { position: absolute; inset: -20%; background: radial-gradient(40% 40% at 78% 18%, #ffc59a 0%, rgba(255,197,154,0) 70%), radial-gradient(55% 55% at 12% 92%, #b8400f 0%, rgba(184,64,15,0) 70%), radial-gradient(45% 45% at 30% 30%, #ff8a50 0%, rgba(255,138,80,0) 70%); animation: drift 16s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translate(-3%, -2%) rotate(0deg); } to { transform: translate(3%, 3%) rotate(8deg); } }
+  .stage .window { position: absolute; left: 7%; top: 11%; width: 93%; aspect-ratio: 4 / 3; border-radius: 14px 0 0 14px; overflow: hidden; background: #151515; box-shadow: 0 30px 70px -20px rgba(60,20,4,.75), 0 0 0 1px rgba(0,0,0,.25); }
+  .stage .bar { height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 12px; background: #1d1d1d; }
+  .stage .bar i { width: 9px; height: 9px; border-radius: 50%; background: #3a3a3a; }
+  .stage video { width: 100%; height: calc(100% - 30px); object-fit: cover; }
+  .stage .chip { position: absolute; left: 4%; bottom: 6%; z-index: 2; display: inline-flex; align-items: center; gap: 9px; padding: 9px 14px 9px 10px; border-radius: 999px; background: rgba(16,16,16,.88); backdrop-filter: blur(10px); font-size: 13px; color: var(--fg); box-shadow: 0 12px 30px -10px rgba(0,0,0,.6); animation: chip 1s .9s var(--spring) both; }
+  .stage .chip b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--good); color: #052b18; font-size: 12px; }
+  .stage .chip small { color: var(--fg-3); font: 12px var(--f-mono); }
+  @keyframes chip { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .9s var(--ease) both; }
+  .rise-2 { animation-delay: .08s; } .rise-3 { animation-delay: .16s; } .rise-4 { animation-delay: .26s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- sections ---------- */
+  .sec { padding-top: 168px; }
+  .sec h2 { font-size: calc(clamp(36px, 4.4vw, 56px) * var(--display-scale)); }
+  .lead { margin-top: 18px; font-size: 19px; line-height: 1.5; color: var(--fg-2); max-width: 28em; }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* privacy: what you type, and what we see */
+  .seal { display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr); align-items: stretch; margin-top: 52px; }
+  .card { position: relative; border-radius: 24px; padding: 30px 32px 28px; display: flex; flex-direction: column; min-height: 250px; }
+  .card .label { font-size: 13px; font-weight: 600; letter-spacing: .02em; }
+  .card .msg { margin-top: 18px; font-size: 22px; line-height: 1.4; letter-spacing: -0.01em; flex: 1; word-break: break-word; }
+  .card .meta { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .card .meta span { font: 500 12.5px var(--f-mono); padding: 5px 10px; border-radius: 999px; }
+  .you { background: var(--panel); }
+  .you .label { color: var(--fg-3); }
+  .you .meta span { background: rgba(255,255,255,.06); color: var(--fg-2); }
+  .caret { display: inline-block; width: 2px; height: 1.1em; margin-left: 2px; background: var(--amber); vertical-align: -0.18em; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .us { background: var(--amber); color: var(--on-amber); overflow: hidden; }
+  .us .label { color: var(--on-amber-2); }
+  .us .msg { font-family: var(--f-mono); font-size: 18px; line-height: 1.55; color: rgba(20,10,4,.8); letter-spacing: 0; }
+  .us .meta span { background: rgba(20,10,4,.1); color: var(--on-amber); }
+  .pipe { position: relative; display: grid; place-items: center; }
+  .pipe::before { content: ''; position: absolute; left: 6px; right: 6px; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 6px, transparent 6px 12px); }
+  .pipe .lock { position: relative; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #1f1f1f; box-shadow: 0 0 0 6px var(--bg), 0 0 0 7px rgba(255,255,255,.08); color: var(--amber); }
+  .pipe .lock svg { width: 17px; height: 17px; }
+  .pipe .dot { position: absolute; top: calc(50% - 4px); left: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 12px var(--amber); opacity: 0; }
+  .pipe.go .dot { animation: travel .9s var(--ease); }
+  @keyframes travel { 0% { left: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: calc(100% - 8px); opacity: 0; } }
+  .priv-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; margin-top: 36px; align-items: start; }
+  .fact { font-size: 17px; color: var(--fg); }
+  .fact small { display: block; margin-top: 6px; font-size: 13px; color: var(--fg-3); }
+  .cmd { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 18px; border-radius: 14px; background: var(--panel); font: 14px/1.4 var(--f-mono); }
+  .cmd code { white-space: nowrap; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; }
+  .cmd .s { color: var(--fg-3); }
+  .copy { margin-left: auto; flex: none; height: 30px; padding: 0 12px; border-radius: 9px; background: var(--panel-2); font: 500 12px var(--f-body); color: var(--fg-2); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); transition: color .2s, background .2s; }
+  .copy:hover { color: var(--fg); background: #252525; }
+  .proof { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--fg-3); }
+  .proof a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+  .proof a:hover { color: var(--fg); text-decoration-color: var(--amber); }
+
+  /* models: a big number and a moving strip of real names */
+  .models-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: end; }
+  .count { text-align: right; }
+  .count b { display: block; font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: var(--display-tracking); font-size: calc(clamp(72px, 9vw, 128px) * var(--display-scale)); line-height: .9; color: var(--amber); font-variant-numeric: tabular-nums; }
+  .count span { font-size: 15px; color: var(--fg-2); }
+  .strip { margin-top: 56px; display: grid; gap: 12px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .row { display: flex; gap: 12px; width: max-content; animation: slide 60s linear infinite; }
+  .row.r2 { animation-duration: 72s; animation-direction: reverse; }
+  .strip:hover .row { animation-play-state: paused; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .pill { display: inline-flex; align-items: center; gap: 12px; height: 60px; padding: 0 22px 0 16px; border-radius: 16px; background: var(--panel); font-size: 16px; white-space: nowrap; transition: background .2s, box-shadow .2s; }
+  .pill:hover { background: var(--panel-2); box-shadow: inset 0 0 0 1px rgba(240,116,63,.6); }
+  .pill img { width: 26px; height: 26px; object-fit: contain; }
+  .pill .inv { filter: invert(1); }
+  .pill small { font: 12px var(--f-mono); color: var(--fg-3); margin-left: 4px; }
+  .models-link { margin-top: 28px; text-align: center; font-size: 15px; }
+  .models-link a { color: var(--fg-2); border-bottom: 1px solid rgba(255,255,255,.2); padding-bottom: 2px; transition: color .2s, border-color .2s; }
+  .models-link a:hover { color: var(--fg); border-color: var(--amber); }
+
+  /* api: the code changes in front of you */
+  .api { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 64px; align-items: center; }
+  .code { position: relative; border-radius: 22px; background: var(--panel); padding: 22px 0 26px; font: 15px/1.8 var(--f-mono); overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
+  .code .top { display: flex; align-items: center; gap: 7px; padding: 0 22px 16px; margin-bottom: 14px; border-bottom: 1px solid var(--line); font: 12.5px var(--f-body); color: var(--fg-3); }
+  .code .top i { width: 9px; height: 9px; border-radius: 50%; background: #2c2c2c; }
+  .code .top span { margin-left: 8px; }
+  .code .ln { display: block; padding: 0 28px; white-space: pre; overflow-x: auto; transition: background .4s; }
+  .code .c { color: var(--fg-3); }
+  .code .k { color: #c49bff; }
+  .code .s { color: var(--fg); }
+  .code .ln.changed { background: rgba(240,116,63,.12); box-shadow: inset 3px 0 0 var(--amber); }
+  .code .ln.changed .s { color: var(--amber-hi); }
+  .code .tag { position: absolute; right: 18px; top: 16px; font: 600 12px var(--f-body); padding: 5px 10px; border-radius: 999px; background: var(--amber); color: var(--on-amber); opacity: 0; transform: translateY(-4px); transition: opacity .4s, transform .4s var(--spring); }
+  .code.done .tag { opacity: 1; transform: none; }
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 32px; }
+  .tools a { display: inline-flex; align-items: center; gap: 9px; height: 40px; padding: 0 14px 0 10px; border-radius: 12px; background: var(--panel); font-size: 14px; color: var(--fg-2); transition: color .2s, background .2s, transform .25s var(--spring); }
+  .tools a:hover { color: var(--fg); background: var(--panel-2); transform: translateY(-2px); }
+  .tools img { width: 20px; height: 20px; object-fit: contain; border-radius: 5px; }
+  .tools .inv { filter: invert(1); }
+
+  /* pricing */
+  .price-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px; align-items: stretch; margin-top: 52px; }
+  .block { position: relative; border-radius: 28px; overflow: hidden; background: var(--amber); color: var(--on-amber); padding: 44px 44px 40px; }
+  .block > * { position: relative; z-index: 1; }
+  .block .bg { position: absolute; inset: -20%; z-index: 0; background: radial-gradient(45% 50% at 85% 15%, #ffc195 0%, rgba(255,193,149,0) 70%), radial-gradient(55% 55% at 0% 100%, #c24a14 0%, rgba(194,74,20,0) 70%); animation: drift 18s ease-in-out infinite alternate; }
+  .block .big { font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: var(--display-tracking); font-size: calc(96px * var(--display-scale)); line-height: .9; }
+  .block .big-sub { margin-top: 12px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+  .block .buys { margin-top: 26px; display: inline-block; padding: 10px 16px; border-radius: 14px; background: rgba(20,10,4,.1); font-size: 16px; color: var(--on-amber-2); }
+  .block .buys b { margin: 0 4px; font: 600 26px var(--f-mono); color: var(--on-amber); font-variant-numeric: tabular-nums; }
+  .block .pay { margin-top: 30px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .block .pay i { width: 38px; height: 38px; border-radius: 50%; background: var(--on-amber); display: grid; place-items: center; }
+  .block .pay img { width: 22px; height: 22px; }
+  .block .pay span { margin-left: 4px; font-size: 14px; color: var(--on-amber-2); }
+  .block .btn { margin-top: 34px; }
+  .prices { align-self: center; }
+  .prices li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .prices li:first-child { padding-top: 0; }
+  .prices .m { font-size: 17px; }
+  .prices b { font: 500 18px var(--f-mono); }
+  .prices .bar { grid-column: 1 / -1; height: 4px; border-radius: 4px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .prices .bar i { display: block; height: 100%; width: 0; border-radius: 4px; background: linear-gradient(90deg, #b8400f, var(--amber)); transition: width 1.2s var(--ease); }
+  .prices.in .bar i { width: var(--w); }
+  .prices-cap { margin-top: 14px; font-size: 13px; color: var(--fg-3); }
+
+  /* close */
+  .close { position: relative; margin-top: 176px; padding: 120px 0 132px; text-align: center; overflow: hidden; }
+  .close::before { content: ''; position: absolute; left: 50%; top: 50%; width: min(1000px, 140vw); height: 400px; transform: translate(-50%, -42%); background: radial-gradient(closest-side, rgba(240,116,63,.34), rgba(240,116,63,.08) 60%, rgba(240,116,63,0)); pointer-events: none; }
+  .close h2 { position: relative; font-size: calc(clamp(44px, 6vw, 80px) * var(--display-scale)); }
+  .close p { position: relative; margin-top: 18px; font-size: 19px; color: var(--fg-2); }
+  .close .ctas { position: relative; display: flex; gap: 12px; justify-content: center; margin-top: 36px; flex-wrap: wrap; }
+
+  /* footer */
+  .foot { padding: 72px 0 48px; font-size: 14px; color: var(--fg-2); }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 32px; }
+  .foot h3 { font-size: 13px; font-weight: 500; color: var(--fg-3); margin-bottom: 12px; }
+  .foot li + li { margin-top: 8px; }
+  .foot a:hover { color: var(--fg); }
+  .foot-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; margin-top: 64px; font-size: 13px; color: var(--fg-3); }
+
+  .m-only { display: none; }
+  @media (max-width: 1100px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+    .hero-grid > * { min-width: 0; }
+    .hero h1 { font-size: calc(min(76px, (100vw - 2 * var(--gutter)) / 7.3) * var(--display-scale)); }
+    .stage { max-width: 620px; }
+  }
+  @media (max-width: 960px) {
+    .nav-links, .nav-side a:not(.btn) { display: none; }
+    .hero { padding-top: 52px; }
+    .hero-grid, .api, .price-grid, .priv-foot, .models-head { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .hero-grid > *, .api > *, .price-grid > *, .priv-foot > * { min-width: 0; }
+    .seal { grid-template-columns: minmax(0, 1fr); }
+    .pipe { height: 56px; }
+    .pipe::before { left: 50%; right: auto; top: 6px; bottom: 6px; width: 2px; height: auto; background: repeating-linear-gradient(180deg, rgba(255,255,255,.22) 0 6px, transparent 6px 12px); }
+    .pipe .dot { display: none; }
+    .count { text-align: left; }
+    .sec { padding-top: 128px; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 860px) { .d-only { display: none; } .m-only { display: block; } .stage { aspect-ratio: 9 / 10; } .stage .window { aspect-ratio: 8 / 9; top: 8%; left: 6%; width: 94%; } }
+  @media (max-width: 520px) {
+    .card { padding: 24px; min-height: 0; }
+    .card .msg { font-size: 19px; }
+    .us .msg { font-size: 15px; }
+    .block { padding: 32px 26px; }
+    .block .big { font-size: calc(76px * var(--display-scale)); }
+    .code { font-size: 13px; }
+    .code .ln { padding: 0 18px; }
+    .btn { height: 48px; }
+    .cmd code { white-space: normal; overflow-wrap: anywhere; }
+  }
+
+  /* type switcher (study tool, not part of the design) */
+  .pair { position: fixed; z-index: 90; right: 16px; bottom: 16px; font: 500 12px/1.3 'Geist', system-ui, sans-serif; color: #eaeaea; }
+  .pair-btn { height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(24,24,24,.9); backdrop-filter: blur(10px); box-shadow: 0 0 0 1px rgba(255,255,255,.12); display: inline-flex; gap: 8px; align-items: center; }
+  .pair-list { position: absolute; right: 0; bottom: 42px; width: 290px; padding: 8px; border-radius: 14px; background: rgba(24,24,24,.96); box-shadow: 0 0 0 1px rgba(255,255,255,.12); display: none; }
+  .pair.open .pair-list { display: block; }
+  .pair-list button { width: 100%; text-align: left; padding: 9px 10px; border-radius: 9px; display: grid; gap: 3px; }
+  .pair-list button:hover, .pair-list button[aria-pressed="true"] { background: rgba(255,255,255,.08); }
+  .pair-list small { color: #9a9a9a; font-weight: 400; }
+  .pair-list .hint { padding: 8px 10px 4px; color: #8a8a8a; font-weight: 400; }
+  @media (max-width: 860px) { .pair-btn .pair-label { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    .reveal { opacity: 1; transform: none; }
+    .row { flex-wrap: wrap; width: auto; }
+    .row [aria-hidden="true"] { display: none; }
+    .strip { -webkit-mask-image: none; mask-image: none; }
+  }
+</style>
+</head>
+<body data-pairings='[
+  {"name":"Archivo Semi-Expanded + Geist","note":"Wide, heavy headlines with presence; the logo study’s wordmark family.","vars":{"--f-display":"\"Archivo\", sans-serif","--display-weight":"700","--display-stretch":"112%","--display-tracking":"-0.04em","--display-scale":"1"}},
+  {"name":"Geist + Geist Mono","note":"One family. Quieter, Vercel-like.","vars":{"--f-display":"\"Geist\", sans-serif","--display-weight":"600","--display-stretch":"100%","--display-tracking":"-0.05em","--display-scale":"1.05"}},
+  {"name":"Barlow Condensed + Geist","note":"Condensed, signage-like headlines over a wide body.","vars":{"--f-display":"\"Barlow Condensed\", sans-serif","--display-weight":"600","--display-stretch":"100%","--display-tracking":"-0.01em","--display-scale":"1.1"}}
+]'>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="arr" viewBox="0 0 16 16"><path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="2" fill="currentColor"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+</svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="PayPerQ home"><img src="assets/flame2.png" alt="">PayPerQ</a>
+    <nav class="nav-links" aria-label="Primary"><a href="#privacy">Privacy</a><a href="#models">Models</a><a href="#api">API</a><a href="#pricing">Pricing</a></nav>
+    <div class="nav-side"><a href="https://ppq.ai/auth">Sign in</a><a class="btn btn-primary btn-sm" href="https://ppq.ai/chat">Start chatting <span class="arr"><svg><use href="#arr"/></svg></span></a></div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <h1 class="display rise"><span class="nw">Chat and build</span> <em class="hl">privately.</em></h1>
+        <p class="sub rise rise-2">Your favorite AI models, with privacy you can verify.</p>
+        <div class="ctas rise rise-3">
+          <a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting <span class="arr"><svg><use href="#arr"/></svg></span></a>
+          <a class="btn btn-ghost" href="https://ppq.ai/api-docs">Get an API key <span class="key">API</span></a>
+        </div>
+        <p class="micro rise rise-4"><span>No account</span><span>No subscription</span><span>From $0.10</span></p>
+      </div>
+      <figure class="stage grain rise rise-3">
+        <div class="glow" aria-hidden="true"></div>
+        <div class="window">
+          <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <video class="d-only" data-inview autoplay muted loop playsinline preload="none" poster="assets/motion/demo-poster.jpg" aria-label="The PayPerQ chat: searching the model picker for Sonnet, switching to Claude Sonnet 5.5, then typing a message served inside the enclave and verified."><source src="assets/motion/demo.mp4" type="video/mp4"></video>
+          <video class="m-only" data-inview autoplay muted loop playsinline preload="none" poster="assets/motion/demo-tall-poster.jpg" aria-hidden="true"><source src="assets/motion/demo-tall.mp4" type="video/mp4"></video>
+        </div>
+        <figcaption class="chip"><b>✓</b>Enclave verified in your browser <small>v0.75.0</small></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec" id="privacy">
+    <div class="wrap">
+      <h2 class="display">Your chats stay <em class="hl">unreadable</em> to us.</h2>
+      <p class="lead">Every chat runs inside a secure enclave. Your browser checks it before anything is sent.</p>
+      <div class="seal reveal" id="seal" aria-label="What you send, and what PayPerQ sees">
+        <div class="card you">
+          <p class="label">What you send</p>
+          <p class="msg"><span id="plain">Draft a polite reply to my landlord. Keep the raise under 6%.</span><span class="caret" aria-hidden="true"></span></p>
+          <div class="meta"><span id="you-model">Claude Sonnet 5.5</span></div>
+        </div>
+        <div class="pipe" id="pipe" aria-hidden="true"><span class="dot"></span><span class="lock"><svg><use href="#lock"/></svg></span></div>
+        <div class="card us grain">
+          <p class="label">What PayPerQ sees</p>
+          <p class="msg" id="cipher" aria-label="Unreadable ciphertext">k8Qz+2vNw0Lr/aT9xHc1mYp4sE7uJd=fG3bKo6Ri5Wq…</p>
+          <div class="meta"><span id="us-model">claude-sonnet-5.5</span><span id="us-tokens">16 tokens</span><span id="us-time">16:20</span></div>
+        </div>
+      </div>
+      <div class="priv-foot">
+        <p class="fact">The model provider gets your message, never your IP address.<small>Covers chat in the app and the API. What a provider can keep depends on the model’s privacy label.</small></p>
+        <div>
+          <div class="cmd"><code><span class="s">PPQ_API_KEY=sk-…</span> npx ppq-private-mode</code><button class="copy" type="button" data-copy="PPQ_API_KEY=sk-… npx ppq-private-mode">Copy</button></div>
+          <p class="proof"><span>Check it yourself:</span><a href="https://github.com/PayPerQ/ppq-enclave-proxy">open-source enclave</a><a href="https://github.com/PayPerQ/ppq-privacy-verifier">verifier</a><span class="mono">build v0.75.0</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="models">
+    <div class="wrap models-head">
+      <div>
+        <h2 class="display">Choose the model for the task.</h2>
+        <p class="lead">Claude, GPT, Gemini, Grok and the best open models. One account, switch any time.</p>
+      </div>
+      <p class="count"><b data-count="388">388</b><span>chat models from 66 providers</span></p>
+    </div>
+    <div class="strip" aria-label="Some of the available models">
+      <div class="row">
+        <span class="pill"><img src="assets/logos/models/claude.svg" alt="">Claude Opus 5.5</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT-6.1 Sol</span>
+        <span class="pill"><img src="assets/logos/models/gemini.svg" alt="">Gemini 4 Argon</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/xai.svg" alt="">Grok 4.7</span>
+        <span class="pill"><img src="assets/logos/models/deepseek.svg" alt="">DeepSeek V4.1 Flash</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/moonshot.svg" alt="">Kimi K3.1 Pro</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/zai.svg" alt="">GLM 5.3</span>
+        <span class="pill"><img src="assets/logos/models/qwen.svg" alt="">Qwen3.8 Max</span>
+        <span class="pill"><img src="assets/logos/models/mistral.svg" alt="">Mistral Large 4</span>
+        <span aria-hidden="true" style="display:contents">
+          <span class="pill"><img src="assets/logos/models/claude.svg" alt="">Claude Opus 5.5</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT-6.1 Sol</span>
+          <span class="pill"><img src="assets/logos/models/gemini.svg" alt="">Gemini 4 Argon</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/xai.svg" alt="">Grok 4.7</span>
+          <span class="pill"><img src="assets/logos/models/deepseek.svg" alt="">DeepSeek V4.1 Flash</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/moonshot.svg" alt="">Kimi K3.1 Pro</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/zai.svg" alt="">GLM 5.3</span>
+          <span class="pill"><img src="assets/logos/models/qwen.svg" alt="">Qwen3.8 Max</span>
+          <span class="pill"><img src="assets/logos/models/mistral.svg" alt="">Mistral Large 4</span>
+        </span>
+      </div>
+      <div class="row r2">
+        <span class="pill"><img src="assets/logos/models/claude.svg" alt="">Claude Sonnet 5.5</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT-6 Luna</span>
+        <span class="pill"><img src="assets/logos/models/minimax.svg" alt="">MiniMax M3</span>
+        <span class="pill"><img src="assets/logos/models/gemini.svg" alt="">Gemini 3.7 Flash</span>
+        <span class="pill"><img src="assets/logos/models/meta.svg" alt="">Muse Spark 1.3</span>
+        <span class="pill"><img src="assets/logos/models/cohere.svg" alt="">Command A</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/moonshot.svg" alt="">Kimi K3</span>
+        <span class="pill"><img src="assets/logos/models/claude.svg" alt="">Claude Haiku 5.5</span>
+        <span class="pill"><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT-6 Astra</span>
+        <span aria-hidden="true" style="display:contents">
+          <span class="pill"><img src="assets/logos/models/claude.svg" alt="">Claude Sonnet 5.5</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT-6 Luna</span>
+          <span class="pill"><img src="assets/logos/models/minimax.svg" alt="">MiniMax M3</span>
+          <span class="pill"><img src="assets/logos/models/gemini.svg" alt="">Gemini 3.7 Flash</span>
+          <span class="pill"><img src="assets/logos/models/meta.svg" alt="">Muse Spark 1.3</span>
+          <span class="pill"><img src="assets/logos/models/cohere.svg" alt="">Command A</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/moonshot.svg" alt="">Kimi K3</span>
+          <span class="pill"><img src="assets/logos/models/claude.svg" alt="">Claude Haiku 5.5</span>
+          <span class="pill"><img class="inv" src="assets/logos/models/openai.svg" alt="">GPT-6 Astra</span>
+        </span>
+      </div>
+    </div>
+    <p class="models-link"><a href="https://ppq.ai/models">See all 388 models, plus image, video and audio →</a></p>
+  </section>
+
+  <section class="sec" id="api">
+    <div class="wrap api">
+      <div class="code reveal" id="code" role="img" aria-label="Python: the OpenAI SDK pointed at PayPerQ by changing the base URL and the API key.">
+        <div class="top" aria-hidden="true"><i></i><i></i><i></i><span>app.py</span></div>
+        <span class="tag">2 lines changed</span>
+        <code aria-hidden="true"><span class="ln"><span class="k">from</span> openai <span class="k">import</span> OpenAI</span><span class="ln"> </span><span class="ln">client = OpenAI(</span><span class="ln" id="l-url">    base_url=<span class="s" id="t-url">"https://api.openai.com/v1"</span>,</span><span class="ln" id="l-key">    api_key=<span class="s" id="t-key">os.environ["OPENAI_API_KEY"]</span>,</span><span class="ln">)</span></code>
+      </div>
+      <div>
+        <h2 class="display">Your models can work beyond this chat.</h2>
+        <p class="lead">One OpenAI-compatible API. Same models, same privacy, same balance.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="assets/logos/tools/claude-code.png" alt="">Claude Code</a>
+          <a href="https://ppq.ai/integrate"><img src="assets/logos/tools/cursor.svg" alt="">Cursor</a>
+          <a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="assets/logos/tools/opencode.png" alt="">OpenCode</a>
+          <a href="https://ppq.ai/integrate"><img src="assets/logos/tools/aider.png" alt="">Aider</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <h2 class="display">Pay per message. Nothing monthly.</h2>
+      <div class="price-grid">
+        <div class="block grain reveal">
+          <div class="bg" aria-hidden="true"></div>
+          <p class="big">$0.10</p>
+          <p class="big-sub">is all you need to start.</p>
+          <p class="buys">That’s about <b data-count="43">43</b> messages on Claude Haiku 5.5.</p>
+          <div class="pay">
+            <i><img src="assets/logos/pay/bitcoin.svg" alt="Bitcoin"></i>
+            <i><img src="assets/logos/pay/lightning-network.svg" alt="Lightning"></i>
+            <i><img src="assets/logos/pay/monero.svg" alt="Monero"></i>
+            <i><img src="assets/logos/pay/tether.svg" alt="Tether"></i>
+            <span>or card. No email.</span>
+          </div>
+          <a class="btn btn-dark" href="https://ppq.ai/chat">Start chatting <span class="arr"><svg><use href="#arr"/></svg></span></a>
+        </div>
+        <div class="prices-wrap">
+          <ul class="prices" id="prices">
+            <li><span class="m">Claude Haiku 5.5</span><b>$0.002</b><span class="bar"><i style="--w:6%"></i></span></li>
+            <li><span class="m">GPT-6 Luna</span><b>$0.018</b><span class="bar"><i style="--w:15%"></i></span></li>
+            <li><span class="m">Claude Sonnet 5.5</span><b>$0.051</b><span class="bar"><i style="--w:38%"></i></span></li>
+            <li><span class="m">Claude Opus 5.5</span><b>$0.134</b><span class="bar"><i style="--w:100%"></i></span></li>
+          </ul>
+          <p class="prices-cap">Typical cost per message (median, Nov 13, 2026). Long chats cost more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="wrap">
+      <h2 class="display">Chat and build <em class="hl">privately.</em></h2>
+      <p>Start in seconds. No account needed.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting <span class="arr"><svg><use href="#arr"/></svg></span></a>
+        <a class="btn btn-ghost" href="https://ppq.ai/api-docs">Read the API docs</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><img src="assets/flame2.png" alt="">PayPerQ</a></div>
+      <div><h3>Product</h3><ul><li><a href="https://ppq.ai/chat">Chat</a></li><li><a href="https://ppq.ai/api-docs">API</a></li><li><a href="https://ppq.ai/models">Models</a></li><li><a href="https://ppq.ai/pricing">Pricing</a></li></ul></div>
+      <div><h3>Privacy</h3><ul><li><a href="https://ppq.ai/private-ai">How it works</a></li><li><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verifier</a></li><li><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave source</a></li><li><a href="https://ppq.ai/privacy">Privacy policy</a></li></ul></div>
+      <div><h3>Company</h3><ul><li><a href="https://ppq.ai/blog">Blog</a></li><li><a href="https://ppq.ai/careers">Careers</a></li><li><a href="https://ppq.ai/terms">Terms</a></li></ul></div>
+      <div><h3>For agents</h3><ul><li><a class="mono" href="https://ppq.ai/llms.txt">llms.txt</a></li><li><a class="mono" href="https://api.ppq.ai/v1/models">v1/models</a></li></ul></div>
+    </div>
+    <div class="foot-base"><span>© 2026 PayPerQ</span><span>This page loads no third-party scripts.</span></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const onView = (el, fn, { once = false, threshold = 0.35 } = {}) => {
+    if (!el) return;
+    if (!('IntersectionObserver' in window)) return fn(true);
+    const io = new IntersectionObserver((es) => es.forEach((e) => { fn(e.isIntersecting); if (once && e.isIntersecting) io.disconnect(); }), { threshold });
+    io.observe(el);
+  };
+
+  // videos play only while visible
+  document.querySelectorAll('video[data-inview]').forEach((v) => {
+    if (reduce) { v.removeAttribute('autoplay'); v.controls = true; return; }
+    onView(v, (on) => on ? v.play().catch(() => {}) : v.pause(), { threshold: 0.3 });
+  });
+
+  // gentle reveals for the main visuals
+  document.querySelectorAll('.reveal').forEach((el) => onView(el, (on) => on && el.classList.add('in'), { once: true, threshold: 0.2 }));
+
+  // count-ups
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const to = +el.dataset.count;
+    onView(el, (on) => {
+      if (!on || reduce) return;
+      const t0 = performance.now(), dur = 1300;
+      const step = (t) => { const k = Math.min(1, (t - t0) / dur); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US'); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }, { once: true, threshold: 0.6 });
+  });
+
+  // price bars grow on view
+  const prices = document.getElementById('prices');
+  onView(prices, (on) => on && prices.classList.add('in'), { once: true, threshold: 0.4 });
+
+  // privacy: you type, we only ever see noise plus the metadata needed to bill
+  const msgs = [
+    ['Draft a polite reply to my landlord. Keep the raise under 6%.', 'Claude Sonnet 5.5', 'claude-sonnet-5.5'],
+    ['Is this rate limiter safe under concurrent requests?', 'Claude Opus 5.5', 'claude-opus-5.5'],
+    ['Summarize these board notes into five decisions.', 'GPT-6 Luna', 'gpt-6-luna'],
+  ];
+  const G = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const rnd = (n) => Array.from({ length: n }, () => G[(Math.random() * 64) | 0]).join('');
+  const plain = document.getElementById('plain'), cipher = document.getElementById('cipher');
+  const youModel = document.getElementById('you-model'), usModel = document.getElementById('us-model');
+  const usTok = document.getElementById('us-tokens'), usTime = document.getElementById('us-time'), pipe = document.getElementById('pipe');
+  const now = () => new Date().toTimeString().slice(0, 5);
+  let running = false, timer = null, i = 0;
+  const sleep = (ms) => new Promise((r) => (timer = setTimeout(r, ms)));
+  async function loop() {
+    while (running) {
+      const [text, model, id] = msgs[i % msgs.length];
+      youModel.textContent = model; usModel.textContent = id; usTime.textContent = now();
+      plain.textContent = ''; cipher.textContent = ''; usTok.textContent = '0 tokens';
+      await sleep(500);
+      for (let c = 1; c <= text.length && running; c++) {
+        plain.textContent = text.slice(0, c);
+        cipher.textContent = rnd(Math.ceil(c * 1.35));
+        usTok.textContent = Math.max(1, Math.round(c / 4)) + ' tokens';
+        await sleep(34 + Math.random() * 40);
+      }
+      pipe.classList.remove('go'); void pipe.offsetWidth; pipe.classList.add('go');
+      // the sealed message keeps shimmering: it is noise to us
+      for (let k = 0; k < 22 && running; k++) { cipher.textContent = rnd(Math.ceil(text.length * 1.35)); await sleep(120); }
+      await sleep(1600);
+      i++;
+    }
+  }
+  if (!reduce) onView(document.getElementById('seal'), (on) => {
+    if (on && !running) { running = true; loop(); }
+    if (!on) { running = false; clearTimeout(timer); }
+  }, { threshold: 0.3 });
+  else { cipher.textContent = rnd(82); }
+
+  // api: the two lines that change are rewritten in place
+  const code = document.getElementById('code');
+  const tUrl = document.getElementById('t-url'), tKey = document.getElementById('t-key');
+  const lUrl = document.getElementById('l-url'), lKey = document.getElementById('l-key');
+  const retype = async (el, to) => {
+    const from = el.textContent;
+    for (let n = from.length; n >= 0; n--) { el.textContent = from.slice(0, n); await new Promise((r) => setTimeout(r, 14)); }
+    for (let n = 1; n <= to.length; n++) { el.textContent = to.slice(0, n); await new Promise((r) => setTimeout(r, 30)); }
+  };
+  const finalCode = () => { tUrl.textContent = '"https://api.ppq.ai/v1"'; tKey.textContent = 'os.environ["PPQ_API_KEY"]'; lUrl.classList.add('changed'); lKey.classList.add('changed'); code.classList.add('done'); };
+  if (reduce) finalCode();
+  else onView(code, async (on) => {
+    if (!on) return;
+    await new Promise((r) => setTimeout(r, 600));
+    lUrl.classList.add('changed'); await retype(tUrl, '"https://api.ppq.ai/v1"');
+    await new Promise((r) => setTimeout(r, 250));
+    lKey.classList.add('changed'); await retype(tKey, 'os.environ["PPQ_API_KEY"]');
+    code.classList.add('done');
+  }, { once: true, threshold: 0.5 });
+
+  // copy
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select to copy'; }
+    setTimeout(() => (b.textContent = 'Copy'), 1400);
+  }));
+
+  // type switcher (study tool): key T cycles pairings
+  const root = document.documentElement, body = document.body;
+  const pairings = JSON.parse(body.dataset.pairings || '[]');
+  const params = new URLSearchParams(location.search);
+  const wrap = document.createElement('div'); wrap.className = 'pair';
+  wrap.innerHTML = `<div class="pair-list" role="group" aria-label="Type pairings"><div class="hint">Type pairings · press T to cycle</div>${pairings.map((p, n) => `<button type="button" data-i="${n}"><span>${n + 1}. ${p.name}</span><small>${p.note}</small></button>`).join('')}</div><button type="button" class="pair-btn" aria-expanded="false"><b>Aa</b><span class="pair-label"></span></button>`;
+  body.appendChild(wrap);
+  const label = wrap.querySelector('.pair-label'), toggle = wrap.querySelector('.pair-btn');
+  const apply = (n) => {
+    Object.entries(pairings[n].vars).forEach(([k, v]) => root.style.setProperty(k, v));
+    root.dataset.pairing = n; label.textContent = pairings[n].name;
+    wrap.querySelectorAll('[data-i]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.i === n)));
+    params.set('type', n + 1); history.replaceState(null, '', '?' + params + location.hash);
+  };
+  toggle.addEventListener('click', () => toggle.setAttribute('aria-expanded', String(wrap.classList.toggle('open'))));
+  wrap.querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => apply(+b.dataset.i)));
+  document.addEventListener('keydown', (e) => { if (e.metaKey || e.ctrlKey || e.altKey) return; if (e.key === 't' || e.key === 'T') apply((+root.dataset.pairing + 1) % pairings.length); if (e.key === 'Escape') wrap.classList.remove('open'); });
+  apply(Math.min(pairings.length, Math.max(1, +params.get('type') || 1)) - 1);
+})();
+</script>
+</body>
+</html>

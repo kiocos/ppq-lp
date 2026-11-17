@@ -1,0 +1,41 @@
+[
+  {
+    "check": "full-canvas artwork animates",
+    "result": "pass"
+  },
+  {
+    "width": 1440,
+    "dimensions": {
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "heroWidth": 1440,
+      "canvasWidth": 1440,
+      "heroHeight": 653.71875,
+      "canvasHeight": 653.71875
+    },
+    "composer": "pass",
+    "pause": "pass",
+    "reducedMotion": "pass",
+    "offscreen": "pass"
+  },
+  {
+    "width": 390,
+    "dimensions": {
+      "viewport": 390,
+      "scrollWidth": 390,
+      "heroWidth": 390,
+      "canvasWidth": 390,
+      "heroHeight": 544.0625,
+      "canvasHeight": 544.0625
+    },
+    "composer": "pass",
+    "pause": "pass",
+    "reducedMotion": "pass",
+    "offscreen": "pass"
+  },
+  {
+    "check": "reduced motion on load",
+    "result": "pass",
+    "errors": []
+  }
+]

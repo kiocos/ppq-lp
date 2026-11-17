@@ -1,0 +1,513 @@
+{
+ "title": "Become a Real AI Hero",
+ "bodyBg": "rgb(8, 8, 8)",
+ "bodyColor": "rgb(244, 243, 241)",
+ "pageH": 6371,
+ "fonts": [
+  "geist 400 700",
+  "geist Fallback normal",
+  "geistMono 400 500",
+  "sourceSerif 400 600",
+  "sourceSerif Fallback normal"
+ ],
+ "h1": [
+  {
+   "tag": "h1",
+   "text": "Engineering fundamentals aren't obsolete.",
+   "font": "geist",
+   "size": "76px",
+   "weight": "700",
+   "lh": "72.96px",
+   "ls": "-3.192px",
+   "color": "rgb(244, 243, 241)",
+   "w": 659,
+   "y": 211
+  }
+ ],
+ "h2": [
+  {
+   "tag": "h2",
+   "text": "Bad code is now the most expensive it has ever been.",
+   "font": "geist",
+   "size": "40px",
+   "weight": "700",
+   "lh": "43.2px",
+   "ls": "-1.2px",
+   "color": "rgb(244, 243, 241)",
+   "w": 591,
+   "y": 890
+  },
+  {
+   "tag": "h2",
+   "text": "A real engineering process, as installable skills",
+   "font": "geist",
+   "size": "44px",
+   "weight": "700",
+   "lh": "45.76px",
+   "ls": "-1.408px",
+   "color": "rgb(244, 243, 241)",
+   "w": 672,
+   "y": 1285
+  },
+  {
+   "tag": "h2",
+   "text": "What do you want to do?",
+   "font": "geist",
+   "size": "44px",
+   "weight": "700",
+   "lh": "45.76px",
+   "ls": "-1.408px",
+   "color": "rgb(244, 243, 241)",
+   "w": 504,
+   "y": 2174
+  },
+  {
+   "tag": "h2",
+   "text": "Software Factories for Real Engineers",
+   "font": "geist",
+   "size": "52px",
+   "weight": "700",
+   "lh": "53.04px",
+   "ls": "-1.872px",
+   "color": "rgb(244, 243, 241)",
+   "w": 732,
+   "y": 3335
+  },
+  {
+   "tag": "h2",
+   "text": "Be first in line for the next cohort",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 560,
+   "y": 3601
+  },
+  {
+   "tag": "h2",
+   "text": "Latest posts and videos",
+   "font": "geist",
+   "size": "36px",
+   "weight": "700",
+   "lh": "37.8px",
+   "ls": "-1.08px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 4446
+  },
+  {
+   "tag": "h2",
+   "text": "Hi, I'm Matt Pocock",
+   "font": "geist",
+   "size": "38px",
+   "weight": "700",
+   "lh": "39.9px",
+   "ls": "-1.14px",
+   "color": "rgb(244, 243, 241)",
+   "w": 730,
+   "y": 5325
+  },
+  {
+   "tag": "h2",
+   "text": "Join 135,400+ developers learning to code with AI",
+   "font": "geist",
+   "size": "24px",
+   "weight": "700",
+   "lh": "27.6px",
+   "ls": "-0.528px",
+   "color": "rgb(244, 243, 241)",
+   "w": 672,
+   "y": 5575
+  }
+ ],
+ "h3": [
+  {
+   "tag": "h3",
+   "text": "01 Getting Started",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 1528
+  },
+  {
+   "tag": "h3",
+   "text": "02 The Main Flow",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 1528
+  },
+  {
+   "tag": "h3",
+   "text": "03 Shaping",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 1528
+  },
+  {
+   "tag": "h3",
+   "text": "04 Engineering",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 1774
+  },
+  {
+   "tag": "h3",
+   "text": "05 Productivity Skills",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 1774
+  },
+  {
+   "tag": "h3",
+   "text": "06 Reference Skills",
+   "font": "geist",
+   "size": "20px",
+   "weight": "700",
+   "lh": "24px",
+   "ls": "-0.4px",
+   "color": "rgb(244, 243, 241)",
+   "w": 395,
+   "y": 1774
+  },
+  {
+   "tag": "h3",
+   "text": "What is actually happening when I prompt a model?",
+   "font": "geist",
+   "size": "25px",
+   "weight": "700",
+   "lh": "28.75px",
+   "ls": "-0.625px",
+   "color": "rgb(244, 243, 241)",
+   "w": 579,
+   "y": 2414
+  },
+  {
+   "tag": "h3",
+   "text": "How do I get it working the way I work?",
+   "font": "geist",
+   "size": "25px",
+   "weight": "700",
+   "lh": "28.75px",
+   "ls": "-0.625px",
+   "color": "rgb(244, 243, 241)",
+   "w": 579,
+   "y": 2624
+  }
+ ],
+ "p": [
+  {
+   "tag": "p",
+   "text": "REAL AI ENGINEERING · BY MATT POCOCK",
+   "font": "geistMono",
+   "size": "11px",
+   "weight": "500",
+   "lh": "15.4px",
+   "ls": "1.76px",
+   "color": "oklab(0.964356 0.000316113 0.00287718 / 0.65)",
+   "w": 659,
+   "y": 184
+  },
+  {
+   "tag": "p",
+   "text": "They're your biggest advantage. AI Hero is the engineering process for working w",
+   "font": "geist",
+   "size": "21px",
+   "weight": "400",
+   "lh": "30.45px",
+   "ls": "normal",
+   "color": "rgb(244, 243, 241)",
+   "w": 488,
+   "y": 452
+  },
+  {
+   "tag": "p",
+   "text": "DEVELOPERS LEARNING",
+   "font": "geistMono",
+   "size": "11px",
+   "weight": "500",
+   "lh": "14.85px",
+   "ls": "1.32px",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 169,
+   "y": 727
+  },
+  {
+   "tag": "p",
+   "text": "TRAINED IN COHORTS",
+   "font": "geistMono",
+   "size": "11px",
+   "weight": "500",
+   "lh": "14.85px",
+   "ls": "1.32px",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 169,
+   "y": 727
+  },
+  {
+   "tag": "p",
+   "text": "FREE SKILLS",
+   "font": "geistMono",
+   "size": "11px",
+   "weight": "500",
+   "lh": "14.85px",
+   "ls": "1.32px",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 169,
+   "y": 727
+  },
+  {
+   "tag": "p",
+   "text": "A lot of people think the rules of software development are being rewritten by A",
+   "font": "geist",
+   "size": "17.5px",
+   "weight": "400",
+   "lh": "29.4px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.72)",
+   "w": 679,
+   "y": 890
+  },
+  {
+   "tag": "p",
+   "text": "Coding agents like Claude Code and Codex ship code faster than any human ever ha",
+   "font": "geist",
+   "size": "17.5px",
+   "weight": "400",
+   "lh": "29.4px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.72)",
+   "w": 679,
+   "y": 969
+  },
+  {
+   "tag": "p",
+   "text": "If you can design codebases agents love, you can reap the rewards of this new er",
+   "font": "geist",
+   "size": "17.5px",
+   "weight": "500",
+   "lh": "29.4px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.72)",
+   "w": 679,
+   "y": 1077
+  },
+  {
+   "tag": "p",
+   "text": "Every skill here is free, installs in one command, and you can use it today. Sta",
+   "font": "geist",
+   "size": "17.5px",
+   "weight": "400",
+   "lh": "29.4px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 672,
+   "y": 1393
+  },
+  {
+   "tag": "p",
+   "text": "Set up once, then find your way around.",
+   "font": "geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "22.75px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 395,
+   "y": 1560
+  },
+  {
+   "tag": "p",
+   "text": "The idea→ship spine, in order.",
+   "font": "geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "22.75px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 395,
+   "y": 1560
+  },
+  {
+   "tag": "p",
+   "text": "Explore an open question and produce a decision/answer that feeds the flow.",
+   "font": "geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "22.75px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 395,
+   "y": 1560
+  },
+  {
+   "tag": "p",
+   "text": "Keep the codebase and issue list healthy; generates work for the flow.",
+   "font": "geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "22.75px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 395,
+   "y": 1806
+  },
+  {
+   "tag": "p",
+   "text": "Human-facing workflows you run, not about code.",
+   "font": "geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "22.75px",
+   "ls": "normal",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "w": 395,
+   "y": 1806
+  }
+ ],
+ "sections": [
+  {
+   "tag": "article",
+   "y": 96,
+   "h": 5875,
+   "pt": "0px",
+   "pb": "0px",
+   "bg": "rgba(0, 0, 0, 0)"
+  }
+ ],
+ "buttons": [
+  {
+   "text": "AI Coding Crash Course is out ",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(244, 243, 241)",
+   "radius": "0px",
+   "h": 18,
+   "font": "12.5px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "AIHero",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(244, 243, 241)",
+   "radius": "7px",
+   "h": 62,
+   "font": "16px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Start Here",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "7px",
+   "h": 28,
+   "font": "16px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Skills",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "11px",
+   "h": 28,
+   "font": "13.5px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Open source",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "11px",
+   "h": 28,
+   "font": "13.5px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Courses",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "11px",
+   "h": 28,
+   "font": "13.5px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Search",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "6px",
+   "h": 13,
+   "font": "13px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Newsletter",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "6px",
+   "h": 13,
+   "font": "13px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Log in",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgba(244, 243, 241, 0.6)",
+   "radius": "6px",
+   "h": 13,
+   "font": "13px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Get the free course",
+   "bg": "rgb(245, 196, 81)",
+   "color": "rgb(25, 21, 16)",
+   "radius": "8px",
+   "h": 29,
+   "font": "13px/700",
+   "shadow": "none"
+  },
+  {
+   "text": "Start the free email course",
+   "bg": "rgb(245, 196, 81)",
+   "color": "rgb(25, 21, 16)",
+   "radius": "9px",
+   "h": 46,
+   "font": "15px/700",
+   "shadow": "none"
+  },
+  {
+   "text": "Browse the skills",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(244, 243, 241)",
+   "radius": "9px",
+   "h": 46,
+   "font": "15px/500",
+   "shadow": "none"
+  }
+ ]
+}

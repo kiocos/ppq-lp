@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Forge study</title>
+<style>
+  @font-face { font-family: 'Geist'; src: url(assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    /* PPQ brand token; it is also the colour of the metal at half heat (see the shader's ramp) */
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --line: rgba(255,255,255,.08);
+    --f: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+    --gutter: clamp(20px, 4vw, 40px); --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .09; }
+  h1, h2, h3, p, ul, pre, figure { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  button, textarea, input { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; }
+  button { cursor: pointer; }
+  svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* ---------- nav ---------- */
+  .nav { position: absolute; inset: 0 0 auto; z-index: 20; }
+  .nav .wrap { display: flex; align-items: center; gap: 28px; height: 68px; }
+  .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+  .brand img { height: 22px; width: auto; }
+  .nav-links { display: flex; gap: 4px; font-size: 14px; font-weight: 500; color: var(--fg-2); }
+  .nav-links a { padding: 8px 10px; border-radius: 6px; transition: color .15s; }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-side { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--fg-2); }
+  .nav-side > a:not(.btn) { padding: 8px 12px; transition: color .15s; }
+  .nav-side > a:not(.btn):hover { color: var(--fg); }
+
+  /* ---------- buttons ---------- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 6px; border: 1px solid transparent; font: 500 15px/1 var(--f); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s, border-color .15s, color .15s; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-secondary { border-color: rgba(255,255,255,.22); color: var(--fg); }
+  .btn-secondary:hover { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.32); }
+  .btn-sm { height: 34px; padding: 0 14px; font-size: 14px; }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; justify-content: center; }
+  .hero-grid { width: 100%; }
+  #forge { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; }
+  .nogl .hero { background: radial-gradient(40% 30% at 70% 82%, rgba(191,60,27,.35), transparent 70%); }
+  .hero-grid { max-width: 1240px; margin: 0 auto; padding: 120px var(--gutter) 236px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 560px); gap: 56px; align-items: center; }
+  .copy { min-width: 0; padding-bottom: 24px; }
+  .copy h1 { font: 400 clamp(40px, 4.3vw, 62px)/1.04 var(--f); letter-spacing: -0.035em; }
+  .copy h1 .nw { white-space: nowrap; }
+  .copy .sub { margin-top: 22px; font-size: 18px; line-height: 1.5; color: var(--fg-2); max-width: 27em; }
+  .ctas { margin-top: 36px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .micro { margin-top: 18px; display: flex; flex-wrap: wrap; font-size: 13px; color: var(--fg-3); }
+  .micro span + span::before { content: '·'; margin: 0 10px; }
+  .rise { opacity: 0; transform: translateY(10px); }
+  .in .rise { animation: rise .9s var(--ease) both; }
+  .in .rise-2 { animation-delay: .07s; } .in .rise-3 { animation-delay: .14s; } .in .rise-4 { animation-delay: .21s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* ---------- the workpiece: the product, lit from below by the metal ---------- */
+  .card { --rim: 0; position: relative; min-width: 0; border-radius: 16px; background: rgba(19,18,17,.80); -webkit-backdrop-filter: blur(16px) saturate(1.1); backdrop-filter: blur(16px) saturate(1.1); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 60px 100px -50px rgba(0,0,0,.95); opacity: 0; transform: translateY(12px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+  .card.show { opacity: 1; transform: none; }
+  /* the forge light catching the card's lower edge; --rim follows the heat under the card */
+  .card::before { content: ''; position: absolute; left: 6%; right: 6%; bottom: -1px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,176,96, calc(.15 + var(--rim) * .7)), transparent); pointer-events: none; }
+  .card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(90% 45% at 50% 108%, rgba(255,118,40, calc(var(--rim) * .13)), transparent 70%); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px 12px 12px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .seg { display: inline-flex; padding: 3px; border-radius: 10px; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.07); }
+  .seg button { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 14px; border-radius: 7px; font-size: 13.5px; color: var(--fg-2); transition: background-color .15s, color .15s; }
+  .seg button svg.i { width: 15px; height: 15px; }
+  .seg button:hover { color: var(--fg); }
+  .seg button[aria-pressed="true"] { background: rgba(255,255,255,.08); color: var(--fg); }
+  .head-r { font-size: 12.5px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .view { position: relative; z-index: 1; padding: 0 18px; }
+  .view[hidden] { display: none; }
+  .msgs { height: 262px; display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; overflow: hidden; padding-bottom: 16px; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 34px); mask-image: linear-gradient(180deg, transparent 0, #000 34px); }
+  .view[data-v="api"] .msgs { height: 318px; }
+  .bubble { align-self: flex-end; max-width: 84%; padding: 9px 14px; border-radius: 16px; background: #262523; font-size: 14.5px; line-height: 1.5; animation: pop .35s var(--ease) both; }
+  .bubble .att { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; padding: 5px 9px 5px 7px; border-radius: 8px; background: rgba(255,255,255,.06); font-size: 12.5px; color: var(--fg-2); }
+  .bubble .att svg.i { width: 14px; height: 14px; }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px); } }
+  .ans { font-size: 14.5px; line-height: 1.6; color: var(--fg); }
+  .ans > * + * { margin-top: 8px; }
+  .ans pre { padding: 11px 14px; border-radius: 10px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.06); font: 12.5px/1.65 var(--mono); white-space: pre; overflow: hidden; --end: #d6d2cb; }
+  .ans ul li { position: relative; padding-left: 16px; }
+  .ans ul li::before { content: ''; position: absolute; left: 3px; top: .72em; width: 4px; height: 4px; border-radius: 50%; background: var(--fg-3); }
+  .ans ul li + li { margin-top: 4px; }
+
+  /* hot tokens: each one arrives incandescent and cools to the text colour */
+  .t { animation: cool 1.05s cubic-bezier(.3,.6,.3,1) both; }
+  @keyframes cool {
+    0%   { color: #fff6dc; text-shadow: 0 0 12px rgba(255,160,60,.95), 0 0 3px rgba(255,214,150,.95); }
+    14%  { color: #ffd08a; text-shadow: 0 0 10px rgba(255,128,40,.8), 0 0 2px rgba(255,170,90,.6); }
+    34%  { color: #f08a4c; text-shadow: 0 0 7px rgba(210,72,26,.5); }
+    62%  { color: #e2b9a4; text-shadow: 0 0 3px rgba(191,60,27,.18); }
+    100% { color: var(--end, var(--fg)); text-shadow: 0 0 0 rgba(191,60,27,0); }
+  }
+  .static .t { animation: none; }
+  .static .rise { opacity: 1; transform: none; animation: none !important; }
+  .static .card { transition: none; }
+
+  /* API view */
+  .term { font: 12.5px/1.7 var(--mono); color: #cfcac2; white-space: pre; overflow: hidden; animation: pop .4s var(--ease) both; }
+  .term .c { color: var(--fg-3); }
+  .term .s { color: #e3d9c9; }
+  .meta { display: flex; align-items: center; gap: 8px; font: 12px var(--mono); color: var(--fg-3); animation: pop .3s var(--ease) both; }
+  .meta b { font-weight: 500; color: var(--good); }
+  .urlrow { display: flex; align-items: center; gap: 12px; height: 50px; padding: 0 8px 0 16px; border-radius: 14px; background: #1d1c1a; border: 1px solid rgba(255,255,255,.09); }
+  .urlrow .k { font-size: 13px; color: var(--fg-3); }
+  .urlrow code { flex: 1; min-width: 0; font: 13.5px var(--mono); color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .copybtn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 8px; font-size: 13px; color: var(--fg-2); border: 1px solid rgba(255,255,255,.1); transition: color .15s, border-color .15s; }
+  .copybtn svg.i { width: 14px; height: 14px; }
+  .copybtn:hover { color: var(--fg); border-color: rgba(255,255,255,.2); }
+
+  /* composer: replica of the app's ChatInput */
+  .box { border-radius: 20px; background: #1d1c1a; border: 1px solid rgba(255,255,255,.09); transition: border-color .2s; }
+  .box:focus-within { border-color: rgba(255,255,255,.18); }
+  .box .top { display: flex; align-items: flex-start; gap: 8px; padding: 12px 14px 0; }
+  .box .shield { margin-top: 2px; color: var(--fg-2); }
+  .box textarea { flex: 1; min-width: 0; height: 46px; resize: none; outline: none; font-size: 14.5px; line-height: 1.55; color: var(--fg); }
+  .box textarea::placeholder { color: #77736d; }
+  .box .bot { display: flex; align-items: center; gap: 2px; padding: 4px 8px 8px; }
+  .ib { width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center; color: var(--fg-2); flex: none; transition: background-color .15s, color .15s; }
+  .ib:hover { background: rgba(255,255,255,.06); color: var(--fg); }
+  .trig, .rsn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 9px 0 8px; border-radius: 999px; font-size: 14px; color: var(--fg); min-width: 0; transition: background-color .15s; }
+  .rsn { color: var(--fg-2); font-size: 13.5px; }
+  .trig:hover, .rsn:hover { background: rgba(255,255,255,.06); }
+  .trig .bub { color: var(--fg-2); width: 17px; height: 17px; }
+  .trig .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .trig .chev, .rsn .chev { width: 14px; height: 14px; color: var(--fg-3); }
+  .rsn svg.i:first-child { width: 16px; height: 16px; }
+  .lg { width: 17px; height: 17px; flex: none; }
+  .lg.claude { color: #d97757; }
+  .lg.openai { color: #ecebe8; }
+  .sp { flex: 1; }
+  .send { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #f2f2f2; color: #151515; flex: none; transition: transform .15s, opacity .2s, background-color .15s; }
+  .send svg.i { width: 17px; height: 17px; stroke-width: 2.2; }
+  .send.wait { opacity: .35; }
+  .send.press { transform: scale(.88); }
+  .status { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; padding: 0 16px; font-size: 12.5px; color: var(--fg-3); text-align: center; }
+  .status svg.i { width: 14px; height: 14px; }
+  .status.ok { color: var(--good); }
+  .status a { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(95,211,154,.45); }
+  .status code { font: 12px var(--mono); color: var(--fg-2); }
+  .spin { width: 12px; height: 12px; border-radius: 50%; border: 1.6px solid rgba(255,255,255,.18); border-top-color: var(--fg-2); animation: spin .8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- the hallmark: hit areas over the punches, and the line under the bar ---------- */
+  .punch { position: absolute; z-index: 3; border-radius: 4px; pointer-events: none; }
+  .punch.on { pointer-events: auto; cursor: help; }
+  .pop { position: absolute; z-index: 30; width: 260px; padding: 10px 12px; border-radius: 8px; background: #f2f1ee; color: #161514; font-size: 12.5px; line-height: 1.45; box-shadow: 0 16px 40px -12px rgba(0,0,0,.7); pointer-events: none; opacity: 0; transform: translate(-50%, calc(-100% - 10px)) translateY(4px); transition: opacity .15s, transform .15s; }
+  .pop.on { opacity: 1; transform: translate(-50%, calc(-100% - 10px)); }
+  .pop b { display: block; font-weight: 600; margin-bottom: 2px; }
+  .pop code { font: 11.5px var(--mono); }
+  .hm-cap { position: absolute; z-index: 3; transform: translateX(-50%); max-width: calc(100vw - 40px); font-size: 13px; color: var(--fg-3); text-align: center; white-space: nowrap; transition: opacity .3s; }
+  .hm-cap .stp { color: var(--fg-2); }
+  .hm-cap .stp b { font-weight: 500; color: var(--fg); }
+  .hm-cap .ok { color: var(--good); }
+  .hm-cap a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+  .hm-cap a:hover { color: var(--fg); }
+  .hm-cap code { font: 12px var(--mono); }
+  .flip { display: inline-block; animation: pop .3s var(--ease) both; }
+
+  /* ---------- study chrome: dock + anatomy ---------- */
+  .dock { position: fixed; right: 16px; bottom: 16px; z-index: 60; display: flex; gap: 2px; padding: 4px; border-radius: 10px; background: rgba(18,17,16,.86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--line); font-size: 12.5px; }
+  .dock button, .dock a { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 10px; border-radius: 7px; color: var(--fg-2); transition: background-color .15s, color .15s; }
+  .dock button:hover, .dock a:hover, .dock button[aria-pressed="true"] { background: rgba(255,255,255,.07); color: var(--fg); }
+  .dock kbd { font: 11px var(--mono); color: var(--fg-3); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
+  .dock svg.i { width: 14px; height: 14px; }
+  .pin { position: absolute; z-index: 40; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: #f2f1ee; color: #141312; display: grid; place-items: center; font: 600 12px/1 var(--f); box-shadow: 0 0 0 6px rgba(242,241,238,.14), 0 6px 20px rgba(0,0,0,.5); opacity: 0; transform: scale(.6); transition: opacity .25s, transform .25s var(--ease); pointer-events: none; }
+  .anat .pin { opacity: 1; transform: none; }
+  .legend { position: fixed; left: 16px; bottom: 16px; z-index: 60; width: min(780px, calc(100vw - 460px)); display: grid; grid-template-columns: 1fr 1fr; gap: 12px 28px; padding: 16px 18px; border-radius: 12px; background: rgba(18,17,16,.92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--line); font-size: 13px; line-height: 1.5; color: var(--fg-2); opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .25s, transform .25s var(--ease); }
+  .anat .legend { opacity: 1; transform: none; pointer-events: auto; }
+  .legend li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; }
+  .legend li > span { width: 20px; height: 20px; border-radius: 50%; background: #f2f1ee; color: #141312; display: grid; place-items: center; font: 600 11px/1 var(--f); margin-top: 1px; }
+  .legend b { color: var(--fg); font-weight: 500; }
+
+  /* ---------- the explainer under the hero (for the review, in Portuguese) ---------- */
+  .why { max-width: 1160px; margin: 0 auto; padding: 72px var(--gutter) 140px; }
+  .why .kick { font-size: 13px; font-weight: 500; color: var(--fg-3); }
+  .why h2 { margin-top: 12px; font: 400 clamp(28px, 2.8vw, 38px)/1.12 var(--f); letter-spacing: -0.03em; text-wrap: balance; max-width: 18em; }
+  .why .lead { margin-top: 14px; font-size: 17px; line-height: 1.55; color: var(--fg-2); max-width: 40em; }
+  .four { margin-top: 48px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 36px; }
+  .four h3 { font-size: 15px; font-weight: 500; }
+  .four h3 span { color: var(--fg-3); font-weight: 400; }
+  .four p { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: var(--fg-2); }
+  .swatch { display: block; height: 3px; width: 44px; margin-bottom: 16px; border-radius: 2px; }
+  .notes { margin-top: 72px; display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .before img { width: 100%; border-radius: 10px; border: 1px solid var(--line); opacity: .85; }
+  .before p { margin-top: 10px; font-size: 13px; color: var(--fg-3); }
+  .notes h3 { font-size: 15px; font-weight: 500; }
+  .notes ul { margin-top: 10px; }
+  .notes li { font-size: 14.5px; line-height: 1.55; color: var(--fg-2); padding-left: 16px; position: relative; }
+  .notes li + li { margin-top: 8px; }
+  .notes li::before { content: ''; position: absolute; left: 2px; top: .7em; width: 5px; height: 5px; border-radius: 50%; background: var(--fg-3); }
+  .notes li b { color: var(--fg); font-weight: 500; }
+  .notes code { font: 13px var(--mono); color: var(--fg); }
+  .notes .grp + .grp { margin-top: 28px; }
+
+  @media (max-width: 1080px) { .four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 860px) {
+    .nav-links, .nav-side > a:not(.btn) { display: none; }
+    .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 172px; padding-top: 104px; padding-bottom: 72px; }
+    .ans pre { white-space: pre-wrap; }
+    .copy { padding-bottom: 0; }
+    .copy h1 { font-size: 40px; }
+    .copy .sub { font-size: 17px; margin-top: 16px; }
+    .ctas { margin-top: 28px; }
+    .msgs { height: 240px; }
+    .view[data-v="api"] .msgs { height: 296px; }
+    .head-r { display: none; }
+    .rsn { display: none; }
+    .notes { grid-template-columns: minmax(0, 1fr); }
+    .dock { left: 16px; right: 16px; justify-content: center; }
+    .legend { bottom: 66px; width: calc(100vw - 32px); grid-template-columns: 1fr; gap: 10px; }
+  }
+  @media (max-width: 520px) {
+    .four { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .view { padding: 0 14px; }
+    .ans, .bubble { font-size: 14px; }
+    .ans pre { font-size: 11.5px; padding: 10px 12px; }
+    .term { font-size: 11px; }
+    .hm-cap { white-space: normal; width: calc(100vw - 40px); }
+    .dock kbd { display: none; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bub" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10.5 11V9.5a1.5 1.5 0 0 1 3 0V11"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-6 .1 4 4 0 0 0-2.5 5.8 4 4 0 0 0 .6 6.6A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 6 .1 4 4 0 0 1 2.5 5.8 4 4 0 0 1-.6 6.6A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7M12 19V5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+  <symbol id="lg-claude" viewBox="0 0 24 24"><path fill="currentColor" d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z"/></symbol>
+  <symbol id="lg-openai" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"/></symbol>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="PayPerQ home"><img src="assets/flame2.png" alt="">PayPerQ</a>
+    <nav class="nav-links" aria-label="Primary"><a href="#">Privacy</a><a href="#">Models</a><a href="#">API</a><a href="#">Pricing</a></nav>
+    <div class="nav-side"><a href="#">Log in</a><a class="btn btn-secondary btn-sm" href="#">Open app</a></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <canvas id="forge" aria-hidden="true"></canvas>
+    <div class="hero-grid">
+      <div class="copy">
+        <h1 class="rise"><span class="nw">Chat and build</span> <span class="nw">privately.</span></h1>
+        <p class="sub rise rise-2">Your favorite AI models, with privacy you can verify.</p>
+        <div class="ctas rise rise-3">
+          <a class="btn btn-primary" id="cta" href="#">Start chatting</a>
+          <a class="btn btn-secondary" href="#">Get an API key</a>
+        </div>
+        <p class="micro rise rise-4"><span>No account</span><span>No subscription</span></p>
+      </div>
+
+      <div class="card" id="card">
+        <div class="card-head">
+          <div class="seg" role="group" aria-label="Chat or API">
+            <button type="button" aria-pressed="true" data-view="chat"><svg class="i"><use href="#i-bub"/></svg>Chat</button>
+            <button type="button" aria-pressed="false" data-view="api"><svg class="i"><use href="#i-code"/></svg>API</button>
+          </div>
+          <span class="head-r">Guest session · chats stay in this browser</span>
+        </div>
+        <div class="view" data-v="chat">
+          <div class="msgs" id="m-chat" aria-live="polite"></div>
+          <div class="box">
+            <div class="top"><svg class="i shield" aria-hidden="true"><use href="#i-shield"/></svg><textarea id="ta" rows="2" placeholder="Ask anything…" aria-label="Message"></textarea></div>
+            <div class="bot">
+              <button class="ib" type="button" aria-label="Attach files"><svg class="i"><use href="#i-plus"/></svg></button>
+              <button class="trig" type="button" aria-label="Model"><svg class="i bub"><use href="#i-bub"/></svg><svg class="lg claude" id="mlogo" aria-hidden="true"><use href="#lg-claude"/></svg><span class="nm" id="mname">Claude Sonnet 5.5</span><svg class="i chev"><use href="#i-chev"/></svg></button>
+              <button class="rsn" type="button" aria-label="Reasoning effort"><svg class="i"><use href="#i-brain"/></svg><span>Medium</span><svg class="i chev"><use href="#i-chev"/></svg></button>
+              <span class="sp"></span>
+              <button class="ib" type="button" aria-label="Dictate"><svg class="i"><use href="#i-mic"/></svg></button>
+              <button class="send" id="send" type="button" aria-label="Send"><svg class="i"><use href="#i-up"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="view" data-v="api" hidden>
+          <div class="msgs" id="m-api" aria-live="polite"></div>
+          <div class="urlrow"><span class="k">Base URL</span><code>https://api.ppq.ai/v1</code><button type="button" class="copybtn" data-copy="https://api.ppq.ai/v1"><svg class="i"><use href="#i-copy"/></svg><span>Copy</span></button></div>
+        </div>
+        <p class="status" id="status"><span class="spin"></span><span>Checking the enclave before anything is sent…</span></p>
+      </div>
+    </div>
+
+    <div class="hm-cap" id="cap"></div>
+    <div class="pop" id="pop" role="tooltip"></div>
+    <span class="pin" data-pin="1">1</span><span class="pin" data-pin="2">2</span><span class="pin" data-pin="3">3</span><span class="pin" data-pin="4">4</span>
+  </section>
+
+  <section class="why" lang="pt-BR">
+    <p class="kick">Estudo · a forja como material, não como cena</p>
+    <h2>Sem ferreiro. Quem forja é o visitante.</h2>
+    <p class="lead">A pintura mostrava outra pessoa trabalhando. Aqui o produto é a peça na bigorna, e o calor é a linguagem da página: um só movimento, de quente para frio, que só aparece onde algo está sendo feito agora.</p>
+    <div class="four">
+      <div><span class="swatch" style="background:linear-gradient(90deg,#3a0a04,#bf3c1b,#ffc067)"></span><h3>Build <span>· o metal</span></h3><p>Uma barra de aço renderizada em tempo real. Fria nas pontas, quente onde o trabalho acontece: embaixo da resposta enquanto o modelo escreve, e onde o cursor passa perto.</p></div>
+      <div><span class="swatch" style="background:linear-gradient(90deg,#fff6dc,#f08a4c,#ecebe8)"></span><h3>IA <span>· tokens em brasa</span></h3><p>Cada token chega incandescente e esfria em pouco mais de um segundo. A resposta é forjada na frente do visitante, no produto real, e não numa ilustração.</p></div>
+      <div><span class="swatch" style="background:#5fd39a"></span><h3>Privacidade <span>· o hallmark</span></h3><p>Há mais de 700 anos a prata inglesa é testada por um órgão independente e marcada no Goldsmiths' Hall; daí a palavra <i>hallmark</i>. As quatro punções são as quatro checagens que o navegador faz antes de enviar: fabricante, hardware AWS Nitro, PCR0 e versão.</p></div>
+      <div><span class="swatch" style="background:#bf3c1b"></span><h3>Marca <span>· uma cor só</span></h3><p>O laranja do botão (<code style="font:13px var(--mono)">#bf3c1b</code>) é a cor exata do metal a meio calor. Na pintura havia dois laranjas diferentes, e parecia erro.</p></div>
+    </div>
+    <div class="notes">
+      <figure class="before"><img src="assets/before-r10.png" alt="A hero da r10: pintura barroca de um ferreiro, parada, atrás do texto." loading="lazy"><p>Antes (r10): bonita, mas parada, e nada na imagem diz IA ou privacidade.</p></figure>
+      <div>
+        <div class="grp"><h3>O que é real e o que é encenado</h3>
+          <ul>
+            <li><b>Real:</b> o composer replica o do app; os nomes de modelos, a base URL da API e o PCR0 <code>bd2b83ae…5de85c10</code> da build v0.75.0, publicado em 13 nov 2026 em PayPerQ/ppq-enclave-proxy.</li>
+            <li><b>Encenado:</b> as respostas foram escritas por mim, sem chamar nenhum modelo. A verificação é uma sequência cronometrada, não uma checagem de attestation de verdade.</li>
+            <li><b>Para publicar:</b> a checagem precisa rodar de verdade no navegador, o que exige que o endpoint de attestation aceite CORS. Se não der, as punções saem: simular uma verificação para esse público seria pior do que não ter.</li>
+          </ul>
+        </div>
+        <div class="grp"><h3>Experimente</h3>
+          <ul>
+            <li>Passe o cursor perto da barra de metal, ou digite no composer: o metal esquenta.</li>
+            <li>Troque entre Chat e API no topo do card. Passe o mouse nas punções para ler cada checagem.</li>
+            <li><b>R</b> repete a abertura, <b>A</b> mostra a anatomia.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="dock" role="group" aria-label="Study controls">
+  <button type="button" id="replay"><svg class="i"><use href="#i-replay"/></svg>Replay <kbd>R</kbd></button>
+  <button type="button" id="anat" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg>Anatomia <kbd>A</kbd></button>
+  <a href="../prometheus/r10/prometheus.html" target="_blank" rel="noopener">Antes (r10)<svg class="i"><use href="#i-ext"/></svg></a>
+</div>
+<ol class="legend" lang="pt-BR" aria-label="Anatomia">
+  <li><span>1</span><div><b>Metal = build.</b> A peça na bigorna. Esquenta onde algo está sendo feito agora.</div></li>
+  <li><span>2</span><div><b>Tokens em brasa = IA.</b> A resposta é forjada na sua frente, no produto real.</div></li>
+  <li><span>3</span><div><b>Hallmark = privacidade verificável.</b> Uma punção por checagem, antes de qualquer envio.</div></li>
+  <li><span>4</span><div><b>Mesmo laranja = marca.</b> O botão tem a cor do metal a meio calor.</div></li>
+</ol>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 a;
+void main() { gl_Position = vec4(a, 0.0, 1.0); }
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+uniform vec2 uRes;        // css px
+uniform float uDpr;
+uniform float uTime;
+uniform float uBarY;      // bar centre, css px from the top of the hero
+uniform float uBarH;
+uniform float uTipX;      // where the forged point ends (the bar runs off the right edge)
+uniform float uTaper;     // length of the drawn-out point
+uniform float uFade;      // how far below the bar the surface fades out
+uniform sampler2D uHeat;  // 256 x 1, heat along the bar (0..1.5 packed into 0..1)
+uniform sampler2D uMark;  // hallmark punches, one per channel: 0 outside, .5 sunk field, 1 raised letter
+uniform vec4 uMarkRect;   // x, y, w, h in css px
+uniform vec4 uReveal;     // which punches have been struck
+uniform vec2 uStrikePos;
+uniform float uStrikeAge; // seconds since the last strike
+uniform float uSeed;
+
+float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 p) {
+  vec2 i = floor(p); vec2 f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+float fbm(vec2 p) { float v = 0.0; float a = 0.5; for (int i = 0; i < 4; i++) { v += a * noise(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return v; }
+float heatAt(float x) { return texture2D(uHeat, vec2(clamp(x / uRes.x, 0.0, 1.0), 0.5)).r * 1.5; }
+
+// steel colour by temperature; the stop at .55 is PPQ's #bf3c1b
+vec3 ramp(float t) {
+  t = max(t, 0.0);
+  vec3 c0 = vec3(0.075, 0.070, 0.065), c1 = vec3(0.26, 0.040, 0.018), c2 = vec3(0.52, 0.090, 0.030),
+       c3 = vec3(0.749, 0.235, 0.106), c4 = vec3(0.95, 0.47, 0.15), c5 = vec3(1.0, 0.76, 0.40), c6 = vec3(1.0, 0.95, 0.84);
+  if (t < 0.18) return mix(c0, c1, t / 0.18);
+  if (t < 0.36) return mix(c1, c2, (t - 0.18) / 0.18);
+  if (t < 0.55) return mix(c2, c3, (t - 0.36) / 0.19);
+  if (t < 0.72) return mix(c3, c4, (t - 0.55) / 0.17);
+  if (t < 0.88) return mix(c4, c5, (t - 0.72) / 0.16);
+  return mix(c5, c6, clamp((t - 0.88) / 0.17, 0.0, 1.0));
+}
+vec4 dep(vec4 v) { return smoothstep(vec4(0.12), vec4(0.40), v) - smoothstep(vec4(0.62), vec4(0.90), v); }
+float depthAt(vec2 uv) {
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) return 0.0;
+  return dot(dep(texture2D(uMark, uv)), uReveal);
+}
+
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, uRes.y * uDpr - gl_FragCoord.y) / uDpr;
+  vec3 bg = vec3(0.047, 0.043, 0.039);
+  vec3 c = bg;
+
+  // profile: full thickness, drawn down to a rounded point on the left
+  float s = clamp((p.x - uTipX) / uTaper, 0.0, 1.0);
+  float f = p.x < uTipX ? 0.0 : 0.2 + 0.8 * (1.0 - pow(1.0 - s, 1.35));
+  float hh = uBarH * 0.5 * f;
+  float top = uBarY - hh + (noise(vec2(p.x * 0.006, 1.0)) - 0.5) * 3.0 * f;
+  float bot = uBarY + hh + (noise(vec2(p.x * 0.005, 7.0)) - 0.5) * 3.0 * f;
+  float hx = heatAt(p.x) * smoothstep(uTipX - 2.0, uTipX + 30.0, p.x);
+  float dTop = top - p.y;
+  float dBot = p.y - bot;
+
+  if (dTop > 0.0) {
+    // the glow rising off the bar, wavering in the heat
+    float sh = noise(vec2(p.x * 0.017, p.y * 0.022 + uTime * 1.3)) - 0.5;
+    float xs = p.x + sh * 18.0 * smoothstep(0.0, 80.0, dTop);
+    float r = min(dTop * 0.9, 420.0);
+    float hs = (heatAt(xs - r) + heatAt(xs - r * 0.5) + 2.0 * heatAt(xs) + heatAt(xs + r * 0.5) + heatAt(xs + r)) / 6.0;
+    hs *= smoothstep(uTipX, uTipX + uTaper, xs);
+    float d = dTop + sh * 8.0 * smoothstep(0.0, 50.0, dTop);
+    float g = 0.55 * exp(-d / 6.0) + 0.30 * exp(-d / 34.0) + 0.15 * exp(-d / 140.0) + 0.06 * exp(-d / 380.0);
+    c += ramp(hs * 0.82) * g * smoothstep(0.06, 1.0, hs);
+  } else if (dBot > 0.0) {
+    // the surface it rests on: a light pool and a dim reflection of the bar
+    float k = smoothstep(0.06, 1.0, hx);
+    vec3 pool = ramp(hx * 0.78) * k * (0.40 * exp(-dBot / 7.0) + 0.17 * exp(-dBot / 36.0));
+    float th = max(bot - top, 1.0);
+    float rv = dBot / th;
+    vec3 refl = vec3(0.0);
+    if (rv < 1.0 && f > 0.0) {
+      float yy = bot - dBot;
+      float T = hx * (0.8 + 0.34 * fbm(vec2(p.x * 0.010 - uTime * 0.04, yy * 0.045 + uTime * 0.015)));
+      refl = ramp(T) * smoothstep(0.06, 0.3, T) * 0.14 * (1.0 - rv) * (1.0 - rv);
+      refl *= 0.75 + 0.5 * noise(vec2(p.x * 0.05, dBot * 0.6));
+    }
+    c += pool + refl;
+    c = mix(c, bg, smoothstep(uFade * 0.15, uFade, dBot));
+  }
+
+  float inBar = f > 0.0 ? smoothstep(top - 0.75, top + 0.75, p.y) * (1.0 - smoothstep(bot - 0.75, bot + 0.75, p.y)) : 0.0;
+  inBar *= smoothstep(uTipX - 0.5, uTipX + 1.5, p.x);
+  if (inBar > 0.001) {
+    float v = clamp((p.y - top) / max(bot - top, 0.5), 0.0, 1.0);
+    float flow = fbm(vec2(p.x * 0.010 - uTime * 0.04, p.y * 0.045 + uTime * 0.015));
+    float fine = fbm(vec2(p.x * 0.07, p.y * 0.11));
+    // oxide scale: small dark flecks, sparse
+    float scl = smoothstep(0.665, 0.74, fbm(vec2(p.x * 0.05 + 3.0, p.y * 0.14 - uTime * 0.004)));
+    float T = hx * (0.78 + 0.40 * flow) * (1.0 - 0.30 * scl) * (0.96 + 0.08 * fine);
+    // thin parts lose heat first: the point is colder
+    T *= mix(0.55, 1.0, f);
+
+    // hallmark: the sunk field is cooled by the die, the letters stay hot
+    vec2 muv = (p - uMarkRect.xy) / uMarkRect.zw;
+    float D = 0.0; float lit = 0.0;
+    if (muv.x > -0.02 && muv.x < 1.02 && muv.y > -0.1 && muv.y < 1.1) {
+      vec2 e = vec2(1.0 / uMarkRect.z, 1.0 / uMarkRect.w);
+      D = depthAt(muv);
+      float dx = depthAt(muv + vec2(e.x, 0.0)) - depthAt(muv - vec2(e.x, 0.0));
+      float dy = depthAt(muv + vec2(0.0, e.y)) - depthAt(muv - vec2(0.0, e.y));
+      lit = clamp(-dy * 0.9 - dx * 0.35, -1.0, 1.0);
+      T *= 1.0 - 0.46 * D;
+    }
+
+    // a square bar seen a little from above: top face, corner, front face, underside
+    float ft = 0.2;
+    float onTop = 1.0 - smoothstep(ft - 0.025, ft + 0.025, v);
+    float cq = (v - ft) / 0.035;
+    float corner = exp(-cq * cq);
+    float edges = smoothstep(0.0, 0.08, v) * (1.0 - 0.45 * smoothstep(0.82, 1.0, v));
+    float Th = T * (1.0 + 0.08 * onTop) * (1.0 - 0.16 * corner) * mix(0.82, 1.0, edges);
+    float shade = mix(0.92 - 0.12 * smoothstep(0.3, 1.0, v), 1.2, onTop) * mix(0.7, 1.0, edges);
+    vec3 hot = ramp(Th) * shade * (1.0 + 0.55 * lit);
+    vec3 steel = mix(vec3(0.20, 0.195, 0.19), vec3(0.085, 0.082, 0.078) * (1.0 - 0.35 * smoothstep(0.4, 1.0, v)), smoothstep(ft - 0.03, ft + 0.03, v));
+    steel += vec3(0.20) * corner;
+    steel += vec3(0.08) * (1.0 - smoothstep(0.0, 0.05, v));
+    steel *= (0.85 + 0.3 * fine) * (1.0 - 0.4 * D);
+    steel += vec3(0.06) * lit;
+    vec3 barC = mix(steel, hot, smoothstep(0.05, 0.28, T));
+    c = mix(c, barC, inBar);
+  }
+
+  // a strike: one flash, a short spray of sparks that slow down and fall
+  if (uStrikeAge < 1.4) {
+    vec2 sp = uStrikePos;
+    vec2 dv = p - sp;
+    float dist2 = dot(dv, dv);
+    float a = uStrikeAge;
+    c += vec3(1.0, 0.86, 0.62) * exp(-a * 18.0) * exp(-dist2 / (2.0 * 30.0 * 30.0)) * 0.95;
+    if (dist2 < 460.0 * 460.0) {
+      for (int i = 0; i < 30; i++) {
+        float fi = float(i);
+        float r1 = hash(vec2(fi, uSeed)); float r2 = hash(vec2(fi + 7.1, uSeed * 1.3));
+        float r3 = hash(vec2(fi * 1.7, uSeed + 3.0)); float r4 = hash(vec2(fi + 2.3, uSeed * 0.7));
+        float ai = a - r4 * 0.06;
+        float life = 0.28 + 0.62 * r3;
+        if (ai < 0.0 || ai > life) continue;
+        float ang = -1.5708 + (r1 - 0.5) * 2.9;
+        float spd = 170.0 + 480.0 * r2 * r2 + 120.0 * r4;
+        vec2 vel = vec2(cos(ang), sin(ang)) * spd;
+        float kd = 2.6;
+        float a0 = max(ai - 0.02, 0.0);
+        vec2 p1 = sp + vel * (1.0 - exp(-kd * ai)) / kd + vec2(0.0, 450.0 * ai * ai);
+        vec2 p0 = sp + vel * (1.0 - exp(-kd * a0)) / kd + vec2(0.0, 450.0 * a0 * a0);
+        vec2 pa = p - p0; vec2 ba = p1 - p0;
+        float h = clamp(dot(pa, ba) / max(dot(ba, ba), 0.001), 0.0, 1.0);
+        float ds = length(pa - ba * h);
+        float life01 = ai / life;
+        vec3 sc = mix(vec3(1.0, 0.92, 0.75), vec3(1.0, 0.50, 0.16), life01);
+        c += sc * exp(-ds * ds / 0.5) * pow(1.0 - life01, 1.4) * (0.7 + 0.9 * r1);
+      }
+    }
+  }
+
+  c += (hash(p + fract(uTime)) - 0.5) / 255.0;
+  gl_FragColor = vec4(c, 1.0);
+}
+</script>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const root = document.documentElement;
+  const hero = $('#hero'), canvas = $('#forge'), card = $('#card');
+  const params = new URLSearchParams(location.search);
+  const STATIC = matchMedia('(prefers-reduced-motion: reduce)').matches || params.has('static');
+  if (STATIC) root.classList.add('static');
+
+  /* ------------------------------------------------ content (answers are written for the study) */
+  const EX = [
+    { kind: 'chat', model: 'Claude Sonnet 5.5', logo: 'claude',
+      q: 'Why does my rate limiter let two requests through at once?',
+      a: [
+        { tag: 'p', text: 'Two workers read the count before either writes it back. Make the check and the decrement one atomic step:' },
+        { tag: 'pre', text: "local n = redis.call('DECR', KEYS[1])\nif n < 0 then redis.call('INCR', KEYS[1]) end\nreturn n >= 0" },
+        { tag: 'p', text: 'Run it with EVAL and nothing can slip in between.' },
+      ] },
+    { kind: 'api',
+      a: [ { tag: 'p', text: 'tagseal: short, a verb, and it says what the tool does. Seal a tag, verify it later.' } ] },
+    { kind: 'chat', model: 'GPT-6.1 Terra', logo: 'openai', file: 'contract.pdf',
+      q: 'Summarize the termination clause in plain English.',
+      a: [
+        { tag: 'p', text: "Either side can end it with 60 days' written notice. Leave early and you owe this quarter's fees, nothing more." },
+        { tag: 'ul', items: ['Email counts as written notice (§14.2).', 'The final invoice is due within 30 days.'] },
+      ] },
+  ];
+  const CURL = `<span class="c">$</span> curl https://api.ppq.ai/v1/chat/completions \\
+    -H <span class="s">"Authorization: Bearer $PPQ_API_KEY"</span> \\
+    -d <span class="s">'{"model": "claude-sonnet-5.5", "stream": true,
+         "messages": [{"role": "user",
+           "content": "Name a CLI that signs git tags"}]}'</span>`;
+
+  /* the hallmark: four punches, one per check (UK order: maker, standard, assay office, date letter) */
+  const PUNCH = [
+    { txt: 'PPQ', shape: 'shield', w: 46, step: '<b>Maker</b> PayPerQ, open source',
+      tip: "<b>Maker's mark</b>The code in the enclave is PayPerQ's, public at <code>PayPerQ/ppq-enclave-proxy</code>." },
+    { txt: 'NITRO', shape: 'oval', w: 68, step: '<b>Hardware</b> AWS Nitro signature valid',
+      tip: '<b>Assay mark</b>AWS Nitro hardware signed the attestation, not PayPerQ.' },
+    { txt: 'bd2b83', shape: 'oct', w: 74, step: '<b>PCR0</b> <code>bd2b83ae…5de85c10</code>',
+      tip: '<b>Standard mark</b>PCR0 <code>bd2b83ae…5de85c10</code> is the hash of the code running inside.' },
+    { txt: '0.75.0', shape: 'date', w: 70, step: '<b>Build</b> matches v0.75.0 on GitHub',
+      tip: '<b>Date letter</b>That hash matches build v0.75.0, published on 13 Nov 2026 with a Sigstore attestation.' },
+  ];
+
+  /* ------------------------------------------------ WebGL */
+  const gl = canvas.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false });
+  let prog, U = {}, texHeat, texMark;
+  if (!gl) root.classList.add('nogl');
+  else {
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s)); return s; };
+    prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, $('#vs').textContent));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, $('#fs').textContent));
+    gl.linkProgram(prog); gl.useProgram(prog);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    ['uRes', 'uDpr', 'uTime', 'uBarY', 'uBarH', 'uTipX', 'uTaper', 'uFade', 'uHeat', 'uMark', 'uMarkRect', 'uReveal', 'uStrikePos', 'uStrikeAge', 'uSeed'].forEach((n) => U[n] = gl.getUniformLocation(prog, n));
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    const mk = () => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; };
+    texHeat = mk(); texMark = mk();
+    gl.uniform1i(U.uHeat, 0); gl.uniform1i(U.uMark, 1);
+  }
+
+  /* ------------------------------------------------ heat along the bar (a 1-D field that diffuses and relaxes) */
+  const N = 256, heat = new Float32Array(N), tmp = new Float32Array(N), heatBytes = new Uint8Array(N);
+  const addHeat = (x, amt, sig) => { for (let i = 0; i < N; i++) { const xi = (i + .5) / N * L.W; heat[i] += amt * Math.exp(-(((xi - x) / sig) ** 2)); } };
+  const mouse = { on: false, x: 0, y: 0 };
+  const S = { introStart: 0, intro: 0, reveal: [0, 0, 0, 0], strikeAt: -99, strikePos: [0, 0], seed: 1 };
+  function targetAt(i, t) {
+    const x = (i + .5) / N * L.W;
+    const g = Math.exp(-(((x - L.heatCx) / L.heatSig) ** 2));
+    const on = x < L.tipX ? 0 : Math.min(1, (x - L.tipX) / L.taper);
+    return S.intro * (0.10 + 0.74 * g) * (0.35 + 0.65 * on) * (1 + 0.04 * Math.sin(t * 0.8 + i * 0.09));
+  }
+  function stepHeat(dt, t) {
+    const rate = S.intro < 1 ? 2.4 : 0.9;
+    for (let i = 0; i < N; i++) heat[i] += (targetAt(i, t) - heat[i]) * Math.min(1, dt * rate);
+    const k = Math.min(0.22, dt * 5);
+    for (let pass = 0; pass < 2; pass++) { tmp.set(heat); for (let i = 1; i < N - 1; i++) heat[i] = tmp[i] + k * (tmp[i - 1] + tmp[i + 1] - 2 * tmp[i]); }
+    if (mouse.on && mouse.x > L.tipX) { const prox = Math.exp(-(((mouse.y - L.barY) / 110) ** 2)); if (prox > 0.02) for (let i = 0; i < N; i++) { const xi = (i + .5) / N * L.W; heat[i] += Math.max(0, 0.82 - heat[i]) * 2.2 * dt * prox * Math.exp(-(((xi - mouse.x) / 52) ** 2)); } }
+    for (let i = 0; i < N; i++) { heat[i] = Math.min(1.32, Math.max(0, heat[i])); heatBytes[i] = Math.round(heat[i] / 1.5 * 255); }
+  }
+
+  /* ------------------------------------------------ layout */
+  const L = {};
+  function measure() {
+    const hr = hero.getBoundingClientRect(), cr = card.getBoundingClientRect(), pr = $('.copy').getBoundingClientRect();
+    const mob = innerWidth < 860;
+    L.W = hr.width; L.H = hr.height; L.mob = mob;
+    L.barH = mob ? 40 : 58;
+    // desktop: the bar runs under the card; phone: between the copy and the card, so it is on the first screen
+    L.barY = mob ? (pr.bottom - hr.top) + 44 + L.barH / 2 : (cr.bottom - hr.top) + 58 + L.barH / 2;
+    L.cardL = cr.left - hr.left; L.cardW = cr.width; L.cardCx = L.cardL + cr.width / 2;
+    L.tipX = pr.left - hr.left; L.taper = mob ? 70 : 170;
+    L.fade = mob ? 150 : Math.min(190, L.H - L.barY - L.barH / 2 - 4);
+    L.heatCx = mob ? L.W * 0.56 : L.cardCx;
+    L.heatSig = mob ? L.W * 0.44 : L.W * 0.30;
+    L.markH = mob ? 26 : 32;
+    const sc = L.markH / 30, gap = 7 * sc, pad = 4;
+    const ws = PUNCH.map((p) => p.w * sc);
+    L.markW = ws.reduce((a, b) => a + b, 0) + gap * (ws.length - 1) + pad * 2;
+    L.markX = (mob ? L.W * 0.58 : L.heatCx) - L.markW / 2;
+    L.markY = L.barY - L.markH / 2 + L.barH * 0.09;
+    let x = L.markX + pad;
+    L.punches = ws.map((w) => { const r = { x, w, cx: x + w / 2, cy: L.markY + L.markH / 2 }; x += w + gap; return r; });
+    // canvas
+    L.dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(L.W * L.dpr); canvas.height = Math.round(L.H * L.dpr);
+    if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+    buildMarks();
+    placeChrome();
+  }
+
+  /* ------------------------------------------------ hallmark texture */
+  function shapePath(ctx, shape, x0, y0, w, h) {
+    ctx.beginPath();
+    if (shape === 'shield') {
+      const r = 3;
+      ctx.moveTo(x0 + r, y0); ctx.lineTo(x0 + w - r, y0); ctx.quadraticCurveTo(x0 + w, y0, x0 + w, y0 + r);
+      ctx.lineTo(x0 + w, y0 + h * 0.52); ctx.quadraticCurveTo(x0 + w, y0 + h * 0.86, x0 + w / 2, y0 + h);
+      ctx.quadraticCurveTo(x0, y0 + h * 0.86, x0, y0 + h * 0.52); ctx.lineTo(x0, y0 + r); ctx.quadraticCurveTo(x0, y0, x0 + r, y0);
+    } else if (shape === 'oval') {
+      ctx.ellipse(x0 + w / 2, y0 + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+    } else if (shape === 'oct') {
+      const c = h * 0.24;
+      ctx.moveTo(x0 + c, y0); ctx.lineTo(x0 + w - c, y0); ctx.lineTo(x0 + w, y0 + c); ctx.lineTo(x0 + w, y0 + h - c);
+      ctx.lineTo(x0 + w - c, y0 + h); ctx.lineTo(x0 + c, y0 + h); ctx.lineTo(x0, y0 + h - c); ctx.lineTo(x0, y0 + c);
+    } else {
+      const r = h * 0.2;
+      ctx.moveTo(x0 + r, y0); ctx.lineTo(x0 + w - r, y0); ctx.arc(x0 + w, y0, r, Math.PI, Math.PI / 2, true);
+      ctx.lineTo(x0 + w, y0 + h - r); ctx.arc(x0 + w, y0 + h, r, -Math.PI / 2, Math.PI, true);
+      ctx.lineTo(x0 + r, y0 + h); ctx.arc(x0, y0 + h, r, 0, -Math.PI / 2, true);
+      ctx.lineTo(x0, y0 + r); ctx.arc(x0, y0, r, Math.PI / 2, 0, true);
+    }
+    ctx.closePath();
+  }
+  function buildMarks() {
+    if (!gl) return;
+    const k = 3; // texture pixels per css px, so the letters stay crisp
+    const W = Math.ceil(L.markW * k), H = Math.ceil(L.markH * k);
+    const out = new Uint8Array(W * H * 4);
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    const fs = (L.markH / 30) * 11.2;
+    PUNCH.forEach((p, i) => {
+      const r = L.punches[i];
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H); ctx.setTransform(k, 0, 0, k, 0, 0);
+      const x0 = r.x - L.markX, y0 = 0.5, w = r.w, h = L.markH - 1;
+      ctx.fillStyle = 'rgb(128,128,128)'; shapePath(ctx, p.shape, x0, y0, w, h); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = `700 ${fs}px "Geist Mono"`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '0.04em';
+      ctx.fillText(p.txt, x0 + w / 2, y0 + h * (p.shape === 'shield' ? 0.42 : 0.53));
+      const d = ctx.getImageData(0, 0, W, H).data;
+      for (let j = 0; j < W * H; j++) out[j * 4 + i] = Math.round(d[j * 4] * d[j * 4 + 3] / 255);
+    });
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texMark);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, out);
+  }
+
+  /* ------------------------------------------------ study chrome: hit areas, caption, pins */
+  const pop = $('#pop'), cap = $('#cap');
+  const hits = PUNCH.map((p, i) => {
+    const el = document.createElement('span'); el.className = 'punch'; el.tabIndex = -1; hero.append(el);
+    const show = () => { const r = L.punches[i]; pop.innerHTML = p.tip; pop.style.left = r.cx + 'px'; pop.style.top = (L.markY - 6) + 'px'; pop.classList.add('on'); };
+    el.addEventListener('pointerenter', show); el.addEventListener('focus', show);
+    el.addEventListener('pointerleave', () => pop.classList.remove('on')); el.addEventListener('blur', () => pop.classList.remove('on'));
+    return el;
+  });
+  function placeChrome() {
+    L.punches.forEach((r, i) => Object.assign(hits[i].style, { left: r.x + 'px', top: L.markY + 'px', width: r.w + 'px', height: L.markH + 'px' }));
+    cap.style.left = (L.markX + L.markW / 2) + 'px'; cap.style.top = (L.barY + L.barH / 2 + 22) + 'px';
+    const hr = hero.getBoundingClientRect();
+    const pin = (n, x, y) => Object.assign($(`[data-pin="${n}"]`).style, { left: x + 'px', top: y + 'px' });
+    pin(1, L.tipX + (L.mob ? 70 : 190), L.barY);
+    const ans = card.querySelector('.view:not([hidden]) .msgs'); const ar = ans.getBoundingClientRect();
+    pin(2, ar.left - hr.left + 4, ar.top - hr.top + ar.height * 0.55);
+    pin(3, L.markX - 16, L.barY);
+    const cr = $('#cta').getBoundingClientRect(); pin(4, cr.right - hr.left - 2, cr.top - hr.top + 2);
+  }
+
+  /* ------------------------------------------------ render loop */
+  let T0 = performance.now(), last = T0, raf = 0, visible = true;
+  function draw(now) {
+    if (!gl) return;
+    const t = (now - T0) / 1000;
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texHeat);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, N, 1, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, heatBytes);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texMark);
+    gl.uniform2f(U.uRes, canvas.width / L.dpr, canvas.height / L.dpr);
+    gl.uniform1f(U.uDpr, L.dpr); gl.uniform1f(U.uTime, STATIC ? 12 : t);
+    gl.uniform1f(U.uBarY, L.barY); gl.uniform1f(U.uBarH, L.barH);
+    gl.uniform1f(U.uTipX, L.tipX); gl.uniform1f(U.uTaper, L.taper); gl.uniform1f(U.uFade, L.fade);
+    gl.uniform4f(U.uMarkRect, L.markX, L.markY, L.markW, L.markH);
+    gl.uniform4f(U.uReveal, ...S.reveal);
+    gl.uniform2f(U.uStrikePos, ...S.strikePos);
+    gl.uniform1f(U.uStrikeAge, STATIC ? 99 : (now - S.strikeAt) / 1000);
+    gl.uniform1f(U.uSeed, S.seed);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  function rim() {
+    let s = 0, n = 0;
+    for (let i = 0; i < N; i++) { const x = (i + .5) / N * L.W; if (x > L.cardL && x < L.cardL + L.cardW) { s += heat[i]; n++; } }
+    card.style.setProperty('--rim', Math.max(0, Math.min(1, ((n ? s / n : 0) - 0.2) / 0.8)).toFixed(3));
+  }
+  let fps = 0, fc = 0, fT = performance.now();
+  function frame(now) {
+    fc++; if (now - fT > 1000) { fps = fc * 1000 / (now - fT); fc = 0; fT = now; }
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = Math.max(last, now);
+    const e = Math.max(0, Math.min(1, (now - S.introStart) / 1500)); S.intro = 1 - Math.pow(1 - e, 3);
+    stepHeat(dt, (now - T0) / 1000); draw(now); rim();
+    raf = visible ? requestAnimationFrame(frame) : 0;
+  }
+  function settleStatic() {
+    S.intro = 1;
+    for (let i = 0; i < N; i++) heat[i] = targetAt(i, 0);
+    for (let k = 0; k < 4; k++) stepHeat(0.016, 0);
+    draw(performance.now()); rim();
+  }
+  window.__forge = { heat, L, S, get fps() { return fps; } };
+  new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf && !STATIC) { last = performance.now(); raf = requestAnimationFrame(frame); } }).observe(hero);
+
+  /* ------------------------------------------------ the sequence */
+  let run = 0;
+  const timers = [];
+  const wait = (ms, id) => new Promise((res, rej) => timers.push(setTimeout(() => (id === run ? res() : rej(0)), ms)));
+  const ta = $('#ta'), send = $('#send'), status = $('#status');
+  const views = { chat: $('[data-v="chat"]'), api: $('[data-v="api"]') };
+  const boxes = { chat: $('#m-chat'), api: $('#m-api') };
+  let verified = false;
+
+  function tokenize(s) {
+    const raw = s.match(/\n|[ \t]+|[A-Za-z]+|[0-9]+|[^\sA-Za-z0-9]/g) || [];
+    const out = []; let lead = '';
+    for (let w of raw) {
+      if (/^[ \t]+$/.test(w)) { lead += w; continue; }
+      if (/^[A-Za-z]+$/.test(w) && w.length > 6) { const parts = []; while (w.length) { parts.push(w.slice(0, 4 + (w.length % 2))); w = w.slice(4 + (w.length % 2)); } parts[0] = lead + parts[0]; out.push(...parts); }
+      else out.push(lead + w);
+      lead = '';
+    }
+    if (lead) out.push(lead);
+    return out;
+  }
+  async function tokensTo(node, text, id) {
+    const toks = tokenize(text);
+    if (STATIC) { node.textContent = text; return; }
+    let i = 0;
+    while (i < toks.length) {
+      const burst = 1 + (Math.random() * 3 | 0);
+      for (let j = 0; j < burst && i < toks.length; j++, i++) {
+        const s = document.createElement('span'); s.className = 't'; s.textContent = toks[i]; node.append(s);
+        addHeat(L.cardCx + (Math.random() - 0.5) * L.cardW * 0.6, 0.032, 70);
+      }
+      await wait(26 + Math.random() * 44, id);
+    }
+  }
+  async function streamBlocks(container, blocks, id) {
+    for (const b of blocks) {
+      if (b.tag === 'ul') { const ul = document.createElement('ul'); container.append(ul); for (const it of b.items) { const li = document.createElement('li'); ul.append(li); await tokensTo(li, it, id); } continue; }
+      const el = document.createElement(b.tag); container.append(el);
+      if (b.tag === 'pre') { const code = document.createElement('code'); el.append(code); await tokensTo(code, b.text, id); }
+      else await tokensTo(el, b.text, id);
+    }
+  }
+  function setView(v) {
+    Object.entries(views).forEach(([k, el]) => el.hidden = k !== v);
+    card.querySelectorAll('.seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+    setStatus(verified ? (v === 'api' ? 'api' : 'ok') : 'check');
+    requestAnimationFrame(placeChrome);
+  }
+  function setModel(name, logo) {
+    $('#mname').textContent = name;
+    const lg = $('#mlogo'); lg.setAttribute('class', 'lg ' + logo); lg.querySelector('use').setAttribute('href', '#lg-' + logo);
+  }
+  function setStatus(kind) {
+    status.classList.toggle('ok', kind === 'ok');
+    if (kind === 'check') status.innerHTML = '<span class="spin"></span><span>Checking the enclave before anything is sent…</span>';
+    else if (kind === 'ok') status.innerHTML = '<svg class="i"><use href="#i-lock"/></svg><span>Served inside PayPerQ\'s secure enclave router · <a href="#">Verified</a></span>';
+    else if (kind === 'api') status.innerHTML = '<svg class="i" style="color:var(--good)"><use href="#i-lock"/></svg><span>Through the same enclave with <code>npx ppq-private-mode</code></span>';
+    else status.innerHTML = '<span>' + kind + '</span>';
+  }
+  async function typeQ(text, id, speed) {
+    ta.value = '';
+    for (const ch of text) { ta.value += ch; if (!STATIC) await wait(speed, id); }
+  }
+  async function runChat(ex, id, opts = {}) {
+    setView('chat'); setModel(ex.model, ex.logo);
+    const box = boxes.chat;
+    if (!opts.keep) box.innerHTML = '';
+    send.classList.toggle('wait', !verified);
+    await typeQ(ex.q, id, opts.speed || 18);
+    if (opts.untilVerified) await opts.untilVerified;
+    if (id !== run) throw 0;
+    if (!STATIC) { send.classList.add('press'); await wait(140, id); send.classList.remove('press'); }
+    ta.value = '';
+    const b = document.createElement('div'); b.className = 'bubble';
+    b.innerHTML = (ex.file ? `<span class="att"><svg class="i"><use href="#i-file"/></svg>${ex.file}</span><br>` : '') + ex.q.replace(/</g, '&lt;');
+    box.innerHTML = ''; box.append(b);
+    if (!STATIC) await wait(420, id);
+    const a = document.createElement('div'); a.className = 'ans'; box.append(a);
+    await streamBlocks(a, ex.a, id);
+  }
+  async function runApi(ex, id) {
+    setView('api');
+    const box = boxes.api; box.innerHTML = '';
+    const term = document.createElement('div'); term.className = 'term'; term.innerHTML = CURL; box.append(term);
+    if (!STATIC) await wait(650, id);
+    const meta = document.createElement('div'); meta.className = 'meta'; meta.innerHTML = '<b>200</b> text/event-stream · claude-sonnet-5.5'; box.append(meta);
+    if (!STATIC) await wait(260, id);
+    const a = document.createElement('div'); a.className = 'ans'; box.append(a);
+    await streamBlocks(a, ex.a, id);
+  }
+  const runEx = (ex, id, o) => ex.kind === 'api' ? runApi(ex, id) : runChat(ex, id, o);
+
+  function strike(i) {
+    const r = L.punches[i];
+    S.reveal[i] = 1; S.strikeAt = performance.now(); S.strikePos = [r.cx, r.cy]; S.seed = 1 + Math.random() * 90;
+    addHeat(r.cx, 0.5, 20);
+    hits[i].classList.add('on');
+    cap.innerHTML = `<span class="flip stp">${PUNCH[i].step}${i === 3 ? ' <span class="ok">✓</span>' : ''}</span>`;
+  }
+  function verify() {
+    verified = true; send.classList.remove('wait');
+    setStatus(views.api.hidden ? 'ok' : 'api');
+    cap.innerHTML = '<span class="flip"><span class="ok">✓ Verified by your browser</span> before anything was sent · <a href="https://github.com/PayPerQ/ppq-privacy-verifier" target="_blank" rel="noopener">Check it yourself</a></span>';
+  }
+
+  async function play(id) {
+    await wait(420, id); card.classList.add('show');
+    await wait(300, id);
+    let resolveV; const vP = new Promise((r) => resolveV = r);
+    const chat = runChat(EX[0], id, { speed: 21, untilVerified: vP }); chat.catch(() => {});
+    cap.innerHTML = '<span class="flip">Your browser is checking the enclave…</span>';
+    for (let i = 0; i < 4; i++) { await wait(i ? 440 : 260, id); strike(i); }
+    await wait(560, id); verify(); resolveV();
+    await chat;
+    let k = 1;
+    for (;;) { await wait(5200, id); await runEx(EX[k % EX.length], id, { speed: 16 }); k++; }
+  }
+  function start() {
+    run++; timers.splice(0).forEach(clearTimeout);
+    verified = false; S.reveal = [0, 0, 0, 0]; S.strikeAt = -1e9; heat.fill(0);
+    hits.forEach((h) => h.classList.remove('on')); pop.classList.remove('on');
+    boxes.chat.innerHTML = ''; boxes.api.innerHTML = ''; ta.value = '';
+    setView('chat'); setModel(EX[0].model, EX[0].logo);
+    hero.classList.remove('in'); void hero.offsetWidth; hero.classList.add('in');
+    if (STATIC) {
+      card.classList.add('show'); verified = true; S.reveal = [1, 1, 1, 1]; hits.forEach((h) => h.classList.add('on'));
+      runChat(EX[0], run).then(() => { verify(); settleStatic(); }).catch(() => {});
+      verify(); settleStatic();
+      return;
+    }
+    card.classList.remove('show');
+    S.introStart = performance.now() + 120;
+    play(run).catch(() => {});
+  }
+
+  /* ------------------------------------------------ interaction */
+  hero.addEventListener('pointermove', (e) => { const r = hero.getBoundingClientRect(); mouse.on = true; mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+  hero.addEventListener('pointerleave', () => mouse.on = false);
+  ta.addEventListener('input', () => addHeat(L.cardCx + (Math.random() - 0.5) * L.cardW * 0.5, 0.06, 60));
+  ta.addEventListener('focus', () => { run++; timers.splice(0).forEach(clearTimeout); });
+  ta.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!ta.value.trim()) return; ta.value = ''; status.classList.remove('ok'); status.innerHTML = '<span>On the real page this opens ppq.ai/chat with your message.</span>'; setTimeout(() => setStatus(verified ? 'ok' : 'check'), 2600); }
+  });
+  card.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
+    run++; timers.splice(0).forEach(clearTimeout); const id = run;
+    const ex = b.dataset.view === 'api' ? EX[1] : EX[0];
+    if (!verified) { verify(); S.reveal = [1, 1, 1, 1]; hits.forEach((h) => h.classList.add('on')); }
+    runEx(ex, id, { speed: 14 }).catch(() => {});
+  }));
+  card.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => { navigator.clipboard?.writeText(b.dataset.copy); const s = b.querySelector('span'); s.textContent = 'Copied'; setTimeout(() => s.textContent = 'Copy', 1400); }));
+  const anatBtn = $('#anat');
+  const toggleAnat = () => { const on = !root.classList.contains('anat'); root.classList.toggle('anat', on); anatBtn.setAttribute('aria-pressed', String(on)); placeChrome(); };
+  anatBtn.addEventListener('click', toggleAnat);
+  $('#replay').addEventListener('click', () => { scrollTo({ top: 0 }); start(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target === ta) return;
+    if (e.key === 'a' || e.key === 'A') toggleAnat();
+    if (e.key === 'r' || e.key === 'R') { scrollTo({ top: 0 }); start(); }
+  });
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { measure(); if (STATIC) settleStatic(); }, 120); });
+
+  (document.fonts ? document.fonts.load('700 12px "Geist Mono"').then(() => document.fonts.ready) : Promise.resolve()).then(() => {
+    measure(); start();
+    if (!STATIC) { last = performance.now(); raf = requestAnimationFrame(frame); }
+  });
+})();
+</script>
+</body>
+</html>

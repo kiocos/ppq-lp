@@ -1,0 +1,11 @@
+import { createRequire } from 'module';
+const require = createRequire('/Users/kio/ppq/landing-page/prometheus/tools/package.json');
+const { chromium } = require('playwright');
+const args = process.argv[2] === 'metal' ? ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'];
+const b = await chromium.launch({ headless: process.argv[3] !== 'headed', args });
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await p.goto('file:///Users/kio/ppq/landing-page/forge/index.html');
+await p.waitForTimeout(3000);
+const r = await p.evaluate(() => { const f = window.__forge; const h = Array.from(f.heat); return { fps: f.fps, W: f.L.W, cx: f.L.heatCx, sig: f.L.heatSig, intro: f.S.intro, h0: h[0], h20: h[20], h128: h[128], h180: h[180], h255: h[255], max: Math.max(...h), renderer: (() => { const c = document.createElement('canvas').getContext('webgl'); const e = c.getExtension('WEBGL_debug_renderer_info'); return e ? c.getParameter(e.UNMASKED_RENDERER_WEBGL) : '?'; })() }; });
+console.log(JSON.stringify(r));
+await b.close();

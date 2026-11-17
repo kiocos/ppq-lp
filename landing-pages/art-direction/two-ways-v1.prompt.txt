@@ -1,0 +1,98 @@
+Use case: ui-mockup
+Asset type: one high-resolution full-page desktop landing-page design image for PPQ / PayPerQ, based on the existing “Two ways” HTML composition
+
+Create a genuinely beautiful, shippable-looking, art-directed DARK website design. This is a new raster design concept, not code, not a wireframe, not a photograph of a laptop. Render ONE continuous tall website, front-on, including the complete header, all eight sections and footer. Aim for a high-resolution portrait canvas approximately 1280 × 3840, or a comparably tall high-detail format. It must look like a meticulously crafted product website, with legible main text and rich, precisely drawn product interfaces.
+
+DESIGN DIRECTION
+Use the confident typographic hierarchy and spacious product presentation of Jitter, the exceptionally refined art direction of Luma, and the crisp product focus of Framer. Develop a distinct PPQ identity rather than copying any site. Think warm charcoal, copper, controlled studio illumination and beautifully detailed software. The design must feel much more expressive and finished than a plain gray HTML wireframe.
+Main background near #151515, slightly warm black; layered product surfaces #1d1d1d and #242424; crisp warm-white typography near #ededed; secondary text #bbbbbb. Burnt-orange action color #bf3c1b and warm orange accent #e97d49. Use a modern Geist-like neo-grotesk throughout, Geist Mono-like type only in code and terminal UI, a small geometric PayPerQ wordmark with its orange flame. No serif accents.
+A single restrained art gesture behind the hero product pair: grazing warm copper light across a finely textured satin-charcoal backdrop, with a soft directional shadow and one precise luminous edge. This should feel like exquisite product photography translated to web art direction, not an orange nebula or a gradient blob. Let interface edges catch this light. Repeat a restrained version of this treatment behind the wide API demonstration lower on the page. Keep text areas calm, clear and readable.
+Create personality with composition, microtypography, precise fine lines, beautiful black-on-black material differentiation, well-selected interface crops, contrasting scales and intentional warm accents. Allow generous empty space BETWEEN sections. Do not stack sections tightly. Use approximately 96–144 px visual pauses at this composition scale and a consistent 4/8/16/24/32/48/64 spacing system. Keep a clear hierarchy from large headline to body to captions. The result should be premium, clean, easy to read and visually memorable.
+
+MANDATORY COMPOSITION — preserve this exact order and the main grid relationships of the Two ways HTML:
+1. HEADER + CENTERED HERO. Small flame + “PayPerQ” wordmark at top left; small navigation “Privacy”, “Models & pricing”, “API”; “Open chat ↗” at right. Large centered two-line headline and centered supporting paragraph, then two centered CTAs. Below, two large, meticulously rendered SOFTWARE INTERFACES side by side, sharing a baseline: OpenCode terminal on the LEFT about 62% of the width; PPQ chat on the RIGHT about 38%. This pair is the hero artwork and must dominate. OpenCode should visibly show working context, a small source-file sidebar, a draft “Explain this codebase.” and PPQ model access, not an empty black rectangle with a wordmark. Chat should clearly show the actual familiar charcoal PPQ-style workspace, composer and an OPEN MODEL PICKER with Claude, GPT and open-weight choices. Sharp, believable pixels, excellent micro-detail, subtle depth, tasteful orange selection accents. Do not tilt the entire page, use device frames or distort the UIs. They can have modest studio shadows and thin highlights. The site is selling useful software, not an abstract sculpture.
+
+2. ENCLAVE: large headline and copy on the LEFT, about 62% of the row; a tall, highly crafted verification/source-code visual on the RIGHT, about 38%. The visual should resemble a real source/build verification workspace, titled “Enclave router”, with the three factual concepts “Published code”, “Reproducible builds”, “Independent verification”. Add thoughtful technical detail, not a giant padlock, shield or magical chip. Preserve the scope note about CHAT ONLY.
+
+3. PROVIDER PRIVACY: headline LEFT and introduction RIGHT in one row. Under it, THREE OPEN TYPOGRAPHIC COLUMNS, separated by space and fine rules: “Anon”, “Zero Data Retention”, “End-to-end encrypted models”. No three chunky feature cards. This is a readable comparison. Keep the API configuration caveat visible underneath.
+
+4. MODEL CHOICE: text on the LEFT about 43%, larger PPQ chat / model picker crop on the RIGHT about 57%. Show a richly detailed, beautifully legible actual software-style picker; use model names and choice states, not a cloud of floating logos. This visual should have an editorial crop and stronger scale than a generic miniature screenshot.
+
+5. PAY PER USE: headline LEFT and introduction RIGHT; underneath, THREE OPEN COLUMNS for the three benefits. Avoid subscription pricing cards or invented dollar amounts. Refined typography, fine rules and small purposeful details.
+
+6. API: the most important commercial section, and the largest product visual on the page. Strong headline LEFT about 62%, copy RIGHT about 38%. Beneath, an almost full-bleed, very detailed OpenCode workspace using PPQ, with command prompt, project files, code, and model selection. Make this expansive and desirable, with exquisite surface/edge lighting and restrained copper around the canvas, not a generic code snippet in a small card. Below the wide image, two clear text columns and the CTA “Find an app to connect ↗”. This stage should feel like the visual payoff of the page.
+
+7. WALLET: a quiet horizontal band with fine top/bottom rules. Text LEFT about 62%, a large elegant vertical typographic stack “Bitcoin”, “Lightning”, “Monero” on the RIGHT about 38%. Orange emphasis on Bitcoin can be used. No decorative coin renders or speculative finance imagery.
+
+8. CLOSING: headline LEFT and short copy + two CTAs RIGHT. Small minimal footer with PayPerQ wordmark and “Pricing”, “Privacy”, “API docs”. Leave generous breathing room. No new sections, testimonial carousels, customer logos, awards, metrics or claims.
+
+EXACT MAIN COPY — preserve wording, punctuation and section order; typeset these naturally within the above composition, keeping headlines especially clear:
+HERO
+“Your favorite AI models, with privacy you can verify.”
+“Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.”
+“Start chatting” / “Explore API connections”
+
+ENCLAVE
+“Your chat traffic stays unreadable to us.”
+“PPQ routes chat requests through a secure enclave: an isolated hardware environment that keeps your prompts and replies out of our ordinary servers and logs.”
+“We receive the metadata needed to route and bill for your requests. The contents of your chat traffic remain protected from us.”
+“Built to be checked”
+“Published enclave code, reproducible builds, and independent verification tools let you examine the protection behind the promise.”
+“See how the enclave works ↗”
+“This protection covers chat requests. Other features have different processing paths.”
+
+PROVIDER PRIVACY
+“Know what your model provider can see.”
+“Protection from PPQ is one part of the picture. Your model’s privacy label explains what happens when the request reaches its provider.”
+“Anon”
+“The provider can read your prompt and may retain it under its policies.”
+“Zero Data Retention”
+“The provider processes your request under an agreement not to store prompts or replies.”
+“End-to-end encrypted models”
+“The model itself runs inside a protected enclave, shielding the conversation’s contents from its hosting provider.”
+“Compare privacy protections ↗”
+“API protections depend on configuration and supported features. Zero Data Retention must be enabled for API requests.”
+
+MODELS
+“Choose the model for the task.”
+“Use Claude for one project, GPT for another, or explore open-weight alternatives. Choose based on capability, price, and privacy, without setting up a separate provider account for each.”
+“Your balance works across the models available through PPQ, so you can change your approach as your needs change.”
+“Explore models & pricing ↗”
+
+USAGE
+“Your AI spending follows your usage.”
+“Add prepaid credit and use it when you need AI. There’s no PPQ subscription and no separate monthly plan for each model.”
+“Match the model to the job”
+“Choose a lower-cost model for straightforward tasks and a more capable one for demanding work.”
+“Know what you’re paying for”
+“Text requests are charged by the model’s rates and the amount of input and output processed, including conversation context.”
+“Keep one balance”
+“Use your credit across PPQ chat and requests from connected apps.”
+“Check model prices ↗”
+
+API
+“Your models can work beyond this chat.”
+“An API lets other apps use the models available through PPQ. Connect a compatible coding assistant, research workspace, or automation tool with your PPQ API key.”
+“You choose the tool and model. PPQ provides the model access and charges its usage to your existing balance.”
+“One connection to multiple providers”
+“Use PPQ’s API instead of managing separate credentials and balances for each model provider.”
+“Start with a supported app”
+“Follow a setup guide, choose a compatible model, and send your first request.”
+“Find an app to connect ↗”
+
+WALLET
+“Start from your wallet.”
+“Fund your balance with Bitcoin, Lightning, or Monero. No email registration required.”
+“Choose your models, use them in chat or connected tools, and keep track of your spending in one place.”
+“Start using PPQ”
+“No PPQ subscription · One prepaid balance”
+
+CLOSING
+“More choice in AI. More control over how you use it.”
+“Choose your models and privacy protections. Start in chat or connect your tools through the API, paying as you go.”
+“Start chatting” / “Explore API connections”
+
+AVOID
+Generic AI-site aesthetics: purple/blue gradients, neon rainbow borders, glossy orbs, particles, stars, giant padlocks, 3D coins, floating feature icons, tiny equal-sized card grids, every section boxed in the same rounded container. No arbitrary charts, fake social proof, fake stats, invented prices or privacy promises. No “Layout study”, “Product recording space”, playback controls, numbered section badges, design-board annotations or browser chrome. Do not turn this into a mobile screen. Do not omit or reorder the API, usage, wallet or closing sections. Keep the entire page visible, not cropped after the hero.
+
+Output: one beautiful, exceptionally polished full-page desktop web design image with the specified section architecture, not a collage of multiple alternatives.

@@ -1,0 +1,8 @@
+/* Round 2 additions (round 1 pages keep the original kit) */
+.display, h1, h2 { text-wrap: balance; }
+p, dt, dd, li, figcaption, caption { text-wrap: pretty; }
+[class*="grid"] > *, .evidence > *, .app > *, .tiles > *, .split > *, .head > *, .check > *, .api > *, .pay > *, .verify > *, .proof > *, .wallet > *, .trio > * { min-width: 0; }
+.tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tbl-scroll .tbl { min-width: 640px; }
+.inv-light { filter: invert(1); }
+.media video, .frame video { background: var(--panel); }

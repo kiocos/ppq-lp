@@ -1,0 +1,48 @@
+        <div class="en-pin-wrap story-visual">
+          <div class="sx" id="sx" role="group" aria-label="Animation: your message is encrypted in your browser, crosses PayPerQ's server as ciphertext with only its IP, model and token count readable, is decrypted inside an AWS Nitro Enclave in that server, and reaches the AI provider without your IP. Before sending, your browser checks the enclave's attestation against the published build fingerprint.">
+            <div class="sx-cam" aria-hidden="true">
+              <!-- fibres between the three places; a point of light runs ahead of the message -->
+              <i class="sx-fibre" data-f="1"></i><i class="sx-fibre" data-f="2"></i>
+              <i class="sx-comet"></i>
+
+              <!-- your browser: a window on ppq.ai with the chat composer -->
+              <div class="sx-browser sx-dev">
+                <div class="sx-bar"><i></i><i></i><i></i><span class="sx-url"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>ppq.ai</span></div>
+                <div class="sx-composer"><span class="sx-plus">+</span><span class="sx-ph"></span><span class="sx-send"><svg viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></span></div>
+              </div>
+
+              <!-- PayPerQ's server: a chassis with the enclave as a sealed, lit bay inside it -->
+              <div class="sx-server">
+                <div class="sx-face"><img src="../assets/ppq-icon.png" alt="" width="20" height="20"><span class="sx-vent"></span><span class="sx-leds"><i></i><i></i><i></i></span></div>
+                <div class="sx-bay"><span class="sx-bay-name">AWS Nitro Enclave</span><i class="sx-screw"></i><i class="sx-screw"></i><i class="sx-screw"></i><i class="sx-screw"></i></div>
+                <div class="sx-foot"><span class="sx-vent"></span></div>
+                <i class="sx-scan"></i>
+              </div>
+
+              <!-- the AI provider: the selected model's maker, among others -->
+              <div class="sx-provider">
+                <div class="sx-logos"><img class="on" src="../assets/logos/models/claude.svg" alt=""><img class="mono" src="../assets/logos/models/openai.svg" alt=""><img src="../assets/logos/models/gemini.svg" alt=""><img class="mono" src="../assets/logos/models/xai.svg" alt=""></div>
+              </div>
+
+              <!-- the message -->
+              <div class="sx-card sx-msg">
+                <span class="sx-lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path class="sh" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+                <p class="sx-t"></p>
+                <div class="sx-chips"><span class="sx-chip ip">IP 203.0.113.7</span><span class="sx-chip">claude-sonnet-5</span><span class="sx-chip">1,840 tokens</span></div>
+              </div>
+            </div>
+
+            <!-- verification: fades in where the schematic was; the same browser window, now checking the enclave -->
+            <div class="sx-ver">
+              <div class="sx-browser">
+                <div class="sx-bar"><i></i><i></i><i></i><span class="sx-url"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>ppq.ai</span></div>
+                <div class="sx-check">
+                  <div class="sx-row"><span class="sx-src enc"><i></i></span><span class="sx-hash sx-got"></span></div>
+                  <div class="sx-row"><span class="sx-src gh"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg></span><span class="sx-hash sx-pub">PCR0 3ef8 468b feaf b866 …</span></div>
+                  <div class="sx-verdict"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="tick" pathLength="1" d="m8 12.5 3 3 5-6"/><path class="x" d="m9 9 6 6m0-6-6 6"/></svg><span></span></div>
+                  <button class="sx-tamper" type="button" tabindex="-1">Try a modified build</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>

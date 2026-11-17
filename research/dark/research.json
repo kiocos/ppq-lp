@@ -1,0 +1,130 @@
+{
+  "researchedAt": "2026-11-11",
+  "method": "Current public pages inspected with T3 preview tools; saved screenshots are unmodified viewport captures. Prior award-entry imagery used only for historical Jitter/Luma comparison.",
+  "awardStatus": "The new shortlist is selected for visual similarity. Awwwards wins are not verified for these six references.",
+  "screenshots": {
+    "jitterLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-jitter-video-mwct5zlf-1cd16150.png",
+      "url": "https://jitter.video/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/jitterLive.png"
+    },
+    "jitterDetail": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-jitter-video-mwct6ah6-e0244b93.png",
+      "url": "https://jitter.video/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/jitterDetail.png"
+    },
+    "lumaLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-lumalabs-ai-mwct6npi-7b068997.png",
+      "url": "https://lumalabs.ai/app",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/lumaLive.png"
+    },
+    "floraLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-flora-ai-mwcter1n-129cdae2.png",
+      "url": "https://flora.ai/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/floraLive.png"
+    },
+    "framerLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-www-framer-com-mwct98tn-dc70ee22.png",
+      "url": "https://www.framer.com/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/framerLive.png"
+    },
+    "splineLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-spline-design-mwctf1df-00eb91e7.png",
+      "url": "https://spline.design/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/splineLive.png"
+    },
+    "splineDetail": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-spline-design-mwctf5wb-f0c5435e.png",
+      "url": "https://spline.design/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/splineDetail.png"
+    },
+    "unicornLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-www-unicorn-studio-mwcta01t-4c43d30c.png",
+      "url": "https://www.unicorn.studio/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/unicornLive.png"
+    },
+    "hulyLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-huly-io-mwct9oer-818ce292.png",
+      "url": "https://huly.io/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/hulyLive.png"
+    },
+    "riveLive": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-rive-app-mwct77hr-7b65e5e0.png",
+      "url": "https://rive.app/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/riveLive.png"
+    },
+    "splineHero": {
+      "source": "/Users/kio/.t3/userdata/browser-artifacts/browser-screenshot-spline-design-mwct7gr8-8a4daa5e.png",
+      "url": "https://spline.design/",
+      "destination": "/Users/kio/ppq/landing-page/research/dark/images/splineHero.png"
+    }
+  },
+  "references": [
+    {
+      "key": "floraLive",
+      "name": "FLORA",
+      "url": "https://flora.ai/",
+      "closest": "Closest to Luma",
+      "role": "My strongest aesthetic match",
+      "description": "Black canvas, expressive serif headline, italic emphasis, and a loose composition of richly colored images. The surrounding interface stays quiet.",
+      "borrow": "Use a small set of striking PPQ outputs around a clear headline. Let the examples provide the color and mood.",
+      "caution": "The node-based workflow belongs to FLORA; PPQ’s demonstration should use its own chat and model-selection interface.",
+      "primary": true
+    },
+    {
+      "key": "framerLive",
+      "name": "Framer",
+      "url": "https://www.framer.com/",
+      "closest": "Closest to Jitter",
+      "role": "Best structural reference",
+      "description": "Large white sans-serif type, ample black space, compact navigation, and a broad product demonstration beneath the opening copy.",
+      "borrow": "Use this spacing and hierarchy for the PPQ opening: one strong message, a clear action, and a substantial real-product preview.",
+      "caution": "Its current page is more businesslike than Jitter. Carry over Jitter’s playfulness through the showcased outputs.",
+      "primary": true
+    },
+    {
+      "key": "splineHero",
+      "name": "Spline",
+      "url": "https://spline.design/",
+      "closest": "Jitter’s simplicity",
+      "role": "Best prompt-first reference",
+      "description": "A minimal black shell, restrained gray controls, a prominent prompt field, example chips, and large scenes of the working editor farther down.",
+      "borrow": "A particularly direct fit for PPQ’s existing prompt entry. Follow it with a legible demonstration of switching or comparing models.",
+      "caution": "Keep text contrast strong; some animated headline states are intentionally very dim.",
+      "primary": true
+    },
+    {
+      "key": "unicornLive",
+      "name": "Unicorn Studio",
+      "url": "https://www.unicorn.studio/",
+      "closest": "Luma’s editorial character",
+      "role": "Best typography and texture reference",
+      "description": "Charcoal surfaces, an oversized expressive headline, muted supporting copy, and a colorful visual canvas. Decorative drawing details add a crafted character.",
+      "borrow": "Use its balance of expressive imagery and neutral UI. It is a useful reference if PPQ should feel like a creative instrument.",
+      "caution": "Its decorative frame is a brand-specific device. PPQ needs its own visual motif.",
+      "primary": true
+    },
+    {
+      "key": "hulyLive",
+      "name": "Huly",
+      "url": "https://huly.io/",
+      "closest": "More theatrical alternative",
+      "role": "Useful for atmosphere",
+      "description": "Oversized white headings, a dark atmospheric backdrop, a luminous vertical composition and a product window entering at the bottom.",
+      "borrow": "Study the transition from a big visual idea into the working interface. Its warm CTA accent is relevant to PPQ’s orange.",
+      "caution": "The bloom and glow dominate more than they do on Jitter or Luma. This is a stronger effects direction.",
+      "primary": false
+    },
+    {
+      "key": "riveLive",
+      "name": "Rive",
+      "url": "https://rive.app/",
+      "closest": "Motion and result-first storytelling",
+      "role": "Useful for demonstrations",
+      "description": "A black navigation shell and large motion examples with readable labels. The current version uses angular display type and a more technical layout.",
+      "borrow": "Use a short, labeled example of what the product produces. Connect moving visuals to real capabilities.",
+      "caution": "Its current typography and density are farther from the restrained Jitter/Luma direction.",
+      "primary": false
+    }
+  ]
+}

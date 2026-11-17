@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · API section F</title>
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1); --radius: 6px; --radius-card: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h2, h3, p, ul, ol { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: var(--radius); }
+  ::selection { background: var(--brand); color: #fff; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-weight: 400; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 22px; border-radius: var(--radius); font: 500 15px/1 var(--f-body); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s; }
+  .btn-light { background: #fff; color: #1a1714; }
+  .btn-light:hover { background: #efebe6; }
+  .textlink { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 4px; transition: color .15s; }
+  .textlink:hover { color: var(--fg); }
+  .study { padding-top: 40px; font-size: 13px; color: var(--fg-3); display: flex; gap: 16px; flex-wrap: wrap; }
+  .study a { color: var(--fg-2); }
+
+  /* ================= 1 · one key, every tool ================= */
+  .intro { padding: 144px 0 40px; text-align: center; }
+  .label { margin-bottom: 16px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  .intro h2 { font-size: clamp(34px, 4vw, 52px); max-width: 15em; margin: 0 auto; }
+  .intro .lead { margin: 18px auto 0; max-width: 33em; font-size: 18px; color: var(--fg-2); }
+
+  .sky { position: relative; height: 500px; margin-top: 40px; }
+  .sky svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .sky line { stroke: rgba(255,255,255,.07); stroke-width: 1; vector-effect: non-scaling-stroke; transition: stroke .6s var(--ease); }
+  .sky line.lit { stroke: rgba(233,125,73,.55); }
+  .hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 12px; z-index: 2; }
+  .hub .core { position: relative; width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 50% 45%, #2a1710 0%, #160f0c 60%, #110d0b 100%); box-shadow: 0 0 0 1px rgba(233,125,73,.35), 0 0 calc(30px + var(--glow, 0) * 70px) rgba(191,60,27,calc(.15 + var(--glow, 0) * .35)); transition: box-shadow .6s var(--ease); }
+  .hub .core img { width: 40px; height: 40px; }
+  .hub .key { font: 13px var(--f-mono); color: var(--fg-2); padding: 5px 10px; border-radius: 6px; background: rgba(12,11,10,.8); border: 1px solid var(--line); }
+  .node { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 8px; z-index: 1; }
+  .node .tile { width: 60px; height: 60px; border-radius: 14px; display: grid; place-items: center; background: var(--panel); border: 1px solid var(--line); transition: border-color .6s var(--ease), box-shadow .6s var(--ease), background-color .6s; }
+  .node img { width: 30px; height: 30px; object-fit: contain; border-radius: 6px; opacity: .3; filter: grayscale(1); transition: opacity .6s var(--ease), filter .6s var(--ease); }
+  .node img.inv { filter: grayscale(1) invert(1); }
+  .node span { font-size: 12.5px; color: var(--fg-3); opacity: .5; transition: opacity .6s, color .6s; white-space: nowrap; }
+  .node.lit .tile { border-color: rgba(233,125,73,.45); background: var(--panel-2); box-shadow: 0 0 24px -6px rgba(191,60,27,.45); }
+  .node.lit img { opacity: 1; filter: none; }
+  .node.lit img.inv { filter: invert(1); }
+  .node.lit span { opacity: 1; color: var(--fg-2); }
+  .sky-foot { margin-top: 28px; text-align: center; font-size: 14px; color: var(--fg-3); }
+
+  /* ================= 2 · what people build (sticky story) ================= */
+  .story { position: relative; margin-top: 136px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; }
+  .steps .label { margin-bottom: 0; }
+  .step { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; opacity: .28; transition: opacity .5s var(--ease); }
+  .step:first-child { min-height: 70vh; }
+  .step.on { opacity: 1; }
+  .step .n { font: 13px var(--f-mono); color: var(--fg-3); transition: color .5s; }
+  .step.on .n { color: var(--brand-ink); }
+  .step h3 { margin-top: 14px; font-size: clamp(26px, 2.6vw, 34px); }
+  .step p { margin-top: 14px; font-size: 17px; color: var(--fg-2); max-width: 25em; }
+  .tools { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: 14px; color: var(--fg-2); }
+  .tools > * { display: inline-flex; align-items: center; gap: 8px; }
+  .tools img { width: 18px; height: 18px; object-fit: contain; border-radius: 4px; }
+  .tools img.inv { filter: invert(1); }
+  .tools a:hover { color: var(--fg); }
+  .stage-col { position: relative; }
+  .stage { position: sticky; top: calc(50vh - 190px); height: 380px; }
+  .scene { position: absolute; inset: 0; opacity: 0; transform: translateY(14px) scale(.985); transition: opacity .55s var(--ease), transform .55s var(--ease); pointer-events: none; }
+  .scene.on { opacity: 1; transform: none; pointer-events: auto; }
+
+  /* a scene is a small working screen */
+  .screen { position: relative; height: 100%; border-radius: var(--radius-card); background: var(--panel); border: 1px solid var(--line); overflow: hidden; box-shadow: 0 50px 90px -60px rgba(0,0,0,1), 0 0 0 1px rgba(0,0,0,.4); }
+  .screen .bar { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--fg-3); }
+  .screen .bar .dots { display: flex; gap: 5px; margin-right: 6px; }
+  .screen .bar .dots i { width: 8px; height: 8px; border-radius: 50%; background: #2c2a27; }
+  .screen .bar .via { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font: 12px var(--f-mono); }
+  .screen .bar .via::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--brand-ink); box-shadow: 0 0 0 3px rgba(233,125,73,.16); animation: pulse 2s ease-in-out infinite; }
+  .scene.done .bar .via::before { background: var(--good); box-shadow: 0 0 0 3px rgba(95,211,154,.14); animation: none; }
+  @keyframes pulse { 50% { opacity: .4; } }
+  .js .scene [data-s] { opacity: 0; transform: translateY(4px); transition: opacity .4s var(--ease), transform .4s var(--ease); }
+  .js .scene [data-s].in { opacity: 1; transform: none; }
+
+  .term { padding: 20px 22px; font: 14px/1.85 var(--f-mono); color: var(--fg-2); }
+  .term .you { color: var(--fg); }
+  .term .act { display: grid; grid-template-columns: 16px minmax(0, 1fr); }
+  .term .act::before { content: '●'; font-size: 8px; line-height: 26px; color: var(--fg-3); }
+  .term .act.now::before { color: var(--brand-ink); }
+  .term b { font-weight: 400; color: var(--fg); }
+  .term .a { color: var(--good); } .term .d { color: #d77a6a; }
+  .term .pass { color: var(--good); }
+
+  .thread { padding: 20px 18px; display: grid; gap: 10px; align-content: start; font-size: 14.5px; line-height: 1.45; }
+  .msg { max-width: 80%; padding: 10px 13px; border-radius: 14px; }
+  .msg.me { justify-self: end; background: #2a2724; color: var(--fg); border-bottom-right-radius: 4px; }
+  .msg.ai { justify-self: start; background: var(--panel-2); border: 1px solid var(--line); color: var(--fg-2); border-bottom-left-radius: 4px; }
+  .msg.ai b { color: var(--fg); font-weight: 500; }
+  .msg .ok { color: var(--good); }
+  .typing { justify-self: start; display: inline-flex; gap: 4px; padding: 12px 13px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line); }
+  .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--fg-3); animation: dot 1.2s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes dot { 30% { transform: translateY(-3px); opacity: .6; } }
+
+  .ticket { padding: 18px 20px; display: grid; gap: 16px; font-size: 14.5px; line-height: 1.5; }
+  .ticket .k { font-size: 12px; font-weight: 500; color: var(--fg-3); margin-bottom: 5px; }
+  .ticket .in { color: var(--fg); }
+  .ticket .seen { padding: 10px 13px; border-radius: 8px; background: rgba(191,60,27,.1); box-shadow: inset 2px 0 0 var(--brand); color: var(--fg-2); font: 13px/1.6 var(--f-mono); }
+  .ticket .ph { color: var(--brand-ink); }
+  .ticket .out { padding: 10px 13px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); color: var(--fg-2); }
+  .ticket .out b { color: var(--fg); font-weight: 500; }
+
+  .team { padding: 18px 20px; display: grid; gap: 4px; font-size: 14.5px; }
+  .agent { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.05); color: var(--fg-2); }
+  .agent .st { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; color: var(--good); border: 1px solid rgba(95,211,154,.4); }
+  .agent b { font-weight: 500; color: var(--fg); }
+  .agent small { font: 12px var(--f-mono); color: var(--fg-3); }
+  .finding { margin-top: 14px; padding: 13px 15px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); display: grid; gap: 4px; }
+  .finding .sev { font: 500 12px var(--f-mono); color: var(--brand-ink); }
+  .finding p { color: var(--fg); font-size: 15px; }
+  .finding small { color: var(--fg-3); font-size: 13px; }
+
+  /* ================= 3 · change one line ================= */
+  .oneline { margin-top: 120px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px 72px; align-items: center; }
+  .oneline h3 { font-size: clamp(24px, 2.2vw, 30px); }
+  .oneline p { margin-top: 10px; font-size: 16px; color: var(--fg-2); }
+  .line { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 8px 0 20px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font: 15px var(--f-mono); color: var(--fg-2); min-width: 0; }
+  .line code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; }
+  .line .s { color: var(--brand-ink); }
+  .line button { height: 36px; padding: 0 14px; border-radius: var(--radius); font: 500 13px var(--f-body); color: var(--fg-2); border: 1px solid var(--line); transition: color .15s, border-color .15s; }
+  .line button:hover { color: var(--fg); border-color: var(--border); }
+  .line-cap { margin-top: 12px; font-size: 14px; color: var(--fg-3); }
+
+  /* ================= 4 · fund your key ================= */
+  .fund { position: relative; margin-top: 72px; border-radius: 14px; overflow: hidden; background: var(--brand); color: #fff; }
+  .fund::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .18; }
+  .fund > * { position: relative; z-index: 1; }
+  .fund-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; padding: 34px 36px 30px; }
+  .fund h3 { font-size: clamp(24px, 2.3vw, 30px); font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+  .fund-top p { margin-top: 8px; font-size: 16px; color: rgba(255,255,255,.92); }
+  .methods { display: flex; flex-wrap: wrap; gap: 14px 30px; padding: 22px 36px 26px; border-top: 1px solid rgba(255,255,255,.18); }
+  .methods li { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; }
+  .methods i { width: 36px; height: 36px; border-radius: 50%; background: #1c0c06; display: grid; place-items: center; flex: none; }
+  .methods img { width: 20px; height: 20px; }
+  .methods .card { width: 18px; height: 13px; border-radius: 2.5px; border: 1.5px solid #fff; position: relative; }
+  .methods .card::after { content: ''; position: absolute; left: 0; right: 0; top: 3px; height: 2px; background: #fff; }
+  .methods small { display: block; font-size: 12.5px; font-weight: 400; color: rgba(255,255,255,.9); line-height: 1.2; }
+
+  .end { height: 120px; }
+
+  @media (max-width: 900px) {
+    .story, .oneline { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .stage-col { display: none; }
+    .step { min-height: 0; opacity: 1; padding: 0 0 72px; }
+    .step .inline-scene { margin-top: 28px; position: relative; }
+    .inline-scene .scene { position: relative; inset: auto; }
+    .inline-scene .screen { height: auto; min-height: 300px; padding-bottom: 8px; }
+    .step .inline-scene .scene { opacity: 1; transform: none; }
+    .oneline { gap: 24px; }
+    .sky { height: 440px; }
+    .node .tile { width: 48px; height: 48px; border-radius: 12px; }
+    .node img { width: 24px; height: 24px; }
+    .node span { display: none; }
+    .hub .core { width: 80px; height: 80px; }
+    .hub .core img { width: 32px; height: 32px; }
+  }
+  @media (max-width: 600px) {
+    .intro { padding-top: 96px; }
+    .sky { height: 380px; }
+    .story { margin-top: 88px; }
+    .fund-top, .methods { padding-left: 22px; padding-right: 22px; }
+    .line { font-size: 13px; padding-left: 14px; }
+    .term { font-size: 12.5px; padding: 16px; }
+    .methods { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .typing i, .screen .bar .via::before { animation: none; } }
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<div class="wrap study"><span>API section · F (round 5)</span><a href="v4.html">E</a><a href="v3.html">D</a><a href="index.html">A, B, C</a><a href="../r7/prometheus.html#api">Current (r7)</a></div>
+
+<section class="api" id="api" aria-labelledby="api-h">
+  <!-- 1 · one key, every tool -->
+  <div class="wrap intro">
+    <p class="label">API</p>
+    <h2 class="display" id="api-h">One key for every AI tool you use.</h2>
+    <p class="lead">Give your coding agent, your assistant or your own app a PayPerQ key, and it runs on any of 388 models.</p>
+
+    <div class="sky" id="sky" aria-label="PayPerQ's API key connected to Claude Code, Codex, Cursor, OpenCode, Cline, Aider, Roo, Kilo Code, Goose, OpenClaw, Hermes Agent and Open WebUI.">
+      <svg id="sky-lines" aria-hidden="true"></svg>
+      <div class="hub" aria-hidden="true"><span class="core" id="core"><img src="../assets/flame2.png" alt=""></span><span class="key">api.ppq.ai</span></div>
+    </div>
+    <p class="sky-foot">These and 12 more have step-by-step guides. <a class="textlink" href="https://ppq.ai/integrate">See all integrations</a></p>
+  </div>
+
+  <!-- 2 · what people build -->
+  <div class="wrap story" id="story">
+    <div class="steps">
+      <p class="label">What people build with it</p>
+
+      <article class="step" data-step="0">
+        <span class="n">01</span>
+        <h3 class="display">Let an agent write the code.</h3>
+        <p>It reads your repository, makes the change and runs the tests until they pass.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="../assets/logos/tools/claude-code.png" alt="">Claude Code</a>
+          <a href="https://ppq.ai/blog/using-codex-with-payperq"><img class="inv" src="../assets/logos/models/openai.svg" alt="">Codex</a>
+          <a href="https://ppq.ai/blog/using-cursor-with-payperq"><img src="../assets/logos/tools/cursor.svg" alt="">Cursor</a>
+          <a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="../assets/logos/tools/opencode.png" alt="">OpenCode</a>
+          <a href="https://ppq.ai/blog/using-cline-with-payperq"><img src="../assets/logos/tools/cline.png" alt="">Cline</a>
+        </div>
+      </article>
+
+      <article class="step" data-step="1">
+        <span class="n">02</span>
+        <h3 class="display">An assistant that lives in your messages.</h3>
+        <p>It runs on your own server, answers in Telegram, WhatsApp or email, and gets things done for you.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-openclaw-with-payperq"><img src="../assets/logos/tools/openclaw.svg" alt="">OpenClaw</a>
+          <a href="https://ppq.ai/blog/using-hermes-with-payperq"><img src="../assets/logos/tools/hermes.png" alt="">Hermes Agent</a>
+        </div>
+      </article>
+
+      <article class="step" data-step="2">
+        <span class="n">03</span>
+        <h3 class="display">AI inside your own product.</h3>
+        <p>Support replies, search, summaries. Names and emails are replaced before any model sees them.</p>
+        <div class="tools"><span>OpenAI SDK</span><span>Anthropic SDK</span><a href="https://ppq.ai/blog/pii-redaction">PII redaction</a></div>
+      </article>
+
+      <article class="step" data-step="3">
+        <span class="n">04</span>
+        <h3 class="display">Put a team of agents on it.</h3>
+        <p>They audit your app for security holes, research a market or read your sources, and hand you the report.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-strix-with-payperq">Strix</a>
+          <a href="https://ppq.ai/blog/using-tradingagents-with-payperq">TradingAgents</a>
+          <a href="https://ppq.ai/blog/using-open-notebook-with-payperq">Open Notebook</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="stage-col">
+      <div class="stage" id="stage">
+        <!-- 01 -->
+        <div class="scene" data-scene="0" role="img" aria-label="A coding agent on PayPerQ fixes a bug, the tests pass and it commits the fix.">
+          <div class="screen">
+            <div class="bar"><span class="dots"><i></i><i></i><i></i></span>~/shop<span class="via">claude-sonnet-5.5</span></div>
+            <div class="term" aria-hidden="true">
+              <div data-s>&gt; <span class="you">fix the failing checkout test</span></div>
+              <div class="act" data-s><span>Reading <b>src/checkout/total.ts</b></span></div>
+              <div class="act" data-s><span>Tax is applied twice on discounts</span></div>
+              <div class="act" data-s><span>Edited <b>total.ts</b> <span class="a">+4</span> <span class="d">−6</span></span></div>
+              <div class="act" data-s><span>Running <b>npm test</b></span></div>
+              <div class="pass" data-s>✓ 128 passed</div>
+              <div class="act" data-s><span>Committed <b>fix: apply tax once</b></span></div>
+            </div>
+          </div>
+        </div>
+        <!-- 02 -->
+        <div class="scene" data-scene="1" role="img" aria-label="A personal assistant reports what is urgent and saves a draft reply.">
+          <div class="screen">
+            <div class="bar">Assistant<span class="via">kimi-k3</span></div>
+            <div class="thread" aria-hidden="true">
+              <div class="msg me" data-s>Anything urgent before my 10am?</div>
+              <div class="typing" data-s data-transient><i></i><i></i><i></i></div>
+              <div class="msg ai" data-s><b>Your landlord accepted the 5% raise.</b> And the 10am moved to 10:30, so I pushed your gym slot.</div>
+              <div class="msg me" data-s>Nice. Draft him a thank-you.</div>
+              <div class="typing" data-s data-transient><i></i><i></i><i></i></div>
+              <div class="msg ai" data-s><span class="ok">✓</span> Saved in your email drafts.</div>
+            </div>
+          </div>
+        </div>
+        <!-- 03 -->
+        <div class="scene" data-scene="2" role="img" aria-label="A support ticket: the customer's name and email become placeholders before the model sees them; the reply restores them.">
+          <div class="screen">
+            <div class="bar">Support · ticket 4471<span class="via">claude-haiku-5.5</span></div>
+            <div class="ticket" aria-hidden="true">
+              <div data-s><p class="k">Customer</p><p class="in">Hi, I’m Ana Souza, ana.souza@mail.com. My order 4471 hasn’t arrived.</p></div>
+              <div data-s><p class="k">What the model sees</p><p class="seen">Hi, I’m <span class="ph">⟦PERSON_1⟧</span>, <span class="ph">⟦EMAIL_1⟧</span>. My order 4471 hasn’t arrived.</p></div>
+              <div data-s><p class="k">Reply sent</p><p class="out">Hi <b>Ana</b>, sorry for the wait. Order 4471 left the warehouse this morning. Tracking is on its way to <b>ana.souza@mail.com</b>.</p></div>
+            </div>
+          </div>
+        </div>
+        <!-- 04 -->
+        <div class="scene" data-scene="3" role="img" aria-label="A team of security agents scans an app and reports one critical SQL injection with a working proof.">
+          <div class="screen">
+            <div class="bar">Security audit · shop-api<span class="via">deepseek-v4.1-flash</span></div>
+            <div class="team" aria-hidden="true">
+              <div class="agent" data-s><span class="st">✓</span><span><b>Recon</b> mapped 42 routes</span><small>1m 12s</small></div>
+              <div class="agent" data-s><span class="st">✓</span><span><b>Auth</b> checked sessions and tokens</span><small>2m 40s</small></div>
+              <div class="agent" data-s><span class="st">✓</span><span><b>Injection</b> tested every input</span><small>3m 05s</small></div>
+              <div class="agent" data-s><span class="st">✓</span><span><b>Exploit</b> confirmed the finding</span><small>0m 48s</small></div>
+              <div class="finding" data-s><span class="sev">1 critical</span><p>SQL injection in <span style="font-family:var(--f-mono)">/search?q=</span></p><small>Working proof and a suggested fix are in report.md</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 · change one line -->
+  <div class="wrap oneline">
+    <div>
+      <h3 class="display">Already have code? Change one line.</h3>
+      <p>Anything that speaks the OpenAI or Anthropic API works.</p>
+    </div>
+    <div>
+      <div class="line"><code>base_url=<span class="s">"https://api.ppq.ai/v1"</span></code><button type="button" data-copy="https://api.ppq.ai/v1">Copy</button></div>
+      <p class="line-cap"><a class="textlink" href="https://ppq.ai/api-docs">Read the API docs</a></p>
+    </div>
+  </div>
+
+  <!-- 4 · fund your key -->
+  <div class="wrap">
+    <div class="fund">
+      <div class="fund-top">
+        <div>
+          <h3>One key, one balance, every tool.</h3>
+          <p>Top up from $0.10 and use it everywhere. No subscription, no email.</p>
+        </div>
+        <a class="btn btn-light" href="https://ppq.ai/api-docs">Add credit</a>
+      </div>
+      <ul class="methods" aria-label="Payment methods">
+        <li><i><img src="../assets/logos/pay/lightning-network.svg" alt=""></i><span>Lightning<small>+5% bonus</small></span></li>
+        <li><i><img src="../assets/logos/pay/bitcoin.svg" alt=""></i><span>Bitcoin</span></li>
+        <li><i><img src="../assets/logos/pay/monero.svg" alt=""></i><span>Monero</span></li>
+        <li><i><img src="../assets/logos/pay/tether.svg" alt=""></i><span>USDT</span></li>
+        <li><i><img src="../assets/logos/pay/litecoin.svg" alt=""></i><span>Litecoin</span></li>
+        <li><i><span class="card"></span></i><span>Card</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="end"></div>
+</section>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select'; }
+    setTimeout(() => (b.textContent = 'Copy'), 1300);
+  }));
+
+  /* ---------- 1 · constellation: the key lights each tool as you scroll ---------- */
+  const tools = [
+    ['claude-code.png', 'Claude Code'], ['models/openai.svg', 'Codex', 'inv'], ['cursor.svg', 'Cursor'], ['opencode.png', 'OpenCode'],
+    ['cline.png', 'Cline'], ['openclaw.svg', 'OpenClaw'], ['hermes.png', 'Hermes Agent'], ['aider.png', 'Aider'],
+    ['roo.svg', 'Roo', 'inv'], ['kilo.svg', 'Kilo Code'], ['goose.png', 'Goose'], ['openwebui.png', 'Open WebUI', 'inv'],
+  ];
+  const sky = document.getElementById('sky'), svg = document.getElementById('sky-lines'), core = document.getElementById('core');
+  const nodes = [], lines = [];
+  const place = () => {
+    const narrow = innerWidth < 900;
+    const rx = narrow ? 41 : 44, ry = narrow ? 40 : 41;
+    svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
+    tools.forEach((t, i) => {
+      const a = (-90 + 15 + i * (360 / tools.length)) * Math.PI / 180;
+      const x = 50 + rx * Math.cos(a), y = 50 + ry * Math.sin(a);
+      nodes[i].style.left = x + '%'; nodes[i].style.top = y + '%';
+      lines[i].setAttribute('x2', x); lines[i].setAttribute('y2', y);
+    });
+  };
+  tools.forEach(([src, name, inv], i) => {
+    const n = document.createElement('div'); n.className = 'node';
+    const path = src.startsWith('models/') ? `../assets/logos/${src}` : `../assets/logos/tools/${src}`;
+    n.innerHTML = `<span class="tile"><img ${inv ? 'class="inv"' : ''} src="${path}" alt=""></span><span>${name}</span>`;
+    sky.appendChild(n); nodes.push(n);
+    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', 50); l.setAttribute('y1', 50); svg.appendChild(l); lines.push(l);
+  });
+  place(); addEventListener('resize', place);
+  // light order goes round the ring, like one fire lighting the next
+  const light = (k) => {
+    nodes.forEach((n, i) => { const on = i < k; n.classList.toggle('lit', on); lines[i].classList.toggle('lit', on); });
+    core.style.setProperty('--glow', (k / tools.length).toFixed(2));
+  };
+  if (reduce) light(tools.length);
+  else {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(() => {
+        const r = sky.getBoundingClientRect(), vh = innerHeight;
+        // starts when the sky's top reaches 85% of the screen, complete when its centre reaches 45%
+        const start = vh * .85, end = vh * .45 - r.height / 2;
+        const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
+        light(Math.round(p * tools.length));
+        ticking = false;
+      });
+    };
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  }
+
+  /* ---------- 2 · story: one step on screen at a time ---------- */
+  const steps = [...document.querySelectorAll('.step')];
+  const scenes = [...document.querySelectorAll('.scene')];
+  const mobile = matchMedia('(max-width: 900px)');
+  const stage = document.getElementById('stage');
+  // phones: each scene sits under its step; desktop: all scenes share the sticky stage
+  const arrange = () => {
+    scenes.forEach((s, i) => {
+      if (mobile.matches) {
+        let slot = steps[i].querySelector('.inline-scene');
+        if (!slot) { slot = document.createElement('div'); slot.className = 'inline-scene'; steps[i].appendChild(slot); }
+        slot.appendChild(s);
+      } else stage.appendChild(s);
+    });
+  };
+  arrange(); mobile.addEventListener('change', () => { arrange(); scenes.forEach(finish); });
+
+  const runs = new Map();
+  const reset = (s) => { s.classList.remove('done'); s.querySelectorAll('[data-s]').forEach((e) => { e.classList.remove('in', 'now'); e.style.display = ''; }); };
+  const finish = (s) => { s.querySelectorAll('[data-s]').forEach((e) => { e.classList.remove('now'); if (e.dataset.transient !== undefined) e.style.display = 'none'; else e.classList.add('in'); }); s.classList.add('done'); };
+  async function play(s) {
+    const id = (runs.get(s) || 0) + 1; runs.set(s, id);
+    reset(s); await wait(350);
+    for (const e of s.querySelectorAll('[data-s]')) {
+      if (runs.get(s) !== id) return;
+      if (e.dataset.transient !== undefined) { e.classList.add('in'); await wait(900); e.style.display = 'none'; continue; }
+      s.querySelectorAll('.now').forEach((x) => x.classList.remove('now'));
+      if (e.classList.contains('act')) e.classList.add('now');
+      e.classList.add('in');
+      await wait(e.classList.contains('me') ? 650 : 800);
+    }
+    if (runs.get(s) === id) { s.querySelectorAll('.now').forEach((x) => x.classList.remove('now')); s.classList.add('done'); }
+  }
+
+  let current = -1;
+  const activate = (i) => {
+    if (i === current) return; current = i;
+    steps.forEach((st, k) => st.classList.toggle('on', k === i));
+    scenes.forEach((sc, k) => { sc.classList.toggle('on', k === i); if (k !== i) runs.set(sc, (runs.get(sc) || 0) + 1); });
+    if (reduce) finish(scenes[i]); else play(scenes[i]);
+  };
+  if (reduce) scenes.forEach(finish);
+  // desktop: the step crossing the middle of the screen is the active one
+  const ioStep = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting && !mobile.matches) activate(+e.target.dataset.step); }), { rootMargin: '-45% 0px -45% 0px' });
+  steps.forEach((s) => ioStep.observe(s));
+  // phones: each inline scene plays when it scrolls into view
+  const ioScene = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting && mobile.matches) { e.target.classList.add('on'); reduce ? finish(e.target) : play(e.target); ioScene.unobserve(e.target); } }), { threshold: .5 });
+  scenes.forEach((s) => ioScene.observe(s));
+  if (!mobile.matches) activate(0);
+})();
+</script>
+</body>
+</html>

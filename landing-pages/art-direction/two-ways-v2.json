@@ -1,0 +1,17 @@
+{
+  "generator": "built-in image_gen",
+  "selected_image": "/Users/kio/ppq/landing-page/landing-pages/art-direction/two-ways-v2.png",
+  "width": 724,
+  "height": 2172,
+  "source_layout": "../06-two-ways.html",
+  "base_prompt": "two-ways-v1.prompt.txt",
+  "refinement_prompt": "two-ways-v2.prompt.txt",
+  "revision": 2,
+  "status": "visual concept",
+  "notes": [
+    "Same eight-section Two ways architecture",
+    "Product interfaces are illustrative, not production screenshots",
+    "Image copy is condensed; the canonical copy remains src/copy.json",
+    "Refined spacing and typography after reviewing the first generation"
+  ]
+}

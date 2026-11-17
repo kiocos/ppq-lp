@@ -1,0 +1,11 @@
+      <!-- the privacy film: a silent loop plays in place; pressing play starts the explainer (captions are in the film) -->
+      <figure class="vp" id="vp" data-state="teaser">
+        <video class="vp-teaser" muted loop playsinline autoplay preload="auto" poster="../assets/motion/enclave-teaser-poster.jpg" aria-hidden="true"></video>
+        <video class="vp-film" playsinline preload="none" controls aria-label="How the enclave keeps your chats private, a 43-second film with captions"></video>
+        <button class="vp-play" type="button" aria-label="Play the film: how the enclave works, 43 seconds">
+          <span class="vp-disc"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+          <span class="vp-label"><b>See how the enclave works</b><small>0:43</small></span>
+        </button>
+        <figcaption class="fm-sr">The film shows a chat message encrypted in your browser, relayed by PayPerQ's servers that can see only its IP address, model and token count, decrypted only inside an AWS Nitro Enclave that PayPerQ staff cannot log in to, and delivered to the AI provider without your IP. Before sending, your browser checks the enclave's code fingerprint (PCR0) against the published reproducible build; a modified build would not match and nothing would be sent.</figcaption>
+      </figure>
+

@@ -1,0 +1,1232 @@
+# PayPerQ (PPQ) API
+
+> PayPerQ is a unified AI API gateway with 500+ models including Chat, Image, Video, Embeddings, STT, TTS, private (TEE) inference, and more from all major providers. OpenAI-compatible endpoints, pay-per-use pricing (no subscriptions), and cryptocurrency payment support for Bitcoin, Bitcoin lightning, USDT, USDC, XMR, LTC, and any other cryptocurrency. Every chat completion is served inside an attested AWS Nitro enclave, so PPQ itself cannot read prompts or responses (see [Enclave Router](#enclave-router-default-privacy-for-chat)).
+
+PayPerQ provides a single API that gives you access to models from OpenAI, Anthropic, Google, xAI, Mistral, Meta, Deepseek, Qwen, and more — all through an OpenAI-compatible interface. You pay only for what you use with no minimum spend or monthly commitment. Top up your balance with crypto (Bitcoin Lightning, BTC, Monero, Litecoin, Liquid BTC), Nostr Wallet Connect (NWC) auto-topup, or a credit or debit card via Stripe.
+
+The API works with any tool that supports the OpenAI API format: Claude Code, OpenCode, Cursor, Cline, Aider, Roo, OpenWebUI, Goose, and thousands more.
+
+## API Basics
+
+- **API Base URL** (chat, image, video, embeddings, audio, data): `https://api.ppq.ai`
+- **Authentication**: `Authorization: Bearer YOUR_API_KEY` (keys are prefixed with `sk-`)
+- **Schema**: OpenAI-compatible — use the OpenAI SDK with a custom `base_url`
+- **Streaming**: Supported via SSE (Server-Sent Events) for chat completions
+
+To get an API key, sign up at https://ppq.ai and visit https://ppq.ai/api-docs to generate one.
+
+### Quickstart (Python)
+
+```python
+import requests
+
+api_key = "sk-YOUR_API_KEY"
+url = "https://api.ppq.ai/v1/chat/completions"
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+}
+
+data = {
+    "model": "claude-sonnet-5.5",
+    "messages": [{"role": "user", "content": "Hello, how are you?"}]
+}
+
+response = requests.post(url, json=data, headers=headers)
+print(response.json())
+```
+
+### Quickstart (cURL)
+
+```bash
+curl https://api.ppq.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "claude-sonnet-5.5",
+    "messages": [{"role": "user", "content": "Hello, how are you?"}]
+  }'
+```
+
+### Using the OpenAI SDK
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-YOUR_API_KEY",
+    base_url="https://api.ppq.ai/v1"
+)
+
+response = client.chat.completions.create(
+    model="claude-sonnet-5.5",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+## Endpoints
+
+### Chat Completions
+- `POST https://api.ppq.ai/v1/chat/completions` — Send messages to any supported LLM
+- `POST https://api.ppq.ai/chat/completions` — Alias (same behavior, without `/v1` prefix)
+- `POST https://api.ppq.ai/v1/responses` / `POST https://api.ppq.ai/responses` — OpenAI Responses API (drop-in replacement, see [Responses API](#responses-api))
+- `POST https://api.ppq.ai/v1/messages` — Native Anthropic Messages API for Anthropic SDK clients and Claude Code (see [Anthropic Messages API](#anthropic-messages-api))
+- Chat completions are served inside PPQ's attested enclave by default — no flag or setup needed (see [Enclave Router](#enclave-router-default-privacy-for-chat))
+
+### Online Mode (Web Search)
+Any model can search the web in real time. There are two ways to enable it:
+
+**Always search** — include a `plugins` array (the model searches on every request):
+
+```bash
+curl -X POST https://api.ppq.ai/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "claude-sonnet-5.5",
+    "plugins": [{"id": "web", "max_results": 5}],
+    "messages": [{"role": "user", "content": "What is the weather in Omaha, Nebraska right now?"}]
+  }'
+```
+
+**Auto (model-decided)** — pass the `web_search` server tool instead; the model decides whether a search is actually needed and may skip it for questions it can already answer:
+
+```bash
+  -d '{
+    "model": "claude-sonnet-5.5",
+    "tools": [{"type": "web_search"}],
+    "messages": [{"role": "user", "content": "Who won the 2026 World Cup?"}]
+  }'
+```
+
+- **Plugin parameters**: `id` (required, use `"web"`), `max_results` (number of web results to retrieve and inject into context, default: 5), and `engine` (optional — see below). The `web_search` tool accepts the same options under a `parameters` object.
+- **Search provider / `engine`**: web search defaults to Exa.AI ($0.02/request, in addition to token costs) for every model except Perplexity, which always uses its own native search. To use a provider's native search instead (OpenAI GPT-5+, Anthropic, Gemini, Grok), set `engine` explicitly on the plugin/tool — e.g. `"plugins": [{"id": "web", "engine": "native"}]`. Any explicit `engine` you send is always honored; the Exa default only applies when you omit it.
+
+### Routing Preferences
+Append a `:suffix` to a model name to steer how the request is routed — no separate endpoint or config. Most models can be served by more than one upstream provider, and each trades off differently on speed, cost, and reliability.
+
+| Suffix | Optimizes for | Effect |
+|--------|---------------|--------|
+| `:nitro` | Throughput | Routes to the highest tokens-per-second provider. |
+| `:floor` | Cost | Routes to the lowest-priced provider. |
+| `:exacto` | Tool-calling quality | Prefers providers with the strongest tool-calling reliability. |
+| `:online` | Fresh info | Enables web search (shorthand for the `web` plugin above). |
+| `:thinking` | Reasoning | Selects the model's reasoning variant, where available. |
+| `:extended` | Context length | Selects an extended-context variant, where available. |
+
+```bash
+curl -X POST https://api.ppq.ai/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "claude-sonnet-5.5:floor",
+    "messages": [{"role": "user", "content": "Summarize this batch job output."}]
+  }'
+```
+
+- Works with full slugs (`anthropic/claude-sonnet-5.5:nitro`) and PPQ short aliases (`claude-sonnet-5.5:floor`).
+- **Billing is unaffected** — you are always charged the real generation cost (recorded post-hoc from the upstream's reported usage), so a suffix that routes you to a cheaper (`:floor`) or faster (`:nitro`) provider is reflected automatically. `:online` adds the web-search fee described above on paid requests; on free-tier models it is a no-op (web search is not attached, so there is no search and no fee).
+- **No-op on pinned models** — a few models are deliberately routed to a single provider (e.g. low-latency "fast" variants); routing suffixes have no effect there because there is only one provider to choose from.
+- **Variant suffixes** (`:thinking`, `:extended`) only work on models that actually publish that variant; otherwise the request returns a "no endpoints found" error. For reasoning on models that have no `:thinking` variant (e.g. Claude), use the `reasoning` request parameter (e.g. `{ "reasoning": { "effort": "medium" } }`) instead of `:thinking`.
+- **Unknown suffixes pass through untouched**, so a provider's own permaslug (e.g. one ending in `:free`) keeps working as before.
+
+### Privacy Tiers & Zero Data Retention (ZDR)
+
+Every chat model carries a `privacyLevel` in `GET /v1/models`:
+- `anon` — the provider may retain prompt data under its own policy; requests are sent without account linkage.
+- `zdr` — Zero Data Retention: the provider does not store prompt or completion data. PPQ routes these models only to ZDR endpoints.
+- `e2e` — end-to-end encrypted `private/*` models running inside a TEE (see [Private (TEE) Models](#private-tee-models)); even the provider cannot read the prompt.
+
+Independently of the badge, any request can ask for ZDR routing by adding a `provider` object:
+
+```bash
+  -d '{
+    "model": "claude-sonnet-5.5",
+    "provider": { "zdr": true },
+    "messages": [{"role": "user", "content": "Summarize this confidential note."}]
+  }'
+```
+
+- `provider.zdr` (boolean) — route only to upstream endpoints with a Zero Data Retention policy. Works for any model that has a ZDR-capable endpoint upstream, including many proprietary models served via Bedrock, Vertex or Azure, not only the ones badged `zdr`.
+- Other `provider` fields are accepted alongside `zdr`: `data_collection` (`"allow"` / `"deny"`), `order` / `only` / `ignore` (provider allow, deny and priority lists), `sort` (`price` / `throughput` / `latency`), `max_price`, `quantizations`, `require_parameters`, `allow_fallbacks`.
+- A few models have required routing rules that PPQ enforces; on those, PPQ-managed fields such as `order` and `only` may be overridden. Your `zdr` preference is usually preserved, with known exceptions where it is dropped so the request stays routable: Claude Opus 4.8 combined with web search, and Gemini 2.5 Flash. If you need a hard ZDR guarantee, pick a model badged `zdr` or `e2e`.
+
+These tiers describe what the **model provider** retains. Separately, PPQ itself never sees chat content because every chat completion is served inside the enclave described under [Enclave Router](#enclave-router-default-privacy-for-chat). Explainer: https://ppq.ai/blog/anon-vs-zdr-vs-tee-privacy-tiers
+
+### Responses API
+
+PPQ exposes a drop-in replacement for OpenAI's Responses API — the newer agentic-loop endpoint that supersedes Chat Completions for tool-using and reasoning workflows. Same auth, billing, balance enforcement, and model catalog as `/chat/completions`. Use it from clients that natively expect the Responses schema (e.g. the OpenAI SDK's `client.responses.create()` method, agent frameworks built on Responses, OpenAI Agents SDK).
+
+- `POST https://api.ppq.ai/v1/responses` — Submit a Responses-API request
+- `POST https://api.ppq.ai/responses` — Alias (same behavior, without `/v1` prefix)
+
+Request fields (only `model` and `input` are required; everything else is optional):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `model` | string | Any model that works on `/chat/completions` (e.g. `openai/gpt-6.1-sol`, `claude-sonnet-5.5`). |
+| `input` | string \| array | Prompt as plain text, or an array of role-tagged message/content items (text, images, files). |
+| `instructions` | string | System-level guidance prepended to the conversation. |
+| `max_output_tokens` | number | Cap on tokens generated for the response. |
+| `temperature` | number | Sampling temperature, `0`–`2`. |
+| `top_p` | number | Nucleus sampling. |
+| `tools` | array | Tool definitions the model can call (functions, web_search, file_search, code_interpreter, MCP, etc.). |
+| `tool_choice` | string \| object | Constrain tool selection (`"auto"`, `"none"`, `"required"`, or `{ type, name }`). |
+| `parallel_tool_calls` | boolean | Allow concurrent tool calls in one turn. |
+| `reasoning` | object | Reasoning-model controls (e.g. `{ "effort": "low" \| "medium" \| "high" }`). |
+| `response_format` | object | Structured-output schema (JSON schema or `json_object`). |
+| `previous_response_id` | string | Continue from a prior stored response. |
+| `store` | boolean | Persist the response upstream for later retrieval. |
+| `metadata` | object | Up to 16 user-supplied key/value tags (strings/numbers/booleans). |
+| `stream` | boolean | Stream the response as Server-Sent Events. |
+| `include` | array | Request additional output fields in the response. |
+| `truncation` | string | Context-window truncation strategy. |
+| `user` | string | End-user identifier for abuse tracking. |
+
+Response shape:
+
+```json
+{
+  "id": "resp_…",
+  "object": "response",
+  "model": "openai/gpt-6.1-sol",
+  "status": "completed",
+  "output": [ /* array of output items: messages, tool calls, reasoning, … */ ],
+  "output_text": "concatenated assistant text",
+  "usage": { "input_tokens": 12, "output_tokens": 34, "total_tokens": 46 },
+  "created_at": 1709234567
+}
+```
+
+Streaming events (SSE, when `"stream": true`): `response.created`, `response.in_progress`, `response.output_item.added`, `response.content_part.added`, `response.output_text.delta`, `response.output_text.done`, `response.output_item.done`, `response.completed`, `response.failed`. The terminal `response.completed` event carries the final `usage` block (input / output / cached tokens and cost) that PPQ uses for billing.
+
+For the canonical schema, see OpenAI's reference at https://platform.openai.com/docs/api-reference/responses — PPQ accepts the same payloads.
+
+```bash
+curl -N -X POST https://api.ppq.ai/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "openai/gpt-6.1-sol",
+    "input": "Say hi",
+    "stream": true
+  }'
+```
+
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="sk-YOUR_API_KEY", base_url="https://api.ppq.ai/v1")
+
+response = client.responses.create(
+    model="openai/gpt-6.1-sol",
+    input="Hello, how are you?",
+)
+print(response.output_text)
+```
+
+Notes:
+- `private/*` models are not supported on this endpoint — send them to `/v1/chat/completions` (see [Private (TEE) Models](#private-tee-models)).
+- This endpoint is served inside the enclave, like `/v1/chat/completions` (see [Enclave Router](#enclave-router-default-privacy-for-chat)).
+- Insufficient balance returns `402 Payment Required`, identical to `/chat/completions`.
+
+### Enclave Router (default privacy for chat)
+
+Since September 2026, every `POST /v1/chat/completions` request on `api.ppq.ai` (and every chat in the ppq.ai web app) is served inside an **AWS Nitro Enclave** that PPQ calls the Enclave Router. The TLS connection from your client terminates inside the enclave, so prompts and completions are decrypted only there; PPQ's servers, staff, logs and the cloud host are designed to handle ciphertext or metadata only. This is the default: no flag, header, proxy or opt-in is required. The guarantee is strongest when the client verifies the attestation and pins the published measurement before sending (the verifier proxy below does this); a client that skips verification is trusting that the host it reached is the attested one.
+
+**What it guarantees**
+- PPQ's backend is not on the plaintext path. What leaves the enclave is metadata only, for example: credit id, model requested and provider served, token counts, timestamps, whether the request succeeded, and a content-free trace (request field names and shape, routing preferences, route taken, timing). No prompt or response text.
+- The enclave code is open source and reproducibly built, and the running enclave can be checked against the published measurement (`PCR0`) before a single byte is sent. `GET https://api.ppq.ai/attestation?nonce=<hex>` returns the AWS-signed attestation document, bound to the TLS certificate you were served.
+- The only code that handles the reply in the clear between the provider and you is the published, measured enclave code. Routing receipts (below) let you check which provider and model actually served a request; they attest routing facts, not answer content.
+
+**What it does not guarantee**
+- The upstream model provider still receives the prompt in plaintext, subject to its own retention policy (see [Privacy Tiers](#privacy-tiers--zero-data-retention-zdr)). Only `private/*` models are hidden from the provider too.
+- Metadata is visible to PPQ, including your IP address at the network edge.
+- Only chat completions (`/v1/chat/completions`, `/chat/completions`), the Responses API (`POST /v1/responses`, `/responses`), the Messages API (`/v1/messages`, `/v1/messages/count_tokens`), `/v1/decisions` and `private/*` requests are served inside the enclave. Image, video, audio, embeddings and data endpoints are handled by PPQ's backend in the ordinary way.
+
+**Verify it yourself** with the open-source PPQ Privacy Verifier, a small local proxy: `PPQ_API_KEY=sk-... npx ppq-private-mode`, then point any OpenAI- or Anthropic-compatible client at `http://127.0.0.1:8787`. On start it fetches the live attestation, checks it against the published measurement, refuses to send anything if they differ, and encrypts every request body to the verified enclave's key. You get the same enclave without it; the proxy means *you* checked rather than trusting PPQ to have.
+
+- Blog: https://ppq.ai/blog/introducing-the-enclave-router
+- Enclave source, threat model and published measurement: https://github.com/PayPerQ/ppq-enclave-proxy
+- Verifier proxy: https://github.com/PayPerQ/ppq-privacy-verifier
+- Privacy policy: https://ppq.ai/privacy#secure-enclave
+
+**Routing receipts.** Attestation proves the enclave runs published code; a receipt proves where your request went. Every streamed chat completion that the enclave itself sends upstream carries a receipt signed with a key the attestation commits to, as an SSE comment before the first data frame. Two paths carry none: `/v1/decisions`, and `private/*` requests sealed on the client by the verifier proxy, which the enclave relays as ciphertext it cannot inspect (a `private/*` request sent directly does get one):
+
+```
+: ppq-routing-receipt {"v":2,"request_id":"3f9c…","request_id_source":"client","issued_at":"2026-09-29T16:18:52.505Z","requested_model":"anthropic/claude-sonnet-5.5","upstream":"api.anthropic.com","upstream_model":"claude-sonnet-5.5","served_model":"claude-sonnet-5-5-…","route":"direct","provider":"anthropic","upstream_status":200,"skipped":[],"failed":[],"upstream_selects_provider":false}
+: ppq-routing-receipt-sig {"alg":"ECDSA-SHA256","over":"receipt_json_utf8","sig":"…"}
+```
+
+- Non-streamed responses carry the same two values as response headers, `Ppq-Routing-Receipt` (base64 of the JSON) and `Ppq-Routing-Receipt-Sig`. In the header form `served_model` is always `null`, because headers are sent before the upstream answer arrives; use streaming if you need the served model in the receipt.
+- To bind a receipt to your request, send an `x-request-id` header (printable ASCII, up to 128 characters) and require it back as `request_id` with `request_id_source: "client"`.
+- SSE parsers and the OpenAI SDKs ignore comment lines, so receipts are invisible unless you look for them. The enclave repo ships `client/verify-receipt.mjs` to walk the whole chain: attestation, certificate binding, then signature.
+
+### PII Redaction
+
+Add `"pii_redaction": true` to a request body and personal data in your prompt is replaced with placeholders before the request reaches the model provider. The model answers using the placeholders, and PPQ puts the original values back into the response before it reaches you, so your client sees a normal answer.
+
+**What it guarantees**
+- Detection and replacement run inside the Enclave Router (AWS Nitro Enclave, see above). The detector is Tinfoil's PII filter (https://tinfoil.sh), running in its own attested secure enclave; the Enclave Router verifies its attestation before sending it any text. Neither PPQ nor Tinfoil can read your data.
+- The upstream model provider sees only placeholders such as `⟦PERSON_1⟧` or `⟦EMAIL_1⟧`. The same value gets the same placeholder throughout a request; the mapping lives only in enclave memory for that one request and is never logged or stored.
+- Fail-closed: if detection cannot run (timeout, detector unavailable, or the request reached PPQ's backend instead of the enclave), the request is refused with `503 pii_redaction_unavailable` and nothing is sent to the model. A `pii_redaction: true` request is never forwarded unredacted.
+
+**How to use**
+
+```bash
+curl https://api.ppq.ai/chat/completions \
+  -H "Authorization: Bearer $PPQ_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-5.5",
+    "pii_redaction": true,
+    "messages": [{"role": "user", "content": "Draft a reply to Maria Souza (maria.souza@example.com, +1 415 555 0134) confirming her appointment."}]
+  }'
+```
+
+The value must be a JSON boolean: `true` turns redaction on, `false` (or omitting the field) leaves the request unchanged. With the OpenAI SDKs, pass it through `extra_body={"pii_redaction": True}` (Python) or as an extra body field (JavaScript).
+
+**Supported endpoints**
+- `POST /v1/chat/completions` (and `/chat/completions`): `user`, `assistant` and `tool` message text, plus tool-call arguments and reasoning text on assistant turns you send back.
+- `POST /v1/messages`: `user` and `assistant` text blocks, `tool_result` text and `tool_use` inputs.
+- `POST /v1/responses` (and `/responses`): string `input` or `user`/`assistant` message text, `function_call` arguments, `function_call_output` and resent reasoning summaries. Send the full conversation; `previous_response_id` and `conversation` are refused with this flag.
+- Not supported: `POST /v1/messages/count_tokens`, and every non-chat endpoint.
+- Placeholders are restored in streamed and non-streamed responses: message text, reasoning, refusals and tool-call arguments.
+
+**Limits**
+- Detection is automated and can miss items, especially names. Review sensitive prompts yourself.
+- Covered: person names, email addresses, phone numbers, postal addresses, account numbers and secrets, IP addresses. Company names, place names and dates are not protected.
+- System prompts are never redacted (`system`/`developer` messages, the Messages `system` field, Responses `instructions`). Keep personal data out of them.
+- Images, audio, files and documents are untouched.
+- On `/v1/messages`, the model's `thinking` blocks are passed through as-is, so they may show placeholders.
+- `private/*` models are not supported (they are already end-to-end encrypted; see [Private (TEE) Models](#private-tee-models)).
+
+**Errors** (body: `{"error": {"message": "...", "code": "<code>"}}`; on `/v1/messages` and `/v1/responses` the same `code` arrives in that API's own error envelope)
+
+| HTTP | `code` | When |
+|------|--------|------|
+| 400 | `pii_redaction_invalid` | `pii_redaction` is not a boolean (`"true"`, `1`, `null`, ...) |
+| 400 | `pii_redaction_unsupported_model` | The model is a `private/*` model |
+| 400 | `pii_redaction_unsupported_state` | `/v1/responses` request uses `previous_response_id` or `conversation` |
+| 400 | `pii_redaction_unsupported_endpoint` | Sent to `/v1/messages/count_tokens` |
+| 402 | `pii_redaction_insufficient_balance` | On a free model, your balance cannot cover the redaction fee. On paid models the fee is added to the minimum balance of the ordinary `402` |
+| 503 | `pii_redaction_unavailable` | Detection could not run; the request was not sent to the model |
+
+**Price**: **$0.00023 per request plus $0.92 per million input tokens scanned** with `pii_redaction: true` (one detection call per request; the detector scans the text of your messages, up to 80,000 tokens per request, so a 6,000-token request costs about $0.0058), billed on top of the model's normal price as its own `pii_redaction` line in query history, where the Input column is the scanned token count. It also applies to free models. A request that is refused (any error above) or fails before the model answers is not charged the fee.
+
+- Blog: https://ppq.ai/blog/pii-redaction
+
+### Anthropic Messages API
+- `POST https://api.ppq.ai/v1/messages` — Native Anthropic Messages format (streaming, tool use, system prompts). Any non-private chat model works, not only Claude (`private/*` is rejected here; see below).
+- `POST https://api.ppq.ai/v1/messages/count_tokens` — Token count for a request body, Anthropic models only (other models return an Anthropic-shaped 404). Not billed as a completion.
+
+The stock Anthropic SDKs work unmodified: set `base_url` to `https://api.ppq.ai` and pass your PPQ key as the API key. Both `x-api-key: sk-...` (the SDKs' default) and `Authorization: Bearer sk-...` are accepted.
+
+```python
+import anthropic
+
+client = anthropic.Anthropic(api_key="sk-YOUR_API_KEY", base_url="https://api.ppq.ai")
+message = client.messages.create(
+    model="claude-sonnet-5.5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+print(message.content[0].text)
+```
+
+```bash
+# Claude Code against PPQ — no proxy needed
+export ANTHROPIC_BASE_URL="https://api.ppq.ai"
+export ANTHROPIC_AUTH_TOKEN="sk-YOUR_API_KEY"
+export ANTHROPIC_API_KEY=""
+claude
+```
+
+Notes:
+- Append `:online` to the model id for web search on this endpoint (see [Online Mode](#online-mode-web-search)).
+- Insufficient balance returns `402 Payment Required`, identical to `/chat/completions`.
+- This endpoint is served inside the enclave, like `/v1/chat/completions` (see [Enclave Router](#enclave-router-default-privacy-for-chat)). For Claude Code on `private/*` models, or to verify the attestation yourself before sending, use the local verifier proxy described under [Private (TEE) Models](#private-tee-models).
+- Guide: https://ppq.ai/blog/using-claude-code-with-payperq
+
+### Private (TEE) Models
+Private models (`private/*`, badged **E2EE** / `privacyLevel: "e2e"`) run inside **Trusted Execution Environments** — hardware-attested secure enclaves on NVIDIA confidential-computing GPUs (powered by [Tinfoil](https://tinfoil.sh)). The model itself runs inside the TEE, so unlike the Enclave Router above, **the model provider cannot read the prompt either**. The request body is HPKE-encrypted to the TEE's attested key and the response is encrypted on the way back. Who does that sealing determines what PPQ can see (next paragraph).
+
+**Two ways to call them.** (1) **Direct, no proxy:** send a `private/*` model to the standard `POST https://api.ppq.ai/v1/chat/completions` endpoint with your normal API key. PPQ's attested Enclave Router (the measured Nitro enclave above) verifies the Tinfoil attestation and seals the request to the TEE on your behalf; on this path the request is briefly in plaintext inside that measured enclave, so you are trusting the published enclave code, not PPQ's backend. (2) **Client-sealed, true end-to-end:** run the optional open-source **PPQ Privacy Verifier** proxy (`npx ppq-private-mode`) and point your client at it. It verifies the Tinfoil attestation and seals the request on your own machine, so no PPQ system ever holds plaintext, and it adds a native Anthropic Messages endpoint for Claude Code. The `e2e` / E2EE label describes path (2); path (1) still hides content from the model provider's operators and from PPQ's backend.
+
+- **Verifier proxy repo**: https://github.com/PayPerQ/ppq-privacy-verifier (npm package `ppq-private-mode`)
+- **Blog — Enclave Router vs. private models**: https://ppq.ai/blog/introducing-the-enclave-router
+- **Blog — intro**: https://ppq.ai/blog/introducing-tee-models
+- **Blog — how to use via API / OpenClaw**: https://ppq.ai/blog/using-private-tee-models-with-openclaw
+
+```bash
+# Direct: a private model on the standard endpoint, no proxy
+curl https://api.ppq.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{"model":"private/kimi-k3-1-pro","messages":[{"role":"user","content":"Hello"}]}'
+
+# Optional: verify and seal on your own machine with the local proxy (port 8787); needs Node.js 20+
+PPQ_API_KEY=sk-YOUR_API_KEY npx ppq-private-mode
+curl http://127.0.0.1:8787/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"private/kimi-k3-1-pro","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+```python
+from openai import OpenAI
+
+# Direct (no proxy). To go through the local verifier instead, use base_url="http://127.0.0.1:8787/v1"
+client = OpenAI(base_url="https://api.ppq.ai/v1", api_key="sk-YOUR_API_KEY")
+
+response = client.chat.completions.create(
+    model="private/kimi-k3-1-pro",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+print(response.choices[0].message.content)
+```
+
+The proxy exposes a native **Anthropic Messages** endpoint (`POST /v1/messages`) that translates to/from the encrypted TEE — including tool use and streaming — so **Claude Code** and other Anthropic-SDK clients can use private models (the hosted `api.ppq.ai/v1/messages` endpoint does not accept `private/*`):
+
+```bash
+# Use private TEE models inside Claude Code
+PPQ_API_KEY=sk-YOUR_API_KEY npx ppq-private-mode   # start proxy (separate terminal)
+
+export ANTHROPIC_BASE_URL="http://127.0.0.1:8787"
+export ANTHROPIC_AUTH_TOKEN="sk-YOUR_API_KEY"
+export ANTHROPIC_MODEL="private/glm-5-3"
+export ANTHROPIC_SMALL_FAST_MODEL="private/deepseek-v4-1-flash"
+claude
+```
+
+Proxy env vars: `PPQ_API_KEY` (required), `PORT` (default `8787`), `PPQ_API_BASE` (default `https://api.ppq.ai`), `DEBUG`.
+
+**Available private model IDs** (fetch latest with `GET /v1/models?type=all` and filter for `private/`):
+- `private/kimi-k3-1-pro` — Kimi K3.1 Pro, Moonshot's flagship for long-horizon coding & agentic work, reasoning on by default (`reasoning_effort: "none"` turns it off; `low`/`high` set the level), 262K context
+- `private/gpt-oss-120b` — GPT-OSS 120B, budget-friendly general use
+- `private/llama3-3-70b` — Llama 3.3 70B, fast / multilingual
+- `private/glm-5-3` — GLM-5.3, agentic engineering & long-horizon tool use, 1M context
+- `private/gemma4-31b` — Gemma 4 31B, vision + thinking mode
+- `private/deepseek-v4-1-flash` — DeepSeek V4.1 Flash, multimodal refresh with vision input, 1M context
+
+Weights are identical to the standard counterparts; the only difference is the TEE + end-to-end encryption. Each session includes a cryptographic attestation — a proof that the TEE is running the exact code it claims to, on genuine secure hardware. Not supported on `/v1/responses` or the hosted `/v1/messages`.
+
+### Image Generation
+- `POST https://api.ppq.ai/v1/images/generations` — Generate, edit, upscale, or remove backgrounds on images (synchronous)
+- `POST https://api.ppq.ai/v1/images/edits` — OpenAI-spec compatibility endpoint for clients like OpenWebUI, LibreChat, and the OpenAI SDKs. Accepts `multipart/form-data` with an `image` file, `prompt`, and `model`. Same response shape and pricing as `/v1/images/generations`. If you're coding directly against PPQ, stay on `/v1/images/generations` with `image_url` instead.
+- 40+ models from OpenAI (GPT Image), Google (Imagen), Black Forest Labs (Flux, Kontext), xAI (Grok Imagine), ByteDance (SeedDream), Recraft, Qwen, plus upscalers (Clarity, Topaz, Aura SR) and background removal (rembg)
+- Parameter support **varies per model** — fetch per-model capability badges from `GET https://api.ppq.ai/v1/models?type=image` or browse https://ppq.ai/image-models
+
+Request parameters (not every model accepts every field):
+- `model` (required with an API key or credit id; an unauthenticated 402 request may omit it and is quoted for `gpt-image-1`, see [402 Payments](#402-payments-l402--lightning)) — one of the IDs returned by `GET /v1/models?type=image`
+- `prompt` — text description. Required for generation/edit models; ignored by pure upscalers and background removers.
+- `image_url` — source image URL. Required for upscalers, background removal, and explicit image-to-image/edit models; optional on many generation models to enable editing or variation.
+- `n` — number of images, 1–4 (default: 1). Also accepted as `num_images`.
+- `size` — aspect ratio (e.g. `"1:1"`, `"16:9"`, `"9:16"`). Also accepted as `aspect_ratio`. (Not the OpenAI-style `"1024x1024"`.)
+- `resolution` — output resolution tier for models that support it (e.g. `"1K"`, `"2K"`, `"4K"`).
+- `quality` — quality tier; allowed values are model-specific (e.g. `low|medium|high`).
+- `negative_prompt` — text describing what to avoid.
+- `output_format` — `"png"`, `"jpeg"`, or `"webp"`.
+- `client_request_id` — optional idempotency key you mint before submitting (unique per account). A retry with the same key never creates or bills a second generation: it returns the finished result, or attaches to the one still running.
+
+If the connection drops while a generation is in flight (image generation is synchronous and can take 1–3 minutes), poll `GET https://api.ppq.ai/v1/images/generations/by-key/{client_request_id}` to recover the result instead of resubmitting.
+
+```bash
+curl -X POST https://api.ppq.ai/v1/images/generations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "nano-banana-2-1",
+    "prompt": "A serene mountain landscape at sunset",
+    "resolution": "1K",
+    "n": 1
+  }'
+```
+
+```python
+import requests
+
+response = requests.post(
+    "https://api.ppq.ai/v1/images/generations",
+    headers={"Authorization": "Bearer sk-YOUR_API_KEY", "Content-Type": "application/json"},
+    json={"model": "nano-banana-2-1", "prompt": "A serene mountain landscape at sunset", "resolution": "1K"}
+)
+data = response.json()
+print(data["data"][0]["url"])  # Signed URL served by PPQ (valid 24h)
+```
+
+Response shape:
+```json
+{
+  "created": 1709234567,
+  "model": "nano-banana-2-1",
+  "cost": 0.046,
+  "data": [
+    {
+      "url": "https://api.ppq.ai/v1/media/gen_abc123/0?sig=...&exp=...",
+      "content_type": "image/png"
+    }
+  ]
+}
+```
+
+`url` is a signed PPQ URL (valid 24h). Download the bytes before expiry for long-term storage.
+
+Key image model IDs (flat aliases — no `fal-ai/` prefix):
+- `nano-banana-2-1`, `nano-banana-2-1-edit`, `nano-banana-2-lite`, `nano-banana-2-lite-edit`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-edit` — Google Gemini image
+- `gpt-image-1`, `gpt-image-1.5`, `gpt-image-2` — OpenAI GPT Image
+- `flux-2-pro`, `flux-2-max`, `flux-2-flex`, `flux-2-pro-i2i`, `flux-2-max-edit`, `flux-1.1-pro`, `flux-1-schnell` — Black Forest Labs Flux
+- `flux-kontext-pro`, `flux-kontext-max` — Flux Kontext (editing)
+- `seedream-4.5`, `seedream-4.5-edit` — ByteDance SeedDream
+- `qwen-image-2`, `qwen-image-2-edit`, `qwen-image-3`, `qwen-image-3-edit` — Qwen Image
+- `grok-imagine`, `grok-imagine-image-2`, `grok-imagine-image-2-edit` — xAI Grok Imagine
+- `ideogram-v4`, `ideogram-v4-i2i` — Ideogram V4 (typography); `ideogram-v3` (legacy)
+- `mai-image-2.5`, `mai-image-2.5-pro` (+ `-edit`) — Microsoft MAI Image
+- `krea-2-turbo` — Krea 2 Turbo
+- `recraft-v4.1`, `recraft-v4.1-svg` — Recraft (raster + SVG)
+- `grok-imagine`, `grok-imagine-edit` — xAI Grok Imagine
+- `kling-o1-image`, `fast-sdxl` — additional generation models
+- `rembg` — background removal
+- `clarity-upscaler`, `topaz-upscale`, `aura-sr` — upscalers
+
+<!-- media-manifests:image:begin -->
+<!-- media-manifests:image:end -->
+
+Always fetch the current list and per-model capabilities with `GET /v1/models?type=image` — models and aliases change regularly.
+
+### Video Generation
+- `POST https://api.ppq.ai/v1/videos` — Submit a video generation job (async, returns HTTP 202)
+- `GET https://api.ppq.ai/v1/videos/{id}` — Poll for status and retrieve the result (returns 202 while processing, 200 when done)
+- 25+ models from Google (Veo), Kling, Runway, Luma, MiniMax (Hailuo), ByteDance (Seedance), xAI (Grok Imagine), and more
+- Supports both text-to-video and image-to-video (dedicated `-i2v` model variants)
+
+Request parameters (support varies per model):
+- `model` (required with an API key or credit id; an unauthenticated 402 request may omit it and is quoted for `kling-2.5-turbo`, see [402 Payments](#402-payments-l402--lightning)) — one of the IDs returned by `GET /v1/models?type=video`
+- `prompt` (required) — text description of the video
+- `aspect_ratio` — e.g. `"16:9"`, `"9:16"`, `"1:1"` (default: `"16:9"`)
+- `duration` — seconds (e.g. `"5"`, `"10"`). Allowed values are model-specific.
+- `resolution` — output resolution (e.g. `"720p"`, `"1080p"`), priced at that resolution's rate. Allowed values are model-specific. If neither this nor a resolution in `quality` is sent, Wan 3.0, Wan 3.0 Prime, Seedance 2.0, Seedance 2.5, `grok-imagine-video-t2v` and `grok-imagine-video-i2v` use `720p`, and MiniMax H3 uses `768P`. Send it explicitly for a higher output.
+- `quality` — quality tier. Model-specific. On the models listed under `resolution`, prefer `resolution`: a value here that is one of the model's resolutions (e.g. `"1080p"`) is used as the resolution when `resolution` is not sent, and any other value has no effect.
+- `image_url` — required for image-to-video (`-i2v`) models; a publicly accessible image URL
+- `image_urls` — array of reference image URLs for reference-to-video models (`happy-horse-1.1-r2v`: 1–9 images; `wan-3.0-r2v`, `wan-3.0-prime-r2v`: up to 10; `minimax-h3-r2v`)
+- `reference_video_urls` — array of publicly accessible reference video URLs for reference-to-video models (`wan-3.0-r2v`, `wan-3.0-prime-r2v`, `minimax-h3-r2v`): up to 5 clips, 1–15s each, 15s combined, MP4/MOV. Refer to them in the prompt positionally ("the subject in Image 1 walks past Video 1"). A reference video can be the only input — no image is required.
+- `reference_audio_urls` — array of reference audio URLs for the same models: up to 5 clips, 15s combined
+- `file_url`, `web_url` — a document URL or public webpage URL for the Wan 3.0 reference-to-video models to base the video on (`wan-3.0-r2v`, `wan-3.0-prime-r2v`)
+- `video_url` — required for video-to-video models (`grok-imagine-video-v2v`, `kling-o3-standard-v2v`, `kling-o3-pro-v2v`); a publicly accessible video URL
+
+Video generation is **asynchronous**: the POST returns a job ID with HTTP 202 and an `estimated_cost`; poll the GET endpoint every 5–10s until status is `"completed"` or `"failed"`.
+
+```bash
+# Submit a video generation job
+curl -X POST https://api.ppq.ai/v1/videos \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "kling-2.5-turbo",
+    "prompt": "A golden retriever running on a beach at sunset",
+    "aspect_ratio": "16:9",
+    "duration": "5"
+  }'
+# 202 response: {"id": "gen_abc123", "model": "kling-2.5-turbo", "status": "pending", "created": 1709234567, "estimated_cost": 0.4025}
+
+# Poll for completion
+curl https://api.ppq.ai/v1/videos/gen_abc123 \
+  -H "Authorization: Bearer sk-YOUR_API_KEY"
+# 200 when done: {"id": "gen_abc123", "status": "completed", "data": {"url": "https://api.ppq.ai/v1/media/gen_abc123/0?sig=...&exp=...", "content_type": "video/mp4"}, "cost": 0.4025}
+```
+
+```python
+import requests, time
+
+headers = {"Authorization": "Bearer sk-YOUR_API_KEY", "Content-Type": "application/json"}
+
+# Submit job
+resp = requests.post("https://api.ppq.ai/v1/videos", headers=headers,
+    json={"model": "kling-2.5-turbo", "prompt": "A golden retriever running on a beach at sunset",
+          "aspect_ratio": "16:9", "duration": "5"})
+job = resp.json()
+
+# Poll until complete
+while job["status"] not in ("completed", "failed"):
+    time.sleep(5)
+    job = requests.get(f"https://api.ppq.ai/v1/videos/{job['id']}", headers=headers).json()
+
+print(job["data"]["url"])  # Signed PPQ URL to the generated video (valid 24h)
+```
+
+Key video model IDs (flat aliases — no `fal-ai/` prefix):
+
+Text-to-video:
+- `veo3.1`, `veo3.1-fast`, `veo3.1-lite` — Google Veo 3.1 (Quality / Fast / Lite), 8s; Lite is 720p/1080p only
+- `gemini-omni-1.1-flash` — Google Gemini Omni 1.1 Flash (4/6/8/10s, 360p/720p/1080p, 16:9 or 9:16, native audio)
+- `kling-v3-standard`, `kling-v3-pro` — Kling 3.0 (fal v3); `kling-3.0` (KIE), `kling-2.5-turbo`; `kling-o3-standard`, `kling-o3-pro` (Kling O3)
+- `runway-gen4`, `runway-aleph` — Runway
+- `seedance-2-5` — ByteDance Seedance 2.5 (4–30s, native audio)
+- `seedance-2`, `seedance-2-fast` — ByteDance Seedance 2.0 / 2.0 Fast (4–15s, native audio; budget tier)
+- `happy-horse-1.1` — Alibaba Happy Horse 1.1 (native audio)
+- `grok-imagine-video-t2v` — xAI Grok Imagine Video
+- `pika-v2.2` — Pika 2.2
+
+Image-to-video (require `image_url`):
+- `veo3.1-i2v`, `veo3.1-fast-i2v`, `veo3.1-lite-i2v` — Google Veo 3.1 I2V
+- `gemini-omni-1.1-flash-i2v` — Google Gemini Omni 1.1 Flash I2V (one input image)
+- `kling-v3-standard-i2v`, `kling-v3-pro-i2v`, `kling-2.5-turbo-i2v`, `kling-o3-standard-i2v`, `kling-o3-pro-i2v`
+- `seedance-2-5-i2v` — ByteDance Seedance 2.5 I2V
+- `seedance-2-i2v`, `seedance-2-fast-i2v` — ByteDance Seedance 2.0 / 2.0 Fast I2V
+- `happy-horse-1.1-i2v`; `happy-horse-1.1-r2v` takes 1–9 reference images via `image_urls`
+- `wan-3.0-i2v`, `wan-3.0-prime-i2v` — Alibaba Wan 3.0 / Prime I2V; `wan-3.0-r2v`, `wan-3.0-prime-r2v` take reference images (`image_urls`), videos (`reference_video_urls`) and audio (`reference_audio_urls`), alone or combined
+- `minimax-h3-i2v`; `minimax-h3-r2v` takes reference images, videos and audio (up to 12 files combined) via the same keys
+- `grok-imagine-video-i2v`, `grok-imagine-video-1.5-i2v`
+- `pika-i2v`
+
+Video-to-video (require `video_url`): `grok-imagine-video-v2v`, `kling-o3-standard-v2v`, `kling-o3-pro-v2v`
+
+<!-- media-manifests:video:begin -->
+<!-- media-manifests:video:end -->
+
+```bash
+# Reference-to-video (2+ reference images) and video-to-video (edit an existing clip)
+curl -X POST https://api.ppq.ai/v1/videos -H "Authorization: Bearer sk-YOUR_API_KEY" -H "Content-Type: application/json" \
+  -d '{"model": "happy-horse-1.1-r2v", "prompt": "The two characters shake hands", "image_urls": ["https://example.com/a.png", "https://example.com/b.png"]}'
+curl -X POST https://api.ppq.ai/v1/videos -H "Authorization: Bearer sk-YOUR_API_KEY" -H "Content-Type: application/json" \
+  -d '{"model": "kling-o3-standard-v2v", "prompt": "Make it snow", "video_url": "https://example.com/clip.mp4"}'
+# Reference video only (Wan 3.0): the clip is "Video 1" in the prompt
+curl -X POST https://api.ppq.ai/v1/videos -H "Authorization: Bearer sk-YOUR_API_KEY" -H "Content-Type: application/json" \
+  -d '{"model": "wan-3.0-r2v", "prompt": "Recreate the dance from Video 1 in a neon-lit alley", "reference_video_urls": ["https://example.com/dance.mp4"], "duration": "5"}'
+```
+
+Always fetch the current list and pricing with `GET /v1/models?type=video` — model availability and aliases change regularly.
+
+### Data Enrichment
+- `GET https://api.ppq.ai/v1/data/endpoints` — List all available data endpoints with pricing (no auth required)
+- `POST https://api.ppq.ai/v1/data/api/{provider}/{action}` — Call a data enrichment endpoint
+- `GET https://api.ppq.ai/v1/data/api/{provider}/{action}` — Call a data GET endpoint (e.g. place details)
+- `GET https://api.ppq.ai/v1/data/x/{path}` — Call an X/Twitter endpoint (all X/Twitter endpoints use the `/v1/data/x/` prefix, not `/v1/data/api/`, and are GET-only)
+- All enrichment endpoints require `Authorization: Bearer YOUR_API_KEY`
+- Each call deducts from your PPQ credit balance (endpoint price × markup)
+
+Covers people & identity resolution, company lookup, web scraping, Google Maps (including Solar and Aerial View), image and reverse-image search, Reddit, email verification, and X/Twitter data.
+
+For full parameter documentation and request/response schemas for each endpoint, see: https://ppq.ai/data-providers
+
+Available providers and endpoints. Prices shown are base upstream costs; the actual amount deducted from your PPQ balance includes a billing margin. Call `GET /v1/data/endpoints` for the live final-deduction price per endpoint.
+
+| Endpoint | Method | Price (base) |
+|----------|--------|--------------|
+| `/v1/data/api/google-maps/text-search/full` | POST | $0.08 |
+| `/v1/data/api/google-maps/text-search/partial` | POST | $0.02 |
+| `/v1/data/api/google-maps/nearby-search/full` | POST | $0.08 |
+| `/v1/data/api/google-maps/nearby-search/partial` | POST | $0.02 |
+| `/v1/data/api/google-maps/place-details/full` | GET | $0.05 |
+| `/v1/data/api/google-maps/place-details/partial` | GET | $0.02 |
+| `/v1/data/api/google-maps/solar/building-insights` | GET | $0.02 |
+| `/v1/data/api/google-maps/solar/data-layers` | GET | $0.08 |
+| `/v1/data/api/google-maps/solar/rgb-image` | GET | $0.05 |
+| `/v1/data/api/google-maps/aerial-view/lookup-video` | GET | $0.01 |
+| `/v1/data/api/google-maps/aerial-view/render-video` | POST | $0.01 |
+| `/v1/data/api/fullenrich/people-search` | POST | $0.05 |
+| `/v1/data/api/fullenrich/company-search` | POST | $0.05 |
+| `/v1/data/api/pdl/people-enrich` | POST | $0.20 |
+| `/v1/data/api/companyenrich/org-enrich` | POST | $0.06 |
+| `/v1/data/api/companyenrich/properties-enrich` | POST | $0.06 |
+| `/v1/data/api/minerva/resolve` | POST | $0.02 |
+| `/v1/data/api/minerva/enrich` | POST | $0.05 |
+| `/v1/data/api/minerva/validate-emails` | POST | $0.01 |
+| `/v1/data/api/exa/search` | POST | $0.01 |
+| `/v1/data/api/exa/find-similar` | POST | $0.01 |
+| `/v1/data/api/exa/contents` | POST | $0.002 |
+| `/v1/data/api/exa/answer` | POST | $0.01 |
+| `/v1/data/api/firecrawl/scrape` | POST | $0.0126 |
+| `/v1/data/api/firecrawl/search` | POST | $0.0252 |
+| `/v1/data/api/serper/news` | POST | $0.04 |
+| `/v1/data/api/serper/shopping` | POST | $0.04 |
+| `/v1/data/api/serper/images` | POST | $0.04 |
+| `/v1/data/api/serper/people-image-search` | POST | $0.04 |
+| `/v1/data/api/serper/lens` | POST | $0.20 |
+| `/v1/data/api/reddit/search` | POST | $0.02 |
+| `/v1/data/api/reddit/post-comments` | POST | $0.02 |
+| `/v1/data/api/whitepages/person-search` | POST | $0.22 |
+| `/v1/data/api/whitepages/property-search` | POST | $0.22 |
+| `/v1/data/api/hunter/email-verifier` | POST | $0.03 |
+| `/v1/data/x/tweets/search` | GET | $0.01 |
+| `/v1/data/x/tweets/by/id` | GET | $0.01 |
+| `/v1/data/x/tweets/user` | GET | $0.01 |
+| `/v1/data/x/tweets/replies` | GET | $0.01 |
+| `/v1/data/x/tweets/quote_tweets` | GET | $0.01 |
+| `/v1/data/x/tweets/retweeted_by` | GET | $0.01 |
+| `/v1/data/x/users/search` | GET | $0.01 |
+| `/v1/data/x/users/by/id` | GET | $0.01 |
+| `/v1/data/x/users/by/username` | GET | $0.01 |
+| `/v1/data/x/users/followers` | GET | $0.01 |
+| `/v1/data/x/users/following` | GET | $0.01 |
+| `/v1/data/x/lists/by/id` | GET | $0.01 |
+
+```bash
+# Discover all endpoints and prices
+curl https://api.ppq.ai/v1/data/endpoints
+
+# Search for people (FullEnrich)
+curl -X POST https://api.ppq.ai/v1/data/api/fullenrich/people-search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{"limit": 5, "current_company_domains": [{"value": "stripe.com"}], "current_position_seniority_level": [{"value": "VP"}]}'
+
+# Scrape a web page (Firecrawl)
+curl -X POST https://api.ppq.ai/v1/data/api/firecrawl/scrape \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{"url": "https://example.com"}'
+
+# Semantic web search (Exa)
+curl -X POST https://api.ppq.ai/v1/data/api/exa/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{"query": "AI agent startups 2025", "numResults": 10}'
+```
+
+```python
+import requests
+
+api_key = "sk-YOUR_API_KEY"
+headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+
+# People search via FullEnrich
+resp = requests.post(
+    "https://api.ppq.ai/v1/data/api/fullenrich/people-search",
+    headers=headers,
+    json={"limit": 5, "current_company_domains": [{"value": "stripe.com"}], "current_position_seniority_level": [{"value": "VP"}]}
+)
+print(resp.json())
+
+# Enrich a person's profile (PDL)
+resp = requests.post(
+    "https://api.ppq.ai/v1/data/api/pdl/people-enrich",
+    headers=headers,
+    json={"email": "tim@apple.com"}
+)
+print(resp.json())
+```
+
+### Embeddings
+- `POST https://api.ppq.ai/v1/embeddings` — Generate vector embeddings for text input
+- OpenAI SDK compatible — use `client.embeddings.create()` with your PPQ API key
+- Parameters: `model` (required), `input` (required — string or array of strings), `encoding_format` (optional: "float" or "base64"), `dimensions` (optional)
+- A wide selection of embedding models from major providers is supported. Fetch the current list with `GET /v1/models?type=embedding`
+
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="sk-YOUR_API_KEY", base_url="https://api.ppq.ai/v1")
+
+# Single text
+response = client.embeddings.create(
+    model="openai/text-embedding-3-small",
+    input="The quick brown fox jumps over the lazy dog"
+)
+print(response.data[0].embedding[:5])  # First 5 dimensions
+print(f"Total tokens: {response.usage.total_tokens}")
+
+# Batch (multiple texts in one request)
+response = client.embeddings.create(
+    model="openai/text-embedding-3-small",
+    input=["First document", "Second document", "Third document"]
+)
+for item in response.data:
+    print(f"Index {item.index}: {len(item.embedding)} dimensions")
+```
+
+```bash
+curl -X POST https://api.ppq.ai/v1/embeddings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "openai/text-embedding-3-small",
+    "input": "The quick brown fox jumps over the lazy dog"
+  }'
+```
+
+Key embedding models include:
+- `openai/text-embedding-3-small` — Fast and affordable (1536 dimensions, supports custom dimensions)
+- `openai/text-embedding-3-large` — Higher quality (3072 dimensions, supports custom dimensions)
+
+### Decisions
+- `POST https://api.ppq.ai/v1/decisions` — Ask typed questions about a situation; get back one typed answer per question instead of prose
+- `POST https://api.ppq.ai/v1/systemone` — Alias (same behavior; the official `@typesafe-ai/sdk` posts here — `new TypeSafeClient({ baseURL: "https://api.ppq.ai", apiKey: "sk-..." })` works unchanged)
+- `GET https://api.ppq.ai/v1/decisions/models` — List available decision models
+
+Structured decision models are built for routing, classification, gating, and scoring decisions inside software. You send a `state` object (situation context) plus a `questions` map; each question declares its type and returns one typed answer: `"likelihood"` (a 0–1 probability), `"option"` (a chosen label with per-option probabilities), or `"score"` (a numeric value within a range).
+
+Request body:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `model` | string | A decision model id, e.g. `typesafe/jev-1.13`. |
+| `state` | object | Situation context — any key/value pairs describing the input. |
+| `questions` | object | Named questions; each requires a `type` and `instructions`. `choice` takes a `criteria` object (option name → description); `score` takes a `criteria` array of ordered labels. |
+
+```bash
+curl -X POST https://api.ppq.ai/v1/decisions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -d '{
+    "model": "typesafe/jev-1.13",
+    "state": {
+      "ticket": "My card was charged twice for the same top-up",
+      "tier": "pro"
+    },
+    "questions": {
+      "is_billing": { "type": "noul", "instructions": "Is this a billing issue?" },
+      "route": { "type": "choice", "instructions": "Which team should handle it?", "criteria": { "billing": "Billing team", "tech": "Engineering", "sales": "Sales" } },
+      "urgency": { "type": "score", "instructions": "How urgent is this?", "criteria": ["low", "medium", "high"] }
+    }
+  }'
+```
+
+Available decision models: `typesafe/jev-1.13`, `~typesafe/jev-latest`. Fetch the current list with `GET /v1/decisions/models`.
+
+**Private by default** — requests to `/v1/decisions` are served inside the same attested enclave as chat completions (see [Enclave Router](#enclave-router-default-privacy-for-chat)); PPQ's servers never see the `state` or answers, only billing metadata such as token counts and the content-free trace described there.
+
+### Models
+- `GET https://api.ppq.ai/v1/models` — List available models with pricing info
+- Filter by modality with the `type` query parameter:
+  - `GET /v1/models` — Chat models only (default)
+  - `GET /v1/models?type=image` — Image generation models only
+  - `GET /v1/models?type=video` — Video generation models only
+  - `GET /v1/models?type=image,video` — Image and video models
+  - `GET /v1/models?type=embedding` — Embedding models only
+  - `GET /v1/models?type=all` — All models across all modalities (chat, image, video, audio, embedding)
+- Filter popular models: `GET /v1/models?popular=true`
+
+Each chat model entry includes `context_length`, `architecture` (input/output modalities), `supported_parameters`, `privacyLevel` (`anon` / `zdr` / `e2e`, see [Privacy Tiers](#privacy-tiers--zero-data-retention-zdr)), and a `pricing` block in USD per 1M tokens:
+
+```json
+{
+  "id": "claude-sonnet-5.5",
+  "type": "chat",
+  "context_length": 1000000,
+  "privacyLevel": "anon",
+  "supported_parameters": ["max_tokens", "reasoning", "reasoning_effort", "response_format", "tools", "tool_choice", "..."],
+  "pricing": {
+    "type": "per_token",
+    "currency": "USD",
+    "input_per_1M_tokens": 2.11,
+    "output_per_1M_tokens": 10.55,
+    "cache_read_per_1M_tokens": 0.211,
+    "cache_write_per_1M_tokens": 2.6375,
+    "reasoning_per_1M_tokens": 10.55,
+    "image_input_per_1M_tokens": 2.11
+  }
+}
+```
+
+- `cache_read_per_1M_tokens` — rate for cached-prompt tokens read on a cache hit. `null` when the provider publishes no cached-read rate (cached tokens are then billed as plain input).
+- `cache_write_per_1M_tokens` — rate for writing tokens into the prompt cache: the provider's premium when it charges one (Anthropic-style), otherwise equal to the input rate. `null` when the provider publishes neither a write nor a read rate.
+- `reasoning_per_1M_tokens` — reasoning/thinking tokens bill at the output rate on every model.
+- `image_input_per_1M_tokens` — image inputs bill as the prompt tokens the provider reports for them, at the input rate. `null` when the model does not accept image input.
+
+### Speech-to-Text (STT)
+- `POST https://api.ppq.ai/v1/audio/transcriptions` — Transcribe audio to text
+- Powered by Deepgram Nova-3
+- Supported formats: mp3, mp4, mpeg, mpga, m4a, wav, webm (max 500MB)
+- Models: `nova-3` (default), `nova-2` — the only supported transcription models
+- Response formats: json, text, srt, vtt, verbose_json. srt/vtt cues follow sentence boundaries and are capped at about 7 seconds / 84 characters each; verbose_json `segments` use the same cues
+- Parameters: `file` (required), `model`, `response_format`, `language` (e.g. "en", "es", "multi" for auto-detect), `prompt`
+
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="sk-YOUR_API_KEY", base_url="https://api.ppq.ai/v1")
+
+with open("audio.mp3", "rb") as f:
+    transcription = client.audio.transcriptions.create(
+        model="nova-3",
+        file=f,
+        response_format="json"
+    )
+print(transcription.text)
+```
+
+### Text-to-Speech (TTS)
+- `POST https://api.ppq.ai/v1/audio/speech` — Convert text to speech
+- `GET https://api.ppq.ai/v1/audio/voices` — List all available voices
+- `GET https://api.ppq.ai/v1/audio/voices?language=pt` — Filter voices by ISO 639-1 language code
+- Powered by DeepGram Aura 2, ElevenLabs (Multilingual v2, Flash v2.5, v3) and Tinfoil Voxtral (`tinfoil-voxtral-tts` — runs inside a private TEE so the speech provider never sees the text; lowest cost; 20 preset voices across 9 languages)
+- Parameters: `input` (required), `model` (required), `voice` (optional), `language` (optional — ISO 639-1 code e.g. "en", "pt", "es", "fr", "de", "it")
+- Max input: 2000 characters for DeepGram, 5000 for ElevenLabs, 1200 for Voxtral per upstream request; longer inputs are chunked automatically up to the overall limit of 50,000 characters per call
+- Voxtral is priced per 1k characters with a small minimum charge per 1,200-character chunk (its provider bills per request); the floor is published as `pricing.min_per_request` on `GET /v1/audio/models`
+- When `language` is provided without `voice`, the API auto-selects a compatible voice. When both are provided, returns 422 if the voice does not support the language.
+- Fetch available models with `GET https://api.ppq.ai/v1/audio/models`
+
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="sk-YOUR_API_KEY", base_url="https://api.ppq.ai/v1")
+
+# Auto-select voice by language
+response = client.audio.speech.create(
+    model="deepgram_aura_2",
+    input="Hello, welcome to PayPerQ!",
+    extra_body={"language": "en"}
+)
+response.stream_to_file("output.mp3")
+
+# ElevenLabs multilingual
+response = client.audio.speech.create(
+    model="eleven_multilingual_v2",
+    input="Olá, bem-vindo ao PayPerQ!",
+    extra_body={"language": "pt"}
+)
+response.stream_to_file("output_pt.mp3")
+
+# Voxtral inside a private TEE (voices: neutral_female, neutral_male, casual_*, cheerful_female, <lang>_female/_male)
+response = client.audio.speech.create(
+    model="tinfoil-voxtral-tts",
+    voice="neutral_female",
+    input="Hello, welcome to PayPerQ!",
+)
+response.stream_to_file("output_private.mp3")
+```
+
+## Models
+
+PPQ offers 500+ models from major providers. Fetch the current list with pricing dynamically:
+
+```bash
+curl https://api.ppq.ai/v1/models
+```
+
+Key providers include:
+- **OpenAI**: GPT-6 Astra, GPT-6.1 Sol, GPT-5.4 mini, GPT-5 nano
+- **Anthropic**: Claude Fable 5.2, Claude Opus 5.5, Claude Sonnet 5.5, Claude Haiku 4.5
+- **Google**: Gemini 3.1 Pro, Gemini 3.7 Flash
+- **xAI**: Grok 4.6
+- **Mistral**: Mistral Large, Codestral
+- **Meta**: Llama 3, Llama 3.1
+- **Deepseek**: DeepSeek V4 Pro, DeepSeek V4 Flash
+- **Qwen**: Qwen 3
+
+Model availability and pricing change over time. Always use the `GET /v1/models` endpoint for current information.
+
+## Errors & Status Codes
+
+The API returns standard HTTP status codes with JSON error bodies:
+
+```json
+{
+  "status": "error",
+  "statusCode": 401,
+  "message": "Unauthorized"
+}
+```
+
+Common status codes:
+- **400** — Bad Request (malformed JSON or invalid parameters)
+- **401** — Unauthorized (missing or invalid API key)
+- **402** — Payment Required (insufficient credit balance). The message names the credit id prefix, the minimum balance the request needs, and your current balance, e.g. `Insufficient credit on credit id 70dc4ce5…: this request requires a minimum balance of $4.5000 and your current balance is $0.0001. Please top up.` The minimum includes the requested `max_tokens`, so a lower `max_tokens` lowers it.
+- **409** — Conflict (a `client_request_id` already in use by a different media type)
+- **500** — Internal Server Error
+- **503** — Service Unavailable (for example `pii_redaction_unavailable`: PII redaction could not run, so the request was not sent)
+
+Requests with `pii_redaction` return their own `error.code` values: `pii_redaction_invalid`, `pii_redaction_unsupported_model`, `pii_redaction_unsupported_state`, `pii_redaction_unsupported_endpoint` (400), `pii_redaction_insufficient_balance` (402) and `pii_redaction_unavailable` (503). See [PII Redaction](#pii-redaction).
+
+There is no explicit rate limiting — usage is controlled by your credit balance. If your balance is insufficient for a request, you'll receive a 402 response.
+
+**Provider refusals in streams.** When a provider's safety layer stops a streamed `/v1/chat/completions` response, the provider's explanation arrives as `delta.refusal` followed by `finish_reason: "content_filter"`; because most OpenAI-compatible clients ignore `delta.refusal`, PPQ also injects the same explanation as an ordinary `delta.content` chunk just before the refusal-bearing chunk, so the client shows why the answer stopped instead of a silent cutoff. This applies to streamed chat completions only (not `/v1/messages` or non-streamed responses). A stream that dies upstream mid-answer ends with an explicit error frame (e.g. `data: {"error":{"message":"Provider returned error","code":502}}`) rather than truncating silently.
+
+## Billing & Topups
+
+PayPerQ uses a **pay-per-query** model — no subscriptions, no monthly fees. You add credits to your account and each API call deducts from your balance based on the model and token usage.
+
+### Account Management
+- `POST https://api.ppq.ai/accounts/create` — Create a new account (returns credit_id and api_key)
+- `POST https://api.ppq.ai/credits/balance` — Check your current balance (body: `{"credit_id": "YOUR_CREDIT_ID"}`)
+
+### Crypto Topup Endpoints
+All topup endpoints accept `Authorization: Bearer YOUR_API_KEY` and a JSON body with `amount` and `currency`.
+
+- `POST https://api.ppq.ai/topup/create/btc-lightning` — Bitcoin Lightning
+  - Currencies: USD, BTC, SATS
+  - USD limits: $0.10–$1,000 | SATS limits: 100–1,000,000
+  - Expiration: 15 minutes | Bonus: 5% Lightning fee bonus
+
+- `POST https://api.ppq.ai/topup/create/btc` — Bitcoin on-chain
+  - Currencies: USD, BTC
+  - USD limits: $10–$10,000
+  - Expiration: 60 minutes
+
+- `POST https://api.ppq.ai/topup/create/ltc` — Litecoin
+  - Currencies: USD, LTC
+  - USD limits: $2–$1,000
+  - Expiration: 60 minutes
+
+- `POST https://api.ppq.ai/topup/create/lbtc` — Liquid Bitcoin
+  - Currencies: USD, LBTC
+  - USD limits: $2–$10,000
+  - Expiration: 60 minutes
+
+- `POST https://api.ppq.ai/topup/create/xmr` — Monero
+  - Currencies: USD, XMR
+  - USD limits: $5–$10,000
+  - Expiration: 60 minutes
+
+### Topup Utilities
+- `GET https://api.ppq.ai/topup/status/{invoice_id}` — Check invoice payment status
+- `GET https://api.ppq.ai/topup/payment-methods` — List all supported payment methods with limits
+
+### NWC Auto-Topup (Nostr Wallet Connect)
+Connect a Nostr Wallet Connect (NWC) compatible Lightning wallet to automatically top up your balance when it falls below a threshold. Compatible wallets include Alby Hub, LNBits, Primal, and others.
+
+All NWC endpoints authenticate with the `x-credit-id: YOUR_CREDIT_ID` header (no API key / bearer token).
+
+- `POST https://api.ppq.ai/nwc-auto-topup/connect` — Connect an NWC wallet for automatic top-ups
+  - Parameters: `nwc_url` (required), `threshold_usd` (optional, default: 10, min: 5), `topup_amount_usd` (optional, default: 10)
+  - Wallet must support the `pay_invoice` NIP-47 capability
+
+- `GET https://api.ppq.ai/nwc-auto-topup` — Get current NWC auto-topup settings
+
+- `POST https://api.ppq.ai/nwc-auto-topup/resume` — Resume auto-topup after it was paused by a failed payment (wallet out of funds or wallet spending budget exceeded)
+  - Re-validates the stored wallet connection, re-enables auto-topup and immediately attempts a top-up if the balance is below the threshold
+  - Response: `enabled`, `charged`, `disabled_reason` (`insufficient_balance` | `quota_exceeded` | `connection_revoked` when the retry failed again), `failure_reason` (set when a top-up was attempted in this call and failed, else `null`), `balance_sats_before_charge` (wallet balance before any top-up paid in this call)
+  - Returns 400 if the wallet no longer accepts the stored connection (reconnect via `/connect`), 404 if no wallet is connected
+
+- `DELETE https://api.ppq.ai/nwc-auto-topup/connection` — Disconnect wallet and disable auto-topup
+
+### Query History
+Retrieve a paginated log of past queries for your account.
+
+- `GET https://api.ppq.ai/queries/history` — Get query history
+
+Auth: `Authorization: Bearer YOUR_API_KEY`, `api-key: YOUR_API_KEY` header, or `?credit_id=YOUR_CREDIT_ID` query param.
+
+When authenticated via API key, results are scoped to that key by default. Pass `all_keys=true` to see all queries on the account.
+
+Query parameters:
+- `page` — Page number (default: 1)
+- `page_count` — Results per page, max 100 (default: 20)
+- `start_date` / `end_date` — ISO 8601 timestamps for date range filtering
+- `model` — Filter by model name
+- `query_source` / `query_type` — Filter by source or type
+- `all_keys=true` — When authed via API key, include all keys on the account
+- `api_key` — When authed via credit_id, filter to a specific API key string
+
+Response fields per record: `timestamp`, `model`, `input_count`, `output_count`, `price_in_usd`, `query_type`, `query_source`, `api_key_id`, `isOnline`, `isFreeModel`, plus the outcome fields below. Response also includes a `pagination` object with `page`, `page_count`, `total`, `total_pages`.
+
+Failed queries are listed in time order alongside successful ones. Outcome fields (present only on failed queries; absent means the query succeeded):
+- `status` — `"error"`
+- `error_code` — one of `upstream_error`, `upstream_unreachable`, `stream_failed`, `transform_failed`, `timeout`, `invalid_request`, `model_unavailable`, `insufficient_balance`, `free_model_unauthorized`, `generation_failed`, `internal_error`
+- `http_status` — HTTP status of the failure (integer), or `null` when there was none
+
+A failed query's `price_in_usd` is what was actually charged: `0` when nothing was billed, or the real charge when the query failed after partial billing.
+
+### API Key Management
+Manage keys programmatically — create, list, update, and revoke API keys, with optional spending caps, auto-reset periods, and expirations.
+
+**Auth**: All API-key endpoints require the `x-credit-id: YOUR_CREDIT_ID` header (not a bearer token — these are account-level operations). Base URL: `https://api.ppq.ai`.
+
+- `GET /keys` — List all API keys on the account
+  - Query: `include_disabled` (default `false`), `show_key` (default `false` — include the full `api_key` value)
+- `POST /keys` — Create a new key. Response includes the full `api_key` **once** — store it securely.
+  - Body: `name` (required, 1–25 chars, unique per account), `usage_limit_usd` (optional, min $0.01, `null` for unlimited), `reset_period` (`"daily"` | `"weekly"` | `"monthly"` — requires `usage_limit_usd`), `expire_at` (ISO 8601, must be future)
+- `GET /keys/{id}` — Get a single key by MongoDB `_id`. Query: `show_key` (default `false`)
+- `PATCH /keys/{id}` — Update `name`, `usage_limit_usd`, `reset_period`, or `expire_at`. Pass `null` to clear a field. Changing `reset_period` resets `current_period_usage_usd` to $0.
+- `DELETE /keys/{id}` — Revoke the key (soft-delete, immediate, not reversible)
+
+Key fields returned: `_id`, `name`, `api_key` (only when `show_key=true` or on create), `usage_limit_usd`, `current_period_usage_usd`, `total_usage_all_time_usd`, `reset_period`, `reset_at`, `expire_at`, `created_at`, `updated_at`, `deleted_at`.
+
+```bash
+# List keys
+curl https://api.ppq.ai/keys \
+  -H "x-credit-id: YOUR_CREDIT_ID"
+
+# Create a monthly $25-cap key that expires Jan 1, 2027
+curl -X POST https://api.ppq.ai/keys \
+  -H "Content-Type: application/json" \
+  -H "x-credit-id: YOUR_CREDIT_ID" \
+  -d '{
+    "name": "prod-agent",
+    "usage_limit_usd": 25,
+    "reset_period": "monthly",
+    "expire_at": "2027-01-01T00:00:00Z"
+  }'
+
+# Revoke
+curl -X DELETE https://api.ppq.ai/keys/KEY_ID \
+  -H "x-credit-id: YOUR_CREDIT_ID"
+```
+
+### Example: Create a Lightning topup
+
+```bash
+curl -X POST https://api.ppq.ai/topup/create/btc-lightning \
+  -H "Authorization: Bearer sk-YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 1000, "currency": "SATS"}'
+```
+
+Fiat payments (credit/debit card) are also available via Stripe on the website at https://ppq.ai.
+
+## 402 Payments (L402 / Lightning)
+
+PPQ supports **HTTP 402 Payment Required** for pay-per-request access — no account or API key needed. Currently implemented via **L402** (Bitcoin Lightning).
+
+### How it works
+1. Send a request to any 402-enabled endpoint **without** an `Authorization` header.
+2. The server responds `402 Payment Required` with a `WWW-Authenticate: Payment` header containing a challenge and a Lightning invoice.
+3. Pay the Lightning invoice with any Lightning wallet.
+4. Replay the original request with the payment credential: `Authorization: Payment <credential>`. The credential is the base64url encoding of `{"challenge": <challenge>, "payload": {"preimage": "<hex preimage>"}}`, where `<challenge>` is the parsed `WWW-Authenticate` challenge: its `id`, `realm`, `method`, `intent`, `description` and `expires` parameters as strings, `request` as the header's base64url string unchanged, and `opaque` set to the JSON-decoded `opaque` parameter (an object of strings, not the raw base64url). (`mppx`'s `Challenge.fromResponse` + `Credential.serialize` produce exactly this shape.) The server checks the preimage against the invoice in the challenge and returns the data. Each paid credential can be used once and is valid until the signed challenge expires (5 minutes after issue; the Lightning invoice itself stays payable for 10).
+
+402-compatible clients like [`lnget`](https://github.com/lightninglabs/lnget) and [`mppx`](https://github.com/wevm/mppx) automate the challenge–pay–replay loop.
+
+### Supported endpoints
+
+| Category | Endpoint | Method | Pricing | Max per request | Default model |
+|----------|----------|--------|---------|-----------------|---------------|
+| Data Enrichment | `/v1/data/api/*` | GET / POST | Fixed per-endpoint (see [Data Enrichment](#data-enrichment)) | $0.322 (`GET /v1/data/endpoints` has the live final prices) | — |
+| Data Enrichment (X/Twitter) | `/v1/data/x/*` | GET | Fixed per-endpoint (see [Data Enrichment](#data-enrichment)) | $0.0115 | — |
+| Image Generation | `/v1/images/generations` | POST | Varies by model, size, quality | $0.35 × `n` | `gpt-image-1` |
+| Image Editing (OpenAI-spec) | `/v1/images/edits` | POST | Same as image generation | $0.35 × `n` | `gpt-image-1` |
+| Video Generation | `/v1/videos` | POST | Varies by model, duration, resolution | $16.32 | `kling-2.5-turbo` |
+
+### Price ceilings (budgeting before the challenge)
+- Every image and video model carries `pricing.min_price` and `pricing.max_price` on `GET /v1/models?type=image,video` — the cheapest and the most expensive single generation that model can be quoted at, over every quality and size. `n` / `num_images` multiplies the quote. Prices are in USD; the invoice is in satoshis at the BTC/USD rate the challenge carries (`btc_usd_rate` in its `opaque` data), so convert `max_price` to sats at the current rate before using it as a client-side cap (`--max-cost` in `lnget` takes whole sats). The route-level ceilings above are the highest `max_price` across the catalog as of November 2026 and move when models are added. Pick the route from a model's `category` (`text-to-image` / `image-to-image` → `/v1/images/*`, `text-to-video` / `image-to-video` → `/v1/videos`), not from its `type`: image-to-video models are listed under `type=image` but are priced and served as video.
+- A request that names no `model` is quoted for the route's **default model** (table above) and, once paid, generated with it. The 402 body says so. Send `model` to be quoted for anything else; a paid credential is bound to the model and price it was quoted for, so a replay with a different `model` gets a fresh 402.
+- Data endpoints are fixed-price; `GET /v1/data/endpoints` (no auth) lists each path with its final price.
+
+### Example: Data enrichment (curl)
+
+```bash
+# 1. Request without auth — get a 402 challenge with a Lightning invoice
+curl -i -X POST https://api.ppq.ai/v1/data/api/fullenrich/people-search \
+  -H "Content-Type: application/json" \
+  -d '{"limit": 5, "current_company_domains": [{"value": "stripe.com"}]}'
+# Response: 402 Payment Required
+# WWW-Authenticate: Payment id="...", method="lightning", ...
+
+# 2. Pay the invoice, then replay with the payment credential:
+#    base64url( {"challenge": <parsed WWW-Authenticate challenge>, "payload": {"preimage": "<hex preimage>"}} )
+#    (challenge = id, realm, method, intent, description, expires, request as-is, opaque = JSON-decoded opaque;
+#     mppx's Challenge.fromResponse + Credential.serialize build this for you)
+curl -X POST https://api.ppq.ai/v1/data/api/fullenrich/people-search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Payment <credential>" \
+  -d '{"limit": 5, "current_company_domains": [{"value": "stripe.com"}]}'
+```
+
+### Example: Image generation (lnget)
+
+```bash
+# lnget handles the 402 challenge and Lightning payment automatically
+lnget -X POST \
+  -d '{"model": "gpt-image-1", "prompt": "a sunset over mountains", "size": "1:1"}' \
+  --content-type application/json \
+  --max-cost 500 \
+  https://api.ppq.ai/v1/images/generations
+```
+
+### Example: Video generation (lnget)
+
+```bash
+# Submit a video generation job — returns 202 with a signed status URL
+lnget -X POST \
+  -d '{"model": "kling-2.5-turbo", "prompt": "ocean waves at sunset", "duration": "5", "aspect_ratio": "16:9"}' \
+  --content-type application/json \
+  --max-cost 500 \
+  https://api.ppq.ai/v1/videos
+
+# Poll the status_url from the response (no auth needed — the URL is signed)
+lnget "<status_url>"
+```
+
+### Notes
+- For **video generation**, the 202 response includes a `status_url` — a signed URL you can poll without authentication until the video is ready.
+- For **image generation**, the response includes signed media URLs that can be fetched without authentication.
+- All signed URLs expire after 24 hours.
+- If you have a PPQ API key, you can still use it via `Authorization: Bearer sk-...` — the 402 flow is only triggered when no API key is provided.
+- The challenge is issued before the request body is validated: a paid credential is consumed when it is accepted, so check your own request (prompt, image, parameters) before paying — a replay the generation endpoint then rejects (400) is not refunded.
+- Lightning invoices expire 10 minutes after issue; the signed challenge expires after 5.
+
+## Memory
+
+PayPerQ Memory lets the assistant carry useful context — your preferences, your projects, the facts you'd otherwise repeat — across separate conversations on the ppq.ai web app, so you don't reintroduce yourself with every new chat. It is built privacy-first: the infrastructure can't quietly read or leak what it stores.
+
+This is a **ppq.ai web-app feature, not an API endpoint** — there is no `/memory` route on `api.ppq.ai`, and requests to the API endpoints above never read from or write to a user's memory.
+
+How it works:
+- **On by default, per-conversation control** — Memory is enabled by default for every user. A one-tap toggle on the chat composer flips it On or Off for any single conversation, so a sensitive chat never reads from or writes to your memory.
+- **Local-first storage** — Your memory lives in your own browser by default. Nothing is synced to a server unless you explicitly turn on server sync.
+- **Confidential extraction** — Deciding "what's worth remembering" runs inside the same hardware-backed Trusted Execution Environments used for [Private (TEE) Models](#private-tee-models): the conversation is end-to-end encrypted to the enclave, and PPQ sees only ciphertext — never the prompts or the extracted facts.
+- **Encrypted sync (optional)** — Off by default. When enabled with a passkey, synced memory is end-to-end encrypted before it leaves your device, stored as ciphertext only your key can unlock.
+- **Paid models only** — Memory is available on paid models; free-tier models never read or write memory.
+- **Full control** — View everything stored, delete individual items, multi-select and bulk-delete, or clear it all from both device and server in one action.
+
+- **Blog — how it works**: https://ppq.ai/blog/privacy-first-memory
+
+## Important Notes
+
+- **One base URL**: every API — chat, image, video, embeddings, audio (STT/TTS), data — is served from `https://api.ppq.ai`
+- **OpenAI SDK compatibility**: Set `base_url="https://api.ppq.ai/v1"` for chat, images, embeddings and audio
+- **Async video generation**: Video generation is asynchronous — submit a job, then poll for completion. Images are synchronous.
+- **Dynamic model list**: Always fetch available models from `/v1/models` rather than hardcoding — models are added and updated regularly
+- **Streaming**: Chat completions support `"stream": true` for SSE streaming responses
+- **Privacy by default**: `/v1/chat/completions` is served inside an attested AWS Nitro enclave (PPQ cannot read content); `private/*` models additionally hide content from the model provider. `/v1/decisions` is also served in the enclave. `/v1/responses`, `/v1/messages`, image, video, audio, embeddings and data endpoints are not.
+
+## Documentation
+
+- [API Documentation](https://ppq.ai/api-docs): Full interactive API docs with code examples
+- [Image Models Reference](https://ppq.ai/image-models): All image models with per-model capability badges (prompt, image_url, quality, resolution, etc.) and code examples
+- [Data Enrichment Reference](https://ppq.ai/data-providers): Full parameter docs for all 47 data enrichment endpoints
+- [Blog](https://ppq.ai/blog): Additional guides and announcements
+
+## Integration Guides
+
+When a user names a specific tool, the matching guide below is the fastest route: each one gives the exact base URL, key and model settings for that tool.
+
+- [Claude Code](https://ppq.ai/blog/using-claude-code-with-payperq)
+- [Claude Desktop](https://ppq.ai/blog/using-claude-desktop-with-payperq)
+- [OpenAI Codex](https://ppq.ai/blog/using-codex-with-payperq)
+- [OpenCode](https://ppq.ai/blog/using-opencode-with-payperq)
+- [Cursor](https://ppq.ai/blog/using-cursor-with-payperq)
+- [Cline](https://ppq.ai/blog/using-cline-with-payperq)
+- [Roo](https://ppq.ai/blog/using-roo-with-payperq)
+- [Kilo Code](https://ppq.ai/blog/using-kilocode-with-payperq)
+- [Aider](https://ppq.ai/blog/using-aider-with-payperq)
+- [Goose](https://ppq.ai/blog/using-goose-with-payperq)
+- [Hermes Agent](https://ppq.ai/blog/using-hermes-with-payperq)
+- [OpenClaw](https://ppq.ai/blog/using-openclaw-with-payperq)
+- [AutoClaw smart routing for OpenClaw](https://ppq.ai/blog/using-autoclaw-with-payperq)
+- [Private (TEE) models via the API and OpenClaw](https://ppq.ai/blog/using-private-tee-models-with-openclaw)
+- [OpenWebUI](https://ppq.ai/blog/using-openwebui-with-payperq)
+- [Msty Studio](https://ppq.ai/blog/using-msty-with-payperq)
+- [JanitorAI character chat](https://ppq.ai/blog/using-janitorai-with-payperq)
+- [RxResume](https://ppq.ai/blog/using-rxresume-with-payperq)
+- [MKStack (Nostr apps)](https://ppq.ai/blog/using-mkstacks-with-payperq)
+- [Shakespeare (Nostr vibe coding)](https://ppq.ai/blog/shakespeare-nostr-vibe-coding)
+
+## Privacy & Security Guides
+
+- [Introducing the Enclave Router — provable privacy for every chat request](https://ppq.ai/blog/introducing-the-enclave-router)
+- [Anon vs ZDR vs TEE — PayPerQ's three privacy tiers](https://ppq.ai/blog/anon-vs-zdr-vs-tee-privacy-tiers)
+- [Introducing Private (TEE) models — end-to-end encrypted inference](https://ppq.ai/blog/introducing-tee-models)
+- [Passkey-encrypted chats — end-to-end encrypted conversation sync](https://ppq.ai/blog/introducing-passkey-encrypted-chats)
+- [Credit ID, account, or passkey: which option is right for you](https://ppq.ai/blog/payperq-account-types-explained)
+- [Memory on PayPerQ — privacy-first memory](https://ppq.ai/blog/privacy-first-memory)
+
+## Feature Guides
+
+- [Routing preferences — steer how PayPerQ picks your provider](https://ppq.ai/blog/routing-preferences-on-payperq)
+- [Web search — real-time information with any model](https://ppq.ai/blog/introducing-web-search)
+- [Deep Research](https://ppq.ai/blog/introducing-deep-research)
+- [Perplexity Academic Researcher — scholarly search](https://ppq.ai/blog/introducing-perplexity-academic-researcher)
+- [Data enrichment endpoints](https://ppq.ai/blog/data-enrichment-endpoints)
+- [Multi-model chat — compare answers and synthesize](https://ppq.ai/blog/introducing-multi-model-chat)
+- [Private Whisper — voice dictation](https://ppq.ai/blog/introducing-ppq-whisper)
+- [Community stats dashboard](https://ppq.ai/blog/introducing-ppq-stats-dashboard)
+
+## Models & Providers
+
+- [Uncensored models — five more that decline on capability, not policy](https://ppq.ai/blog/introducing-uncensored-models)
+- [Fireworks AI is PayPerQ's primary provider for open-source models](https://ppq.ai/blog/fireworks-ai-primary-open-source-provider)
+- [xAI Grok Imagine on PayPerQ](https://ppq.ai/blog/grok-imagine-on-payperq)
+- [SVG creation — benchmark testing AI models](https://ppq.ai/blog/creating-svg-images-with-ai)

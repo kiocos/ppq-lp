@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Chat and build privately</title>
+<link rel="icon" href="../assets/flame2.png">
+<link rel="stylesheet" href="../assets/kit.css">
+<link rel="stylesheet" href="../assets/kit-r2.css">
+<link rel="stylesheet" href="../assets/kit-r3.css">
+<style>
+  :root {
+    --bg: #f4f1ea; --fg: #1b1a17; --fg-2: #5d584f; --fg-3: #726c60;
+    --panel: #ebe7de; --panel-2: #e2ddd1; --line: rgba(27,26,23,.11);
+    --accent: #c9471c; --accent-ink: #b23c13; --good: #2f7d52;
+    --btn-bg: #1b1a17; --btn-fg: #f4f1ea; --btn-bg-hover: #000;
+    --code-str: #b23c13;
+    --dscale: 1;
+  }
+  body { font-size: 17px; }
+  .nav .wrap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 72px; }
+  .nav-links { display: flex; gap: 30px; font-size: 14px; color: var(--fg-2); }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-side { justify-self: end; display: flex; gap: 18px; align-items: center; font-size: 14px; color: var(--fg-2); }
+
+  .hero { padding: 96px 0 0; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px; align-items: center; }
+  .hero h1 { font-size: calc(clamp(48px, 6.4vw, 92px) * var(--dscale)); }
+  .hero .lede { margin-top: 30px; font-size: 21px; line-height: 1.5; max-width: 30em; }
+  .hero .ctas { display: flex; gap: 12px; margin-top: 38px; flex-wrap: wrap; }
+  .hero .micro { margin-top: 18px; font-size: 14px; color: var(--fg-3); }
+  .receipt { aspect-ratio: 1000 / 1160; justify-self: center; width: 100%; max-width: 520px; }
+  .receipt video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 6%; }
+
+  .product { margin-top: 120px; background: var(--panel); border-radius: 28px; padding: 64px 64px 0; overflow: hidden; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 48px; }
+  .product .copy-col { padding-bottom: 64px; align-self: center; }
+  .product h2 { font-size: 22px; font-family: var(--f-body); font-weight: 500; letter-spacing: -0.015em; line-height: 1.35; }
+  .product h2 span { color: var(--fg-2); font-weight: 400; }
+  .product img { border-radius: 14px 14px 0 0; box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgba(40,30,20,.35); align-self: end; }
+
+  .sec { padding-top: 192px; }
+  h2.display { font-size: calc(clamp(36px, 4.4vw, 60px) * var(--dscale)); }
+  .head { max-width: 760px; }
+  .head .lede { margin-top: 22px; font-size: 20px; color: var(--fg-2); line-height: 1.5; }
+  .sealed { margin-top: 56px; aspect-ratio: 1600 / 700; border-radius: var(--radius-lg); overflow: hidden; }
+  .nos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-top: 72px; }
+  .nos dt { font-size: 17px; font-weight: 500; color: var(--fg); max-width: 18em; }
+  .nos dd { font-family: var(--f-display); font-weight: var(--display-weight); font-size: calc(72px * var(--dscale)); letter-spacing: -0.03em; line-height: 1; margin-top: 18px; }
+  .nos p { margin-top: 14px; font-size: 15px; color: var(--fg-2); max-width: 22em; }
+  .check { margin-top: 72px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; padding-top: 40px; border-top: 1px solid var(--line); }
+  .check h3 { font-family: var(--f-display); font-weight: var(--display-weight); font-size: calc(30px * var(--dscale)); letter-spacing: -0.02em; line-height: 1.1; }
+  .check p { margin-top: 14px; color: var(--fg-2); }
+  .code { background: #1b1a17; color: #efe9dc; --fg-3: #8d8576; --fg-2: #b8ae9c; --code-str: #ffa877; --panel-2: #2a2824; }
+  .check .meta { margin-top: 14px; font: 400 13px/1.7 var(--f-mono); color: var(--fg-3); }
+  .scope { margin-top: 24px; font-size: 14px; color: var(--fg-3); }
+
+  .index-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 72px; margin-top: 56px; align-items: start; }
+  .big { font-family: var(--f-display); font-weight: var(--display-weight); font-size: calc(clamp(96px, 13vw, 180px) * var(--dscale)); line-height: .9; letter-spacing: -0.045em; }
+  .big + p { margin-top: 18px; color: var(--fg-2); font-size: 18px; max-width: 22em; }
+  .leaders { columns: 2; column-gap: 48px; }
+  .leaders li { display: flex; align-items: baseline; gap: 8px; padding: 9px 0; break-inside: avoid; font-size: 16px; }
+  .leaders li::after { content: ''; order: 2; flex: 1; border-bottom: 1px dotted var(--fg-3); transform: translateY(-4px); }
+  .leaders li span:last-child { order: 3; font: 400 14px/1 var(--f-mono); color: var(--fg-2); }
+  .leaders img { width: 18px; height: 18px; object-fit: contain; order: 0; }
+  .leaders .n { order: 1; }
+
+  .price-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
+  .unit { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--panel); }
+  .unit button { height: 30px; padding: 0 14px; border-radius: 999px; font-size: 13px; color: var(--fg-2); }
+  .unit button[aria-pressed=true] { background: var(--fg); color: var(--bg); }
+  .price { margin-top: 40px; }
+  .price td, .price th { font-size: 16px; }
+  .price td.r { font-family: var(--f-mono); }
+  .wallet { margin-top: 72px; display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 48px; align-items: center; }
+  .wallet h3 { font-family: var(--f-display); font-weight: var(--display-weight); font-size: calc(34px * var(--dscale)); letter-spacing: -0.02em; line-height: 1.1; }
+  .wallet p { margin-top: 12px; color: var(--fg-2); }
+  .coins { display: flex; gap: 14px; justify-content: flex-end; }
+  .coins img { width: 40px; height: 40px; }
+
+  .api { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; margin-top: 56px; }
+  .api ul { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; margin-top: 28px; }
+  .api li a { display: flex; gap: 10px; align-items: center; padding: 8px 0; font-size: 15px; }
+  .api li img { width: 22px; height: 22px; object-fit: contain; border-radius: 5px; }
+
+  .close { padding: 220px 0 20px; text-align: center; }
+  .close h2 { font-size: calc(clamp(44px, 6.4vw, 92px) * var(--dscale)); max-width: 12em; margin: 0 auto; }
+  .close .ctas { display: flex; gap: 12px; justify-content: center; margin-top: 40px; }
+
+  @media (max-width: 960px) {
+    .nav-links { display: none; }
+    .nav .wrap { grid-template-columns: 1fr auto; }
+    .hero-grid, .product, .nos, .check, .index-grid, .wallet, .api { grid-template-columns: 1fr; }
+    .product { padding: 40px 24px 0; }
+    .leaders { columns: 1; }
+    .coins { justify-content: flex-start; }
+    .sec { padding-top: 140px; }
+  }
+</style>
+</head>
+<body data-pairings='[
+  {"name":"Source Serif 4 + Geist","note":"Upright book serif for trust; Geist for reading and UI.","vars":{"--f-display":"\"Source Serif 4\", Georgia, serif","--display-weight":"600","--display-tracking":"-0.022em","--display-leading":"1.02","--dscale":"1"}},
+  {"name":"Newsreader + Geist","note":"Newsprint serif, slightly warmer and more editorial.","vars":{"--f-display":"\"Newsreader\", Georgia, serif","--display-weight":"500","--display-tracking":"-0.025em","--display-leading":"1.02","--dscale":"1.04"}},
+  {"name":"Geist + Source Serif 4 text","note":"Roles inverted: sans headlines, serif for reading.","vars":{"--f-display":"\"Geist\", sans-serif","--display-weight":"500","--display-tracking":"-0.045em","--display-leading":"1","--dscale":"0.96","--f-body":"\"Source Serif 4\", Georgia, serif"}}
+]'>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="../assets/flame2.png" alt="">PayPerQ</a>
+    <nav class="nav-links" aria-label="Primary"><a href="#privacy">Privacy</a><a href="#models">Models</a><a href="#pricing">Pricing</a><a href="#api">API</a></nav>
+    <div class="nav-side"><a href="https://ppq.ai/auth">Sign in</a><a class="btn btn-primary btn-sm" href="https://ppq.ai/chat">Start chatting</a></div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <h1 class="display rise">Chat and build privately.</h1>
+        <p class="lede rise rise-2"><span class="t1">Your favorite AI models, with privacy you can verify.</span> <span class="t2">Pay for each message you send, from one prepaid balance. No subscription, in chat or through our API.</span></p>
+        <div class="ctas rise rise-3"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting <span class="arr">→</span></a><a class="btn btn-ghost" href="#pricing">See prices</a></div>
+        <p class="micro rise rise-4">No account or email needed. Top up from $0.10.</p>
+      </div>
+      <div class="receipt rise rise-3">
+        <video data-inview autoplay muted loop playsinline preload="metadata" poster="../assets/motion/ledger2-paper-poster.jpg" aria-label="Animation: a usage receipt prints one line per message, with time, model, tokens and cost, then the total and the balance left.">
+          <source src="../assets/motion/ledger2-paper.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+    <div class="wrap">
+      <figure class="product">
+        <div class="copy-col">
+          <h2>One chat for every model. <span>Switch models mid-conversation, keep your history in your browser, and see what each reply cost.</span></h2>
+        </div>
+        <img src="../app-captures/chat-writing-light.png" alt="The PayPerQ chat in light mode: GPT-6 Luna drafting a polite reply to a rent increase.">
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec" id="privacy">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Your chat traffic stays unreadable to us.</h2>
+        <p class="lede">PayPerQ routes chat requests through a secure enclave, an isolated hardware environment that keeps your prompts and replies out of our ordinary servers and logs.</p>
+      </div>
+      <div class="sealed d-only">
+        <video data-inview autoplay muted loop playsinline preload="none" poster="../assets/motion/sealed2-paper-poster.jpg" aria-label="Animation: a message sealed in the browser, relayed unreadable by PayPerQ, opened only inside the enclave, and sent to the provider without your IP address.">
+          <source src="../assets/motion/sealed2-paper.mp4" type="video/mp4">
+        </video>
+      </div>
+<div class="sealed m-only" style="aspect-ratio:1080/1440"><video data-inview autoplay muted loop playsinline preload="none" poster="../assets/motion/sealed3-tall-paper-poster.jpg" aria-hidden="true"><source src="../assets/motion/sealed3-tall-paper.mp4" type="video/mp4"></video></div>
+      <dl class="nos">
+        <div><dt>Can PayPerQ read your messages?</dt><dd>No.</dd><p>We receive what we need to route and bill: the model, token counts and timing.</p></div>
+        <div><dt>Does the provider get your IP address?</dt><dd>No.</dd><p>Requests reach the model provider through the enclave.</p></div>
+        <div><dt>Do you need an email to start?</dt><dd>No.</dd><p>Your account is a credit ID, and your history stays in your browser.</p></div>
+      </dl>
+      <div class="check">
+        <div>
+          <h3>Built to be checked</h3>
+          <p>Published enclave code, reproducible builds and an independent verifier let you examine the protection behind the promise.</p>
+        </div>
+        <div>
+          <div class="code"><code><span class="c"># trace the enclave measurement to a public build</span>
+gh attestation verify PCR.json --repo PayPerQ/ppq-enclave-proxy
+
+<span class="c"># encrypt and verify locally, then point any client at it</span>
+PPQ_API_KEY=<span class="s">sk-…</span> npx ppq-private-mode</code></div>
+          <p class="meta">Live build v0.73.0 · commit d47912c · PCR0 3ef8 468b feaf b866 …</p>
+        </div>
+      </div>
+      <p class="scope">This protection covers chat requests. Images, video and audio have different processing paths, and what a model provider keeps depends on that model’s privacy label (Anon, Zero Data Retention or end-to-end encrypted).</p>
+    </div>
+  </section>
+
+  <section class="sec" id="models">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Choose the model for the task.</h2>
+        <p class="lede">Use Claude for one project, GPT for another, or explore open-weight alternatives, without setting up a separate provider account for each.</p>
+      </div>
+      <div class="index-grid">
+        <div><p class="big num">387</p><p>chat models in one place, plus 96 for images, video and audio. Catalogue of Nov 13, 2026.</p></div>
+        <ul class="leaders" aria-label="Chat models by provider">
+          <li><img src="../assets/logos/models/openai.svg" alt=""><span class="n">OpenAI</span><span>63</span></li>
+          <li><img src="../assets/logos/models/qwen.svg" alt=""><span class="n">Qwen</span><span>38</span></li>
+          <li><img src="../assets/logos/models/gemini.svg" alt=""><span class="n">Google</span><span>36</span></li>
+          <li><img src="../assets/logos/models/claude.svg" alt=""><span class="n">Anthropic</span><span>20</span></li>
+          <li><img src="../assets/logos/models/zai.svg" alt=""><span class="n">Z.ai</span><span>20</span></li>
+          <li><img src="../assets/logos/models/deepseek.svg" alt=""><span class="n">DeepSeek</span><span>18</span></li>
+          <li><img src="../assets/logos/models/mistral.svg" alt=""><span class="n">Mistral</span><span>18</span></li>
+          <li><img src="../assets/logos/models/meta.svg" alt=""><span class="n">Meta</span><span>17</span></li>
+          <li><img src="../assets/logos/models/moonshot.svg" alt=""><span class="n">Moonshot AI</span><span>10</span></li>
+          <li><img src="../assets/logos/models/xai.svg" alt=""><span class="n">xAI</span><span>7</span></li>
+          <li><img src="../assets/logos/models/cohere.svg" alt=""><span class="n">Cohere</span><span>6</span></li>
+          <li><span class="n">55 more providers</span><span>134</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <div class="price-head">
+        <div class="head">
+          <h2 class="display">Your AI spending follows your usage.</h2>
+          <p class="lede">Add prepaid credit and use it when you need AI. There’s no PayPerQ subscription and no separate monthly plan for each model.</p>
+        </div>
+        <div class="unit" role="group" aria-label="Show prices in">
+          <button type="button" aria-pressed="true" data-unit="usd">USD</button><button type="button" aria-pressed="false" data-unit="sats">sats</button>
+        </div>
+      </div>
+      <table class="tbl price">
+        <thead><tr><th scope="col">Model</th><th scope="col">Good for</th><th scope="col">Privacy</th><th scope="col" class="r">Median per message</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Claude Haiku 5.5</th><td>Quick answers, rewrites</td><td>Anon</td><td class="r" data-usd="0.0023"></td></tr>
+          <tr><th scope="row">Gemini 4 Argon</th><td>Research, long documents</td><td>Anon</td><td class="r" data-usd="0.0139"></td></tr>
+          <tr><th scope="row">GPT-6 Luna</th><td>Everyday writing</td><td>Anon</td><td class="r" data-usd="0.0176"></td></tr>
+          <tr><th scope="row">GLM 5.3</th><td>Open-weight reasoning</td><td>Zero data retention</td><td class="r" data-usd="0.0195"></td></tr>
+          <tr><th scope="row">Claude Sonnet 5.5</th><td>Coding, analysis</td><td>Anon</td><td class="r" data-usd="0.0504"></td></tr>
+          <tr><th scope="row">Claude Opus 5.5</th><td>The hardest problems</td><td>Anon</td><td class="r" data-usd="0.1340"></td></tr>
+        </tbody>
+        <caption>Median cost of one chat message in PayPerQ, Nov 13, 2026. Text is charged by the model’s rates for input and output, including conversation context. Sats at $68,866 per bitcoin, the same day.</caption>
+      </table>
+      <div class="wallet">
+        <div><h3>Start from your wallet.</h3><p>Fund your balance with Bitcoin, Lightning or Monero. No email registration required.</p></div>
+        <div class="coins"><img src="../assets/logos/pay/bitcoin.svg" alt="Bitcoin"><img src="../assets/logos/pay/lightning-network.svg" alt="Lightning Network"><img src="../assets/logos/pay/monero.svg" alt="Monero"><img src="../assets/logos/pay/litecoin.svg" alt="Litecoin"><img src="../assets/logos/pay/tether.svg" alt="Tether"><img src="../assets/logos/pay/usdc.svg" alt="USD Coin"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="api">
+    <div class="wrap">
+      <div class="head"><h2 class="display">Your models can work beyond this chat.</h2></div>
+      <div class="api">
+        <div>
+          <p style="font-size:19px;color:var(--fg-2)">An API lets other apps use the models available through PayPerQ. Connect a coding assistant, research workspace or automation tool with your API key; usage is charged to the same balance.</p>
+          <ul>
+            <li><a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="../assets/logos/tools/claude-code.png" alt="">Claude Code</a></li>
+            <li><a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/cursor.svg" alt="">Cursor</a></li>
+            <li><a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="../assets/logos/tools/opencode.png" alt="">OpenCode</a></li>
+            <li><a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/goose.png" alt="" class="inv-light">Goose</a></li>
+            <li><a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/aider.png" alt="">Aider</a></li>
+            <li><a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/roo.svg" alt="">Roo Code</a></li>
+          </ul>
+        </div>
+        <div class="code"><code><span class="k">from</span> openai <span class="k">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="s">"https://api.ppq.ai/v1"</span>,
+    api_key=os.environ[<span class="s">"PPQ_API_KEY"</span>],
+)
+reply = client.chat.completions.create(
+    model=<span class="s">"glm-5.3"</span>,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: question}],
+)</code></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="wrap">
+      <h2 class="display">More choice in AI. More control over how you use it.</h2>
+      <div class="ctas"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting <span class="arr">→</span></a><a class="btn btn-ghost" href="https://ppq.ai/api-docs">API docs</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><img src="../assets/flame2.png" alt="">PayPerQ</a></div>
+      <div><h4>Product</h4><ul><li><a href="https://ppq.ai/chat">Chat</a></li><li><a href="https://ppq.ai/api-docs">API</a></li><li><a href="https://ppq.ai/models">Models</a></li><li><a href="https://ppq.ai/pricing">Pricing</a></li></ul></div>
+      <div><h4>Privacy</h4><ul><li><a href="https://ppq.ai/private-ai">Enclave router</a></li><li><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verify it yourself</a></li><li><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave source</a></li><li><a href="https://ppq.ai/privacy">Privacy policy</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="https://ppq.ai/blog">Blog</a></li><li><a href="https://ppq.ai/careers">Careers</a></li><li><a href="https://ppq.ai/terms">Terms</a></li></ul></div>
+      <div><h4>For agents</h4><ul><li><a class="mono" href="https://ppq.ai/llms.txt">llms.txt</a></li><li><a class="mono" href="https://api.ppq.ai/v1/models">v1/models</a></li></ul></div>
+    </div>
+    <div class="foot-base"><span>© 2026 PayPerQ</span><span>This page loads no third-party scripts.</span><span class="mono">Updated at block 975,697</span></div>
+  </div>
+</footer>
+<script src="../assets/kit.js"></script>
+<script>
+  // USD / sats toggle (reference price on the same day as the medians)
+  (() => {
+    const BTC_USD = 68866;
+    const cells = document.querySelectorAll('[data-usd]');
+    const render = (unit) => cells.forEach((c) => {
+      const usd = Number(c.dataset.usd);
+      c.textContent = unit === 'sats' ? (usd / BTC_USD * 1e8).toFixed(1) + ' sats' : '$' + usd.toFixed(4);
+    });
+    document.querySelectorAll('.unit button').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('.unit button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      render(b.dataset.unit);
+    }));
+    render('usd');
+  })();
+</script>
+</body>
+</html>

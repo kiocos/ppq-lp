@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · closing CTA, round 2 (cards)</title>
+<style>
+  /* tokens, fonts and buttons copied from latest/index.html */
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Instrument Sans'; src: url(../assets/fonts/InstrumentSans-normal.woff2) format('woff2'); font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49;
+    --f-display: 'Instrument Sans', system-ui, sans-serif; --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --display-scale: 1.02;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --section-space: clamp(72px, 9vw, 128px); --content-space: clamp(40px, 5vw, 64px);
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --radius: 6px;
+    --app-surface: #1d1d1d; --app-muted: #292929; --app-fg: #ededed; --app-fg-2: #bbbbbb; --app-fg-3: #8f8f8f;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  h2, h3, p { margin: 0; font-weight: inherit; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  img { display: block; max-width: 100%; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-family: var(--f-display); font-weight: 400; letter-spacing: -0.02em; line-height: 1.12; text-wrap: balance; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 44px; padding: 0 20px; border-radius: var(--radius); border: 1px solid transparent; font: 500 15px/1 var(--f-body); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s, border-color .15s, color .15s; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-secondary { background: rgba(12,11,10,.35); border-color: rgba(255,255,255,.34); color: var(--fg); }
+  .btn-secondary:hover { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.05); }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 14px; }
+  .btn svg.mark { width: 17px; height: 17px; fill: currentColor; margin-top: -2px; }
+  .btn svg.mark.sm { width: 14px; height: 14px; margin-top: 0; }
+  svg.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- study chrome (not part of the design) ---------- */
+  .study-top { padding: 40px 0 8px; }
+  .study-top h1 { margin: 0; font: 500 14px var(--f-body); color: var(--fg); }
+  .study-top p { margin-top: 6px; font-size: 13px; color: var(--fg-3); max-width: 62em; }
+  .study-top nav { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .study-top nav a { font: 12px var(--f-mono); padding: 5px 9px; border-radius: 4px; background: rgba(255,255,255,.05); color: var(--fg-2); }
+  .study-top nav a:hover { color: var(--fg); }
+  .tag { margin-top: 80px; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; font-size: 13px; color: var(--fg-3); }
+  .tag b { font: 500 12px var(--f-mono); color: var(--bg); background: var(--fg-2); padding: 2px 7px; border-radius: 4px; }
+  .tag b.fav { background: var(--brand-ink); }
+  .tag strong { font-weight: 500; color: var(--fg); font-size: 14px; }
+
+  /* ---------- section frame shared by every option ---------- */
+  .cta { padding: var(--content-space) 0 var(--section-space); }
+  .cta .head { text-align: center; }
+  .cta h2 { font-size: calc(clamp(28px, 2.6vw, 36px) * var(--display-scale)); }
+  .cta .head p { margin: 12px auto 0; max-width: 34em; font-size: 17px; color: var(--fg-2); }
+  .cta .proof { margin-top: 20px; text-align: center; font-size: 13px; color: var(--fg-3); }
+
+  /* ---------- the card: warm graphite, hairline, a lit top edge, a soft drop ---------- */
+  .card { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 16px; background: linear-gradient(180deg, #181715 0%, #121110 70%); border: 1px solid rgba(255,255,255,.075); box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 30px 60px -40px rgba(0,0,0,.9); overflow: hidden; transition: border-color .2s, transform .3s var(--ease); }
+  .card:hover { border-color: rgba(255,255,255,.14); }
+  /* the inset screen that holds the product */
+  .card .vis { position: relative; margin: 6px 6px 0; height: 210px; border-radius: 11px; background: radial-gradient(90% 110% at 50% 0%, #1b1a18 0%, #0e0d0c 75%); border: 1px solid rgba(255,255,255,.05); overflow: hidden; display: grid; place-items: center; }
+  .card .body { display: flex; flex-direction: column; flex: 1; padding: 22px 24px 24px; }
+  .card h3 { font: 400 20px/1.25 var(--f-display); letter-spacing: -0.015em; }
+  .card .body > p { margin-top: 6px; font-size: 15px; color: var(--fg-2); text-wrap: pretty; }
+  .card .acts { margin-top: auto; padding-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .ico { flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; color: var(--fg-2); background: linear-gradient(180deg, #23211e, #171614); border: 1px solid rgba(255,255,255,.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); transition: color .2s, border-color .2s; }
+
+  /* product pieces inside cards */
+  .fx { width: 100%; max-width: 420px; border-radius: 20px; background: var(--app-surface); border: .5px solid #2a2a2a; box-shadow: 0 24px 50px -30px rgba(0,0,0,.95); text-align: left; }
+  .fx .t { display: flex; gap: 10px; align-items: center; padding: 14px 16px 4px; font-size: 15px; color: var(--app-fg-3); }
+  .fx .t svg { color: var(--app-fg-2); width: 17px; height: 17px; }
+  .fx .b { display: flex; align-items: center; gap: 4px; padding: 18px 8px 8px; }
+  .fx .plus { width: 32px; height: 32px; display: grid; place-items: center; color: var(--app-fg-2); }
+  .fx .plus svg { width: 18px; height: 18px; }
+  .fx .model { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 8px 0 6px; font-size: 14px; font-weight: 500; color: var(--app-fg); white-space: nowrap; }
+  .fx .model img { width: 16px; height: 16px; }
+  .fx .model svg { width: 13px; height: 13px; color: var(--app-fg-3); }
+  .fx .send { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; background: #ededed; color: #111; display: grid; place-items: center; flex: none; }
+  .fx .send svg { width: 16px; height: 16px; }
+  .fx-proof { margin-top: 10px; font-size: 12px; color: #6fbf92; display: flex; justify-content: center; gap: 6px; align-items: center; white-space: nowrap; }
+  .fx-proof svg { width: 13px; height: 13px; }
+  .fx-wrap { width: 100%; padding: 0 22px; }
+
+  .code { width: calc(100% - 44px); border-radius: 10px; background: #121110; border: 1px solid rgba(255,255,255,.07); text-align: left; overflow: hidden; }
+  .code .h { display: flex; align-items: center; gap: 6px; padding: 9px 12px; font-size: 12px; color: var(--fg-3); background: rgba(255,255,255,.02); }
+  .code .h i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.12); }
+  .code .h span { margin-left: 6px; }
+  .code pre { margin: 0; padding: 12px 14px 14px; font: 12.5px/1.8 var(--f-mono); color: var(--fg-2); white-space: pre; overflow: hidden; }
+  .code pre b { font-weight: 400; color: var(--fg); }
+  .code pre em { font-style: normal; color: var(--brand-ink); }
+  .logos { margin-top: 14px; display: flex; gap: 8px; justify-content: center; }
+  .logos span { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: #181715; border: 1px solid rgba(255,255,255,.07); }
+  .logos img { width: 18px; height: 18px; object-fit: contain; border-radius: 3px; }
+  .logos img.inv { filter: invert(1); }
+  .api-vis { width: 100%; display: grid; justify-items: center; }
+
+  .peek { align-self: end; width: 196px; height: 186px; padding: 7px 7px 0; border-radius: 30px 30px 0 0; background: #1e1d1b; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 -10px 50px -20px rgba(0,0,0,.9); overflow: hidden; }
+  .peek img { width: 100%; border-radius: 23px 23px 0 0; }
+  .card .vis.phone-vis { place-items: end center; }
+
+  /* ---------- A · product tiles ---------- */
+  .tiles { margin-top: 44px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .tiles .acts .btn { flex: 1 1 0; padding: 0 12px; }
+
+  /* ---------- B · bento ---------- */
+  .bento { margin-top: 44px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: auto auto; gap: 16px; }
+  .bento .big { grid-row: span 2; }
+  .bento .big .vis { height: auto; flex: 1; min-height: 340px; place-items: stretch; }
+  .bento .big .vis img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 100% 100%; }
+  .bento .big .vis::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,13,12,.0) 0%, rgba(14,13,12,0) 70%, rgba(14,13,12,.6) 100%), linear-gradient(0deg, rgba(14,13,12,0) 80%, rgba(14,13,12,.5) 100%); pointer-events: none; }
+  .bento .big .body { flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 6px 24px; }
+  .bento .big .body .acts { grid-column: 2; grid-row: 1 / span 2; padding-top: 0; }
+  .bento .side { flex-direction: row; align-items: stretch; }
+  .bento .side .body { padding: 24px; }
+  .bento .side .vis { order: 2; flex: none; width: 46%; height: auto; margin: 6px 6px 6px 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .bento .side .vis.phone-vis { justify-content: flex-end; }
+  .bento .side .vis.phone-vis .peek { align-self: center; }
+  .bento .side .code { width: calc(100% - 24px); }
+  .bento .side .code pre { font-size: 11.5px; }
+  .bento .side .peek { width: 150px; height: 170px; }
+
+  /* ---------- C · banner card with three rows ---------- */
+  .banner { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(32px, 5vw, 72px); align-items: center; padding: clamp(28px, 4.5vw, 56px); border-radius: 20px; background: radial-gradient(60% 80% at 0% 0%, rgba(191,60,27,.08), rgba(191,60,27,0) 70%), linear-gradient(180deg, #181715 0%, #121110 80%); border: 1px solid rgba(255,255,255,.075); box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 40px 80px -50px rgba(0,0,0,.9); }
+  .banner h2 { font-size: calc(clamp(28px, 2.6vw, 36px) * var(--display-scale)); }
+  .banner .copy p { margin-top: 12px; font-size: 17px; color: var(--fg-2); max-width: 24em; }
+  .banner .copy small { display: block; margin-top: 28px; font-size: 13px; color: var(--fg-3); }
+  .opts { display: grid; gap: 10px; }
+  .opt { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px 18px 16px 16px; border-radius: 12px; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.06); transition: background-color .15s, border-color .15s; }
+  .opt:hover { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.12); }
+  .opt b { display: block; font: 400 18px/1.25 var(--f-display); letter-spacing: -0.01em; }
+  .opt small { display: block; margin-top: 3px; font-size: 14px; color: var(--fg-2); }
+  .opt .arrow { width: 18px; height: 18px; color: var(--fg-3); transition: transform .2s var(--ease), color .2s; }
+  .opt:hover .arrow { transform: translateX(3px); color: var(--fg); }
+  .opt:hover .ico { color: var(--brand-ink); border-color: rgba(233,125,73,.35); }
+  .opt .cover { position: absolute; inset: 0; border-radius: inherit; }
+  .opt .stores { display: flex; gap: 6px; position: relative; z-index: 1; }
+  .opt .stores .btn { width: 36px; padding: 0; }
+  .opt.primary { background: rgba(191,60,27,.10); border-color: rgba(233,125,73,.28); }
+  .opt.primary:hover { background: rgba(191,60,27,.15); border-color: rgba(233,125,73,.45); }
+  .opt.primary .ico { color: var(--brand-ink); border-color: rgba(233,125,73,.3); }
+  .opt.primary .arrow { color: var(--brand-ink); }
+
+  /* ---------- D · link cards ---------- */
+  .links { margin-top: 44px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .links .card { padding: 26px 26px 24px; }
+  .links .card h3 { margin-top: 22px; }
+  .links .card p { margin-top: 6px; font-size: 15px; color: var(--fg-2); }
+  .links .go { margin-top: auto; padding-top: 26px; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; color: var(--fg); }
+  .links .go svg { width: 16px; height: 16px; transition: transform .2s var(--ease); }
+  .links a.card:hover { border-color: rgba(233,125,73,.35); transform: translateY(-2px); }
+  .links a.card:hover .ico { color: var(--brand-ink); }
+  .links a.card:hover .go { color: var(--brand-ink); }
+  .links a.card:hover .go svg { transform: translateX(3px); }
+  .links .card .stores { margin-top: auto; padding-top: 26px; display: flex; gap: 16px; }
+  .links .card .stores a { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 500; }
+  .links .card .stores a:hover { color: var(--brand-ink); }
+  .links .card .stores svg { width: 15px; height: 15px; fill: currentColor; }
+  .links .card:has(.stores):hover { border-color: rgba(255,255,255,.14); }
+
+  /* ---------- E · switcher card ---------- */
+  .swc { margin: 40px auto 0; max-width: 980px; padding: 6px; }
+  .modes { width: max-content; display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.03); border: .5px solid #2a2a2a; }
+  .modes button { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 999px; font-size: 15px; color: var(--app-fg-2); transition: background-color .15s, color .15s; }
+  .modes button:hover { color: var(--app-fg); }
+  .modes button[aria-pressed="true"] { background: var(--app-muted); color: var(--app-fg); }
+  .modes svg.i { width: 17px; height: 17px; }
+  .pane { display: none; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: stretch; }
+  .pane.on { display: grid; animation: pane .4s var(--ease); }
+  @keyframes pane { from { opacity: 0; transform: translateY(6px); } }
+  .swc .modes { position: absolute; left: 34px; top: 34px; z-index: 2; }
+  .pane .txt { padding: 110px 32px 34px 34px; display: flex; flex-direction: column; justify-content: center; }
+  .pane .txt h3 { font: 400 24px/1.2 var(--f-display); letter-spacing: -0.02em; }
+  .pane .txt p { margin-top: 10px; font-size: 16px; color: var(--fg-2); max-width: 24em; }
+  .pane .txt .acts { margin-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .pane .vis { margin: 0; height: 340px; }
+
+  /* ---------- F · paper card (the re-take) ---------- */
+  .paper { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; padding: clamp(28px, 4.5vw, 56px); border-radius: 20px; background: linear-gradient(180deg, #f4f2ee, #ebe7e1); color: #1a1714; box-shadow: 0 40px 80px -50px rgba(0,0,0,.9); }
+  .paper h2 { font-size: calc(clamp(28px, 2.6vw, 36px) * var(--display-scale)); color: #141210; }
+  .paper .copy p { margin-top: 12px; font-size: 17px; color: #57524b; max-width: 24em; }
+  .paper .copy small { display: block; margin-top: 28px; font-size: 13px; color: #6b665e; }
+  .paper .opts { gap: 8px; }
+  .paper .opt { background: #fff; border-color: rgba(26,23,20,.08); box-shadow: 0 1px 2px rgba(26,23,20,.06); }
+  .paper .opt:hover { background: #fff; border-color: rgba(26,23,20,.2); }
+  .paper .opt small { color: #5f5a53; }
+  .paper .opt .ico { background: #f2efea; border-color: rgba(26,23,20,.08); box-shadow: none; color: #3d3934; }
+  .paper .opt .arrow { color: #8a857d; }
+  .paper .opt:hover .arrow { color: #1a1714; }
+  .paper .opt:hover .ico { color: var(--brand); border-color: rgba(191,60,27,.3); }
+  .paper .opt.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .paper .opt.primary small { color: rgba(255,255,255,.86); }
+  .paper .opt.primary .ico { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.2); color: #fff; }
+  .paper .opt.primary .arrow { color: #fff; }
+  .paper .opt.primary:hover { background: var(--brand-hover); }
+  .paper .stores .btn { background: #f2efea; border-color: rgba(26,23,20,.12); color: #1a1714; }
+  .paper .stores .btn:hover { background: #e9e5df; }
+
+  @media (max-width: 960px) {
+    .tiles, .links { grid-template-columns: minmax(0, 1fr); max-width: 480px; margin-inline: auto; }
+    .bento { grid-template-columns: minmax(0, 1fr); }
+    .bento .big { grid-row: auto; }
+    .bento .big .vis { min-height: 260px; }
+    .banner, .paper { grid-template-columns: minmax(0, 1fr); }
+    .pane { grid-template-columns: minmax(0, 1fr); }
+    .pane .vis { height: 240px; margin: 0; order: 2; }
+    .pane .txt { padding: 76px 22px 28px; }
+    .swc .modes { left: 50%; top: 18px; transform: translateX(-50%); }
+  }
+  @media (max-width: 760px) {
+    .cta h2, .banner h2, .paper h2 { font-size: 26px; }
+    .cta .head p, .banner .copy p, .paper .copy p { font-size: 16px; }
+    .bento .big .body { grid-template-columns: minmax(0, 1fr); }
+    .bento .big .body .acts { grid-column: 1; grid-row: auto; padding-top: 18px; }
+    .bento .side { flex-direction: column; }
+    .bento .side .vis { order: 0; width: auto; height: 180px; margin: 6px 6px 0; }
+    .modes button { padding: 0 12px; font-size: 14px; gap: 6px; }
+    .modes svg.i { display: none; }
+    .opt { padding: 14px; gap: 12px; }
+    .opt small { font-size: 13px; }
+    .code pre { font-size: 11.5px; padding: 12px 12px 14px; }
+    .code { width: calc(100% - 28px); }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><path d="M8 9l3 3l-3 3"/><path d="M13 15h3"/><path d="M3 6a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14z"/><path d="M11 4h2"/><path d="M12 17v.01"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6l-6 6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><rect x="9.5" y="10.5" width="5" height="4.5" rx="1"/><path d="M10.5 10.5V9.3a1.5 1.5 0 0 1 3 0v1.2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="m-apple" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></symbol>
+  <symbol id="m-play" viewBox="0 0 24 24"><path d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594zM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924zm12.207 10.065l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973zm0 2.067l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21z"/></symbol>
+</svg>
+
+<div class="wrap study-top">
+  <h1>Closing CTA, round 2: cards, no painting</h1>
+  <p>The end of latest/index.html sends people to chat, an API key or the phone app. Round 1 (with the valley painting) is in <a href="index.html" style="text-decoration:underline">index.html</a>. The cards hold real product: the composer, the API base URL with real tool logos, and app captures. Store links are still “#”. Orange tags mark my favourites.</p>
+  <nav><a href="#a">A · Product tiles</a><a href="#b">B · Bento</a><a href="#c">C · Banner + rows</a><a href="#d">D · Link cards</a><a href="#e">E · Switcher card</a><a href="#f">F · Paper card</a></nav>
+</div>
+
+<!-- ============ A · product tiles ============ -->
+<div class="wrap"><div class="tag" id="a"><b class="fav">A</b><strong>Product tiles</strong><span>Three equal cards, each with a small product screen on top, then its name, one line and its action.</span></div></div>
+<section class="cta">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="display">Start privately.</h2>
+      <p>One prepaid balance for chat, the API and the phone app.</p>
+    </div>
+    <div class="tiles">
+      <article class="card">
+        <div class="vis"><div class="fx-wrap">
+          <div class="fx" aria-hidden="true"><div class="t"><svg class="i"><use href="#i-shield"/></svg>Ask anything…</div><div class="b"><span class="plus"><svg class="i"><use href="#i-plus"/></svg></span><span class="model"><img src="../assets/logos/models/claude.svg" alt="">Claude Sonnet 5.5<svg class="i"><use href="#i-chev"/></svg></span><span class="send"><svg class="i"><use href="#i-up"/></svg></span></div></div>
+          <p class="fx-proof"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>Served inside PayPerQ’s secure enclave router</p>
+        </div></div>
+        <div class="body"><h3>Chat in the browser</h3><p>Every major model. No sign-up, no email.</p><div class="acts"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a></div></div>
+      </article>
+      <article class="card">
+        <div class="vis"><div class="api-vis">
+          <div class="code" aria-hidden="true"><div class="h"><i></i><i></i><i></i><span>.env</span></div><pre><b>OPENAI_BASE_URL</b>=<em>https://api.ppq.ai/v1</em>
+<b>OPENAI_API_KEY</b>=&lt;your PayPerQ key&gt;</pre></div>
+          <div class="logos" aria-label="Works with Claude Code, Codex, Cursor, OpenCode and Cline"><span><img src="../assets/logos/tools/claude-code.png" alt=""></span><span><img class="inv" src="../assets/logos/models/openai.svg" alt=""></span><span><img src="../assets/logos/tools/cursor.svg" alt=""></span><span><img src="../assets/logos/tools/opencode.png" alt=""></span><span><img src="../assets/logos/tools/cline.png" alt=""></span></div>
+        </div></div>
+        <div class="body"><h3>Build with the API</h3><p>One OpenAI-compatible key for every AI tool.</p><div class="acts"><a class="btn btn-secondary" href="https://ppq.ai/chat?workspace=api&amp;apiPage=keys">Get an API key</a></div></div>
+      </article>
+      <article class="card">
+        <div class="vis phone-vis"><div class="peek"><img src="../chat/shots/m-answer-dark.webp" alt="The PayPerQ app on a phone showing a chat."></div></div>
+        <div class="body"><h3>Take it on your phone</h3><p>iPhone and Android, same balance as the web.</p><div class="acts"><a class="btn btn-secondary" href="#"><svg class="mark" aria-hidden="true"><use href="#m-apple"/></svg>App Store</a><a class="btn btn-secondary" href="#"><svg class="mark sm" aria-hidden="true"><use href="#m-play"/></svg>Google Play</a></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B · bento ============ -->
+<div class="wrap"><div class="tag" id="b"><b>B</b><strong>Bento</strong><span>Chat gets the big card with a real capture of the app; API and the phone app share the right column. The big card could go to the API instead, since it earns the most.</span></div></div>
+<section class="cta">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="display">Start privately.</h2>
+      <p>One prepaid balance for chat, the API and the phone app.</p>
+    </div>
+    <div class="bento">
+      <article class="card big">
+        <div class="vis"><img src="../chat/shots/answer-dark.webp" alt="The PayPerQ chat in a browser: a drafted reply and the composer, served inside the secure enclave router."></div>
+        <div class="body"><h3>Chat in the browser</h3><p>Every major model. No sign-up, no email.</p><div class="acts"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a></div></div>
+      </article>
+      <article class="card side">
+        <div class="vis"><div class="code" aria-hidden="true"><div class="h"><i></i><i></i><i></i><span>.env</span></div><pre><b>BASE_URL</b>=
+<em>api.ppq.ai/v1</em></pre></div><div class="logos"><span><img src="../assets/logos/tools/claude-code.png" alt=""></span><span><img class="inv" src="../assets/logos/models/openai.svg" alt=""></span><span><img src="../assets/logos/tools/cursor.svg" alt=""></span><span><img src="../assets/logos/tools/opencode.png" alt=""></span></div></div>
+        <div class="body"><h3>Build with the API</h3><p>One OpenAI-compatible key for every AI tool.</p><div class="acts"><a class="btn btn-secondary btn-sm" href="https://ppq.ai/chat?workspace=api&amp;apiPage=keys">Get an API key</a></div></div>
+      </article>
+      <article class="card side">
+        <div class="vis phone-vis"><div class="peek"><img src="../chat/shots/m-answer-dark.webp" alt=""></div></div>
+        <div class="body"><h3>On your phone</h3><p>iPhone and Android, same balance.</p><div class="acts"><a class="btn btn-secondary btn-sm" href="#"><svg class="mark" aria-hidden="true"><use href="#m-apple"/></svg>App Store</a><a class="btn btn-secondary btn-sm" href="#"><svg class="mark sm" aria-hidden="true"><use href="#m-play"/></svg>Google Play</a></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C · banner + rows ============ -->
+<div class="wrap"><div class="tag" id="c"><b class="fav">C</b><strong>Banner + rows</strong><span>One wide card: the headline on the left, three product rows on the right. Chat is the highlighted row. A faint warm light sits in the card’s corner.</span></div></div>
+<section class="cta">
+  <div class="wrap">
+    <div class="banner">
+      <div class="copy">
+        <h2 class="display">Start privately.</h2>
+        <p>Chat in the browser, build with the API or take it on your phone.</p>
+        <small>One prepaid balance for all three. No subscription.</small>
+      </div>
+      <div class="opts">
+        <div class="opt primary">
+          <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></span>
+          <span><b>Start chatting</b><small>Every major model in the browser. No sign-up.</small></span>
+          <svg class="i arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+          <a class="cover" href="https://ppq.ai/chat" aria-label="Start chatting"></a>
+        </div>
+        <div class="opt">
+          <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-term"/></svg></span>
+          <span><b>Get an API key</b><small>One OpenAI-compatible key for every AI tool.</small></span>
+          <svg class="i arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+          <a class="cover" href="https://ppq.ai/chat?workspace=api&amp;apiPage=keys" aria-label="Get an API key"></a>
+        </div>
+        <div class="opt">
+          <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg></span>
+          <span><b>Get the app</b><small>iPhone and Android, same balance as the web.</small></span>
+          <span class="stores"><a class="btn btn-secondary btn-sm" href="#" aria-label="App Store"><svg class="mark" aria-hidden="true"><use href="#m-apple"/></svg></a><a class="btn btn-secondary btn-sm" href="#" aria-label="Google Play"><svg class="mark sm" aria-hidden="true"><use href="#m-play"/></svg></a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ D · link cards ============ -->
+<div class="wrap"><div class="tag" id="d"><b>D</b><strong>Link cards</strong><span>The simplest: no screens, just an icon, a name, one line and a link. The whole card is clickable; on hover it lifts and warms orange.</span></div></div>
+<section class="cta">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="display">Start privately.</h2>
+      <p>One prepaid balance for chat, the API and the phone app.</p>
+    </div>
+    <div class="links">
+      <a class="card" href="https://ppq.ai/chat">
+        <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></span>
+        <h3>Chat in the browser</h3>
+        <p>Every major model. No sign-up, no email.</p>
+        <span class="go">Start chatting<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="card" href="https://ppq.ai/chat?workspace=api&amp;apiPage=keys">
+        <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-term"/></svg></span>
+        <h3>Build with the API</h3>
+        <p>One OpenAI-compatible key for every AI tool.</p>
+        <span class="go">Get an API key<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <div class="card">
+        <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg></span>
+        <h3>Take it on your phone</h3>
+        <p>iPhone and Android, same balance as the web.</p>
+        <span class="stores"><a href="#"><svg aria-hidden="true"><use href="#m-apple"/></svg>App Store</a><a href="#"><svg aria-hidden="true"><use href="#m-play"/></svg>Google Play</a></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ E · switcher card ============ -->
+<div class="wrap"><div class="tag" id="e"><b>E</b><strong>Switcher card</strong><span>One card with the composer’s mode tabs on top: text and action on the left, the product on the right. Phones open on “Phone app”. Click the tabs.</span></div></div>
+<section class="cta" id="sw">
+  <div class="wrap">
+    <div class="head"><h2 class="display">Start privately.</h2></div>
+    <div class="card swc">
+      <div class="modes" role="tablist" aria-label="Product">
+        <button type="button" role="tab" aria-pressed="true" data-pane="chat"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg>Chat</button>
+        <button type="button" role="tab" aria-pressed="false" data-pane="api"><svg class="i" aria-hidden="true"><use href="#i-term"/></svg>API</button>
+        <button type="button" role="tab" aria-pressed="false" data-pane="app"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>Phone app</button>
+      </div>
+      <div class="pane on" data-pane="chat" role="tabpanel">
+        <div class="txt"><h3>Chat in the browser</h3><p>Every major model, with no sign-up and no email. Pay per message from a prepaid balance.</p><div class="acts"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a></div></div>
+        <div class="vis"><div class="fx-wrap">
+          <div class="fx" aria-hidden="true"><div class="t"><svg class="i"><use href="#i-shield"/></svg>Ask anything…</div><div class="b"><span class="plus"><svg class="i"><use href="#i-plus"/></svg></span><span class="model"><img src="../assets/logos/models/claude.svg" alt="">Claude Sonnet 5.5<svg class="i"><use href="#i-chev"/></svg></span><span class="send"><svg class="i"><use href="#i-up"/></svg></span></div></div>
+          <p class="fx-proof"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>Served inside PayPerQ’s secure enclave router</p>
+        </div></div>
+      </div>
+      <div class="pane" data-pane="api" role="tabpanel">
+        <div class="txt"><h3>Build with the API</h3><p>One OpenAI-compatible key and one balance for Claude Code, Codex, Cursor and more.</p><div class="acts"><a class="btn btn-primary" href="https://ppq.ai/chat?workspace=api&amp;apiPage=keys">Get an API key</a><a class="btn btn-secondary" href="https://ppq.ai/api-docs">Read the docs</a></div></div>
+        <div class="vis"><div class="api-vis">
+          <div class="code" aria-hidden="true"><div class="h"><i></i><i></i><i></i><span>.env</span></div><pre><b>OPENAI_BASE_URL</b>=<em>https://api.ppq.ai/v1</em>
+<b>OPENAI_API_KEY</b>=&lt;your PayPerQ key&gt;</pre></div>
+          <div class="logos"><span><img src="../assets/logos/tools/claude-code.png" alt=""></span><span><img class="inv" src="../assets/logos/models/openai.svg" alt=""></span><span><img src="../assets/logos/tools/cursor.svg" alt=""></span><span><img src="../assets/logos/tools/opencode.png" alt=""></span><span><img src="../assets/logos/tools/cline.png" alt=""></span></div>
+        </div></div>
+      </div>
+      <div class="pane" data-pane="app" role="tabpanel">
+        <div class="txt"><h3>Take it on your phone</h3><p>Every model on iPhone and Android, with the same prepaid balance as the web.</p><div class="acts"><a class="btn btn-primary" href="#"><svg class="mark" aria-hidden="true"><use href="#m-apple"/></svg>App Store</a><a class="btn btn-primary" href="#"><svg class="mark sm" aria-hidden="true"><use href="#m-play"/></svg>Google Play</a></div></div>
+        <div class="vis phone-vis"><div class="peek" style="width:220px;height:270px"><img src="../chat/shots/m-answer-dark.webp" alt="The PayPerQ app on a phone showing a chat."></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ F · paper card ============ -->
+<div class="wrap"><div class="tag" id="f"><b>F</b><strong>Paper card</strong><span>The deliberate re-take: a light card on the dark page, so the end reads as a clear last stop. Same layout as C; chat is the orange row.</span></div></div>
+<section class="cta">
+  <div class="wrap">
+    <div class="paper">
+      <div class="copy">
+        <h2 class="display">Start privately.</h2>
+        <p>Chat in the browser, build with the API or take it on your phone.</p>
+        <small>One prepaid balance for all three. No subscription.</small>
+      </div>
+      <div class="opts">
+        <div class="opt primary">
+          <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></span>
+          <span><b>Start chatting</b><small>Every major model in the browser. No sign-up.</small></span>
+          <svg class="i arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+          <a class="cover" href="https://ppq.ai/chat" aria-label="Start chatting"></a>
+        </div>
+        <div class="opt">
+          <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-term"/></svg></span>
+          <span><b>Get an API key</b><small>One OpenAI-compatible key for every AI tool.</small></span>
+          <svg class="i arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+          <a class="cover" href="https://ppq.ai/chat?workspace=api&amp;apiPage=keys" aria-label="Get an API key"></a>
+        </div>
+        <div class="opt">
+          <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg></span>
+          <span><b>Get the app</b><small>iPhone and Android, same balance as the web.</small></span>
+          <span class="stores"><a class="btn btn-sm" href="#" aria-label="App Store"><svg class="mark" aria-hidden="true"><use href="#m-apple"/></svg></a><a class="btn btn-sm" href="#" aria-label="Google Play"><svg class="mark sm" aria-hidden="true"><use href="#m-play"/></svg></a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div style="height:64px"></div>
+
+<script>
+(() => {
+  const sw = document.getElementById('sw');
+  const show = (name) => {
+    sw.querySelectorAll('.modes button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.pane === name));
+    sw.querySelectorAll('.pane').forEach((p) => p.classList.toggle('on', p.dataset.pane === name));
+  };
+  sw.querySelectorAll('.modes button').forEach((b) => b.addEventListener('click', () => show(b.dataset.pane)));
+  const q = new URLSearchParams(location.search);
+  if (q.get('e')) show(q.get('e'));
+  else if (/iPhone|Android/i.test(navigator.userAgent)) show('app');
+})();
+</script>
+</body>
+</html>

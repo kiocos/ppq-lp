@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Chat section studies (round 1)</title>
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1); --radius: 6px; --radius-card: 12px;
+    --jump: 52px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, p, ul, ol, figure { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: var(--radius); }
+  ::selection { background: var(--brand); color: #fff; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  p { text-wrap: pretty; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-weight: 400; letter-spacing: -0.025em; line-height: 1.12; text-wrap: balance; }
+  .label { margin-bottom: 14px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  .lead { margin-top: 14px; font-size: 17px; line-height: 1.55; color: var(--fg-2); max-width: 32em; }
+  h2.display { font-size: clamp(28px, 2.6vw, 36px); }
+
+  /* ---------- study chrome (same as api/ and privacy-ideas/) ---------- */
+  .study-top { padding-top: 56px; padding-bottom: 8px; }
+  .study-top h1 { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .study-top p { margin-top: 8px; color: var(--fg-2); max-width: 52em; font-size: 15px; }
+  .study-top ul { margin-top: 14px; display: grid; gap: 4px; font-size: 14px; color: var(--fg-3); max-width: 60em; }
+  .study-top li::before { content: '–'; margin-right: 8px; }
+  .jump { position: sticky; top: 0; z-index: 60; background: rgba(12,11,10,.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .jump .wrap { display: flex; gap: 6px; height: var(--jump); align-items: center; overflow-x: auto; }
+  .jump a { padding: 6px 10px; border-radius: var(--radius); font-size: 13px; font-weight: 500; color: var(--fg-2); white-space: nowrap; }
+  .jump a:hover { background: rgba(255,255,255,.06); color: var(--fg); }
+  .jump a b { color: var(--brand-ink); font-weight: 500; margin-right: 6px; }
+  .note { margin-top: 120px; padding: 18px 0 0; border-top: 1px dashed rgba(255,255,255,.18); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 18px; font-size: 14px; color: var(--fg-2); scroll-margin-top: 64px; }
+  .note b.v { font: 500 13px var(--f-mono); color: var(--brand-ink); padding-top: 2px; }
+  .note h3 { font-size: 16px; font-weight: 500; color: var(--fg); }
+  .note p { grid-column: 2; max-width: 62em; }
+  .variant { padding-top: 80px; }
+  .end { height: 160px; }
+
+  /* ---------- buttons ---------- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 44px; padding: 0 18px; border-radius: var(--radius); border: 1px solid transparent; font: 500 15px/1 var(--f-body); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s, border-color .15s, color .15s; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-secondary { border-color: rgba(255,255,255,.34); color: var(--fg); }
+  .btn-secondary:hover { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.05); }
+  /* real marks from Simple Icons (CC0); swap for the official store badges before shipping */
+  .ico { width: 18px; height: 18px; flex: none; margin-top: -2px; }
+  .ico.sm { width: 15px; height: 15px; margin-top: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .small { font-size: 13px; color: var(--fg-3); }
+  .small a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+
+  /* ---------- shared product frames ---------- */
+  /* browser window; .pwa turns it into an installed app window (no address bar) */
+  .win { position: relative; border-radius: 10px; overflow: hidden; background: #161616; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 40px 80px -40px rgba(0,0,0,.95), 0 0 0 1px rgba(0,0,0,.4); }
+  .win .bar { position: relative; height: 36px; display: flex; align-items: center; padding: 0 12px; background: #1d1c1a; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .win .dots { display: flex; gap: 7px; }
+  .win .dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.16); }
+  .win .url, .win .title { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; align-items: center; gap: 7px; transition: opacity .45s var(--ease); white-space: nowrap; }
+  .win .url { width: min(52%, 340px); height: 24px; padding: 0 10px; border-radius: 6px; background: rgba(255,255,255,.06); font: 12px var(--f-mono); color: var(--fg-2); justify-content: center; }
+  .win .url svg { width: 11px; height: 11px; color: var(--fg-3); }
+  .win .url .inst { position: absolute; right: 6px; width: 15px; height: 15px; color: var(--fg-2); transition: color .3s; }
+  .win .title { font-size: 12.5px; font-weight: 500; color: var(--fg-2); opacity: 0; }
+  .win .title img { width: 15px; height: 15px; border-radius: 4px; }
+  .win.pwa .url { opacity: 0; }
+  .win.pwa .title { opacity: 1; }
+  .win .screen { position: relative; aspect-ratio: 16 / 10; background: #141414; }
+  .win .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top left; transition: opacity .5s var(--ease); }
+
+  .phone { position: relative; width: 216px; padding: 7px; border-radius: 34px; background: #1e1d1b; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 40px 70px -30px rgba(0,0,0,.95); }
+  .phone img { width: 100%; aspect-ratio: 1200 / 2460; object-fit: cover; border-radius: 27px; }
+
+  .dock { display: inline-flex; align-items: end; gap: 10px; padding: 8px 10px 10px; border-radius: 18px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(10px); }
+  .dock span { position: relative; width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.07); }
+  .dock .me { background: #fff url(shots/ppq-icon.png) center / 110% no-repeat; }
+  .dock .me::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--fg-2); }
+
+  .pop { position: absolute; width: 270px; padding: 16px; border-radius: 12px; background: #262522; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 48px -16px rgba(0,0,0,.9); font-size: 13px; }
+  .pop .row { display: flex; gap: 12px; align-items: center; }
+  .pop .row img { width: 34px; height: 34px; border-radius: 8px; background: #fff; }
+  .pop b { display: block; font-weight: 500; font-size: 14px; }
+  .pop small { color: var(--fg-3); font-size: 12px; }
+  .pop .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .pop .btns span { height: 30px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 6px; font-weight: 500; }
+  .pop .btns .no { color: var(--fg-2); }
+  .pop .btns .yes { background: var(--brand); color: #fff; }
+
+  /* ======================================================= A: one stage, four steps */
+  .a-intro { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; }
+  .a-intro h2.display { font-size: clamp(34px, 3.6vw, 52px); letter-spacing: -0.035em; line-height: 1.05; max-width: 12em; }
+  .a-intro .lead { font-size: 18px; margin-top: 20px; }
+  .story { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 72px; }
+  .steps { padding: 4vh 0 24vh; }
+  .step { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; opacity: .25; transition: opacity .5s var(--ease); }
+  .step.on { opacity: 1; }
+  .step .n { font: 13px var(--f-mono); color: var(--fg-3); margin-bottom: 12px; }
+  .step h3 { font-size: 30px; font-weight: 400; letter-spacing: -0.025em; line-height: 1.15; text-wrap: balance; }
+  .step p.t { margin-top: 12px; font-size: 17px; color: var(--fg-2); max-width: 24em; }
+  .step .act { margin-top: 24px; }
+  .step .act .small { margin-top: 12px; }
+  .count { display: flex; align-items: baseline; gap: 12px; }
+  .count b { font-size: 44px; font-weight: 400; letter-spacing: -0.04em; line-height: 1; }
+  .count span { font-size: 14px; color: var(--fg-3); max-width: 12em; line-height: 1.35; }
+
+  .stage-wrap { position: sticky; top: var(--jump); height: calc(100vh - var(--jump)); overflow: clip; }
+  .stage { position: absolute; left: 50%; top: 50%; width: 680px; height: 540px; transform: translate(-50%, -50%) scale(var(--k, 1)); }
+  .stage > * { position: absolute; transition: opacity .6s var(--ease), transform .8s var(--ease); }
+  .stage .win { left: 20px; top: 20px; width: 640px; }
+  .stage .dock { left: 50%; top: 476px; transform: translate(-50%, 16px); opacity: 0; }
+  .stage .pop { left: 400px; top: 64px; opacity: 0; transform: translateY(-6px); }
+  .stage .phone { right: 0; top: 56px; opacity: 0; transform: translate(40px, 30px); }
+  /* screens per step */
+  .stage .s-pick { opacity: 1; }
+  .stage .s-ans, .stage .s-new { opacity: 0; }
+  .stage[data-step="2"] .s-ans { opacity: 1; }
+  .stage[data-step="3"] .s-new, .stage[data-step="4"] .s-new { opacity: 1; }
+  /* step 1: the camera pushes into the open picker */
+  .stage .s-pick { transform-origin: 53.4% 56%; transform: scale(1.75); transition: opacity .5s var(--ease), transform 1s var(--ease); }
+  .stage:not([data-step="1"]) .s-pick { opacity: 0; transform: scale(1); }
+  .stage.popping .pop { opacity: 1; transform: none; }
+  .stage.popping .win .inst { color: var(--brand-ink); }
+  .stage[data-step="3"] .dock, .stage[data-step="4"] .dock { opacity: 1; transform: translate(-50%, 0); }
+  .stage[data-step="4"] .win { transform: translate(-70px, -4px) scale(.86); opacity: .55; }
+  .stage[data-step="4"] .dock { transform: translate(calc(-50% - 70px), -40px) scale(.86); opacity: .55; }
+  .stage[data-step="4"] .phone { opacity: 1; transform: none; }
+
+  /* ======================================================= B: stacked product cards */
+  .b-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: end; }
+  .b-head .lead { max-width: 30em; }
+  .strip { margin-top: 48px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .strip .row { display: flex; gap: 10px; width: max-content; animation: slide 60s linear infinite; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .pill { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px 0 12px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 15px; white-space: nowrap; }
+  .pill img { width: 20px; height: 20px; }
+  .pill img.inv { filter: invert(1); }
+
+  .stack { margin-top: 96px; display: grid; gap: 28px; padding-bottom: 8vh; }
+  .pcard { position: sticky; top: calc(var(--jump) + 28px + var(--i) * 18px); min-height: 560px; border-radius: 18px; padding: 48px; display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 48px; align-items: center; overflow: hidden; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 -24px 48px -24px rgba(0,0,0,.9); }
+  .pcard:nth-child(2) { background: var(--panel-2); }
+  .pcard.hot { background: var(--brand); border-color: transparent; color: #fff; }
+  .pcard .k { font-size: 14px; font-weight: 500; color: var(--fg-3); margin-bottom: 14px; display: flex; gap: 8px; align-items: center; }
+  .pcard h3 { font-size: 32px; font-weight: 400; letter-spacing: -0.03em; line-height: 1.12; text-wrap: balance; }
+  .pcard p.t { margin-top: 12px; font-size: 17px; color: var(--fg-2); }
+  .pcard .actions { margin-top: 28px; }
+  .pcard .small { margin-top: 14px; }
+  .pcard.hot .k, .pcard.hot p.t, .pcard.hot .small { color: rgba(255,255,255,.88); }
+  .pcard.hot .btn-light { background: #fff; color: #1a1714; }
+  .pcard.hot .btn-light:hover { background: #f0ebe6; }
+  .pcard.hot .btn-line { border-color: rgba(255,255,255,.6); color: #fff; }
+  .pcard.hot .btn-line:hover { background: rgba(255,255,255,.1); }
+  .pcard .vis { position: relative; align-self: stretch; display: grid; place-items: center; min-height: 420px; }
+  .pcard .vis .win { width: 100%; max-width: 640px; }
+  .pcard .vis.desk { gap: 18px; align-content: center; justify-items: center; }
+  .pcard .vis.desk .win { max-width: 560px; }
+  .pcard .vis.ph { justify-content: center; }
+  .pcard .vis.ph { align-self: end; min-height: 0; height: 500px; align-items: start; margin-bottom: -48px; }
+  .pcard .vis.ph .phone { width: 270px; translate: 0 8px; }
+
+  /* ======================================================= C: light re-take, a switcher */
+  .c-band { background: #f2efe9; color: #1b1916; padding: 120px 0 128px; margin-top: 80px; }
+  .c-band .label { color: #6f6a62; }
+  .c-band .lead { color: #57534c; }
+  .c-grid { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 72px; align-items: center; }
+  .tabs { margin-top: 36px; display: inline-flex; padding: 4px; gap: 2px; border-radius: 10px; background: #e5e1d9; flex-wrap: wrap; }
+  .tabs button { height: 36px; padding: 0 14px; border-radius: 7px; font-size: 14px; font-weight: 500; color: #57534c; transition: background-color .2s, color .2s, box-shadow .2s; }
+  .tabs button[aria-selected="true"] { background: #fff; color: #1b1916; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+  .tabs button:hover:not([aria-selected="true"]) { color: #1b1916; }
+  .panel { margin-top: 28px; min-height: 150px; }
+  .panel[hidden] { display: none; }
+  .panel p.t { font-size: 17px; color: #3c3933; max-width: 26em; }
+  .panel .actions { margin-top: 22px; }
+  .panel .small { margin-top: 12px; color: #6f6a62; }
+  .panel .small a { color: #3c3933; text-decoration-color: rgba(0,0,0,.3); }
+  .c-band .btn-dark { background: #1b1916; color: #fff; }
+  .c-band .btn-dark:hover { background: #33302b; }
+  .c-band .btn-out { border-color: rgba(0,0,0,.3); color: #1b1916; }
+  .c-band .btn-out:hover { border-color: rgba(0,0,0,.55); background: rgba(0,0,0,.04); }
+  .c-stage { position: relative; height: 580px; }
+  .c-stage > * { position: absolute; transition: opacity .55s var(--ease), transform .7s var(--ease); }
+  .c-stage .win { left: 0; top: 30px; width: 100%; max-width: 660px; box-shadow: 0 40px 80px -40px rgba(40,30,20,.55), 0 0 0 1px rgba(0,0,0,.08); }
+  .c-stage .dock { left: 50%; top: 500px; transform: translate(-50%, 12px); opacity: 0; background: rgba(0,0,0,.06); border-color: rgba(0,0,0,.08); }
+  .c-stage .dock span { background: rgba(0,0,0,.08); }
+  .c-stage .dock .me { background: #fff url(shots/ppq-icon.png) center / 110% no-repeat; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+  .c-stage .dock .me::after { background: #6f6a62; }
+  .c-stage .phone { left: 50%; top: 0; width: 262px; transform: translate(-50%, 40px); opacity: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 40px 70px -30px rgba(40,30,20,.6); }
+  .c-stage[data-v="desktop"] .dock { opacity: 1; transform: translate(-50%, 0); }
+  .c-stage[data-v="iphone"] .win, .c-stage[data-v="android"] .win { opacity: 0; transform: scale(.94); }
+  .c-stage[data-v="iphone"] .phone, .c-stage[data-v="android"] .phone { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- phones ---------- */
+  @media (max-width: 900px) {
+    .story { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .stage-wrap { order: -1; z-index: 3; height: 46svh; background: linear-gradient(var(--bg) 90%, rgba(12,11,10,0)); }
+    .steps { padding: 0 0 20vh; position: relative; z-index: 1; }
+    .step { min-height: 60svh; justify-content: flex-start; padding-top: 4svh; }
+    .step h3 { font-size: 26px; }
+    .a-intro { min-height: auto; padding: 24px 0 48px; }
+    .b-head { grid-template-columns: minmax(0, 1fr); }
+    .pcard { grid-template-columns: minmax(0, 1fr); padding: 28px 22px 0; min-height: 0; gap: 28px; position: relative; top: auto; }
+    .pcard .vis { min-height: 0; padding-bottom: 28px; }
+    .pcard .vis.ph { overflow: hidden; height: 360px; padding: 0; align-items: start; }
+    .pcard .vis.ph { margin-bottom: 0; }
+    .pcard .vis.ph .phone { width: 220px; translate: 0 0; }
+    .pcard .vis.desk .dock { display: none; }
+    .c-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .c-stage { height: 400px; }
+    .c-stage .win { top: 20px; }
+    .c-stage .dock { top: 300px; }
+    .c-stage .phone { width: 180px; }
+    .c-band { padding: 80px 0 88px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="2" fill="currentColor"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="apple" viewBox="0 0 24 24"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></symbol>
+  <symbol id="play" viewBox="0 0 24 24"><path fill="currentColor" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594zM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924zm12.207 10.065l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973zm0 2.067l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21z"/></symbol>
+  <symbol id="inst" viewBox="0 0 16 16"><rect x="1.8" y="2.5" width="12.4" height="8.6" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 13.6h5M8 4.8v4M6.2 7.2 8 9l1.8-1.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="wrap study-top">
+  <h1>Chat section: three directions, round 1</h1>
+  <p>Each replaces the Models block on the Prometheus page (r7), after the enclave and the API, and keeps its type, colour and buttons. One chat, three ways in: the browser, the same app installed as a PWA, and the native app for iPhone and Android. The model picker moves inside this section, because choosing a model is part of chatting. Screens are the real app (build v0.75.0, written conversations, staged $18.42 balance).</p>
+  <ul>
+    <li>Checked in the app's code: the PWA opens straight into <code>/chat</code> in its own window; without an account, chats are saved only in that browser; the native app is <code>ai.ppq.mobile</code> on both stores.</li>
+    <li>Not checked, please confirm: store links, whether the native app also routes through the enclave, and whether it shares the balance with the web. The phone shows the mobile web app until we have a native screenshot.</li>
+    <li>388 chat models from 66 providers, Nov 14, 2026.</li>
+  </ul>
+</header>
+<nav class="jump" aria-label="Directions"><div class="wrap">
+  <a href="#a"><b>A</b>One stage, four steps (recommended)</a>
+  <a href="#b"><b>B</b>One card per way in</a>
+  <a href="#c"><b>C</b>Light switcher (re-take)</a>
+  <a href="../r7/prometheus.html#models"><b>·</b>Current (r7)</a>
+</div></nav>
+
+<!-- ======================================================= A -->
+<div class="wrap">
+  <div class="note" id="a"><b class="v">A</b><h3>One stage, four steps</h3><p>A short intro, then the scroll tells the story with one product window that changes as you read: the model picker, the chat in a browser tab, the install prompt that turns the tab into an app window with a dock icon, and the phone stepping in front. Each screen holds one step: a heading, a sentence, an action and the visual. The model chips and the big counter go; the picker itself shows the choice.</p></div>
+</div>
+<section class="variant">
+  <div class="wrap">
+    <div class="a-intro">
+      <p class="label">Chat</p>
+      <h2 class="display">Every model in one private chat.</h2>
+      <p class="lead">Use it in your browser, install it as an app, or take it on your phone.</p>
+    </div>
+    <div class="story" data-story>
+      <div class="steps">
+        <div class="step" data-s="1">
+          <p class="n">01</p>
+          <h3>Choose the model for the task.</h3>
+          <p class="t">Claude, GPT, Gemini, Grok and the best open models in one picker. Switch mid-conversation; one balance pays for all of them.</p>
+          <div class="act"><p class="count"><b>388</b><span>chat models from 66 providers · Nov 14, 2026</span></p></div>
+        </div>
+        <div class="step" data-s="2">
+          <p class="n">02</p>
+          <h3>Open it in any browser.</h3>
+          <p class="t">Nothing to download and no account to make. Without an account, your chats stay saved in that browser.</p>
+          <div class="act"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a></div>
+        </div>
+        <div class="step" data-s="3">
+          <p class="n">03</p>
+          <h3>Install it as an app.</h3>
+          <p class="t">Add PayPerQ to your dock or home screen. It opens in its own window, straight into a new chat.</p>
+          <div class="act"><p class="small">Chrome and Edge: the install icon in the address bar.<br>Safari: Share, then Add to Dock or Add to Home Screen.</p></div>
+        </div>
+        <div class="step" data-s="4">
+          <p class="n">04</p>
+          <h3>Take it on your phone.</h3>
+          <p class="t">A standalone app for iPhone and Android, with the same models.</p>
+          <div class="act actions"><a class="btn btn-secondary" href="#"><svg class="ico"><use href="#apple"/></svg>App Store</a><a class="btn btn-secondary" href="#"><svg class="ico sm"><use href="#play"/></svg>Google Play</a></div>
+        </div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage" data-step="1" aria-hidden="true">
+          <div class="win">
+            <div class="bar"><span class="dots"><i></i><i></i><i></i></span>
+              <span class="url"><svg><use href="#lock"/></svg>ppq.ai/chat<svg class="inst"><use href="#inst"/></svg></span>
+              <span class="title"><img src="shots/ppq-icon.png" alt="">PayPerQ</span></div>
+            <div class="screen">
+              <img class="s-pick" src="shots/picker-dark.webp" alt="">
+              <img class="s-ans" src="shots/answer-dark.webp" alt="" loading="lazy">
+              <img class="s-new" src="shots/newchat-dark.webp" alt="" loading="lazy">
+            </div>
+          </div>
+          <div class="pop"><div class="row"><img src="shots/ppq-icon.png" alt=""><div><b>Install app?</b><small>PayPerQ · ppq.ai</small></div></div><div class="btns"><span class="no">Cancel</span><span class="yes">Install</span></div></div>
+          <div class="dock"><span></span><span></span><span class="me"></span><span></span></div>
+          <div class="phone"><img src="shots/m-answer-dark.webp" alt="" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= B -->
+<div class="wrap">
+  <div class="note" id="b"><b class="v">B</b><h3>One card per way in</h3><p>The heading and the model strip stay close to today's section, then three cards stack as you scroll, one per way in, each with its own composition: a wide browser window, an app window with its dock icon, and an orange card with the phone and the store buttons. Less storytelling than A, more like a product menu. The orange card is the one accent block in the section.</p></div>
+</div>
+<section class="variant">
+  <div class="wrap">
+    <div class="b-head">
+      <div>
+        <p class="label">Chat</p>
+        <h2 class="display">One private chat for every model.</h2>
+        <p class="lead">Claude, GPT, Gemini, Grok and the best open models. One balance, switch any time.</p>
+      </div>
+    </div>
+  </div>
+  <div class="strip" aria-label="Some of the available models">
+    <div class="row">
+      <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Opus 5.5</span>
+      <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6.1 Sol</span>
+      <span class="pill"><img src="../assets/logos/models/gemini.svg" alt="">Gemini 4 Argon</span>
+      <span class="pill"><img class="inv" src="../assets/logos/models/xai.svg" alt="">Grok 4.7</span>
+      <span class="pill"><img src="../assets/logos/models/deepseek.svg" alt="">DeepSeek V4.1 Flash</span>
+      <span class="pill"><img class="inv" src="../assets/logos/models/moonshot.svg" alt="">Kimi K3.1 Pro</span>
+      <span class="pill"><img class="inv" src="../assets/logos/models/zai.svg" alt="">GLM 5.3</span>
+      <span class="pill"><img src="../assets/logos/models/qwen.svg" alt="">Qwen3.8 Flash</span>
+      <span class="pill"><img src="../assets/logos/models/mistral.svg" alt="">Mistral Large 4</span>
+      <span aria-hidden="true" style="display:contents">
+        <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Opus 5.5</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6.1 Sol</span>
+        <span class="pill"><img src="../assets/logos/models/gemini.svg" alt="">Gemini 4 Argon</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/xai.svg" alt="">Grok 4.7</span>
+        <span class="pill"><img src="../assets/logos/models/deepseek.svg" alt="">DeepSeek V4.1 Flash</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/moonshot.svg" alt="">Kimi K3.1 Pro</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/zai.svg" alt="">GLM 5.3</span>
+        <span class="pill"><img src="../assets/logos/models/qwen.svg" alt="">Qwen3.8 Flash</span>
+        <span class="pill"><img src="../assets/logos/models/mistral.svg" alt="">Mistral Large 4</span>
+      </span>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="stack">
+      <article class="pcard" style="--i:0">
+        <div>
+          <p class="k">In your browser</p>
+          <h3>Open a tab and start.</h3>
+          <p class="t">No download and no account. Without an account, your chats stay in that browser.</p>
+          <div class="actions"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a></div>
+        </div>
+        <div class="vis">
+          <div class="win">
+            <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url"><svg><use href="#lock"/></svg>ppq.ai/chat</span></div>
+            <div class="screen"><img src="shots/answer-dark.webp" alt="The PayPerQ chat in a browser tab: a reply drafted by Claude Sonnet 5.5, served inside the enclave." loading="lazy"></div>
+          </div>
+        </div>
+      </article>
+      <article class="pcard" style="--i:1">
+        <div>
+          <p class="k">On your computer</p>
+          <h3>Install it like an app.</h3>
+          <p class="t">PayPerQ gets its own window and a place in your dock, and opens straight into a new chat.</p>
+          <p class="small">Chrome and Edge: the install icon in the address bar. Safari: Share, then Add to Dock.</p>
+        </div>
+        <div class="vis desk">
+          <div class="win pwa">
+            <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="title"><img src="shots/ppq-icon.png" alt="">PayPerQ</span></div>
+            <div class="screen"><img src="shots/newchat-dark.webp" alt="PayPerQ installed as an app: its own window with no address bar, on a new chat." loading="lazy"></div>
+          </div>
+          <div class="dock" aria-hidden="true"><span></span><span></span><span class="me"></span><span></span></div>
+        </div>
+      </article>
+      <article class="pcard hot" style="--i:2">
+        <div>
+          <p class="k">On your phone</p>
+          <h3>A native app for iPhone and Android.</h3>
+          <p class="t">A standalone app, with the same models in your pocket.</p>
+          <div class="actions"><a class="btn btn-light" href="#"><svg class="ico"><use href="#apple"/></svg>App Store</a><a class="btn btn-line" href="#"><svg class="ico sm"><use href="#play"/></svg>Google Play</a></div>
+          <p class="small">Or add the web app to your home screen.</p>
+        </div>
+        <div class="vis ph">
+          <div class="phone"><img src="shots/m-answer-dark.webp" alt="The PayPerQ app on a phone, with the same conversation." loading="lazy"></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= C -->
+<div class="wrap">
+  <div class="note" id="c"><b class="v">C</b><h3>Light switcher (re-take)</h3><p>The opposite of A: no scroll story, one screen, and a light surface that breaks the run of dark sections. The visitor picks where they chat (Browser, Computer, iPhone, Android) and the one visual changes to match, with one line and the right button each. Shortest of the three; the model choice is only named in the lead.</p></div>
+</div>
+<section class="c-band">
+  <div class="wrap c-grid">
+    <div>
+      <p class="label">Chat</p>
+      <h2 class="display">Every model in one private chat.</h2>
+      <p class="lead">Claude, GPT, Gemini, Grok and the best open models. Where do you want to use them?</p>
+      <div class="tabs" role="tablist" aria-label="Where you chat">
+        <button role="tab" aria-selected="true" aria-controls="p-browser" data-v="browser">Browser</button>
+        <button role="tab" aria-selected="false" aria-controls="p-desktop" data-v="desktop">Computer</button>
+        <button role="tab" aria-selected="false" aria-controls="p-iphone" data-v="iphone">iPhone</button>
+        <button role="tab" aria-selected="false" aria-controls="p-android" data-v="android">Android</button>
+      </div>
+      <div class="panel" id="p-browser" role="tabpanel">
+        <p class="t">Open a tab and start. No download, no account, and your chats stay in that browser.</p>
+        <div class="actions"><a class="btn btn-dark" href="https://ppq.ai/chat">Start chatting</a></div>
+      </div>
+      <div class="panel" id="p-desktop" role="tabpanel" hidden>
+        <p class="t">Install the web app: its own window, a place in your dock, straight into a new chat.</p>
+        <p class="small">Chrome and Edge: the install icon in the address bar. Safari: Share, then Add to Dock.</p>
+      </div>
+      <div class="panel" id="p-iphone" role="tabpanel" hidden>
+        <p class="t">The native PayPerQ app for iPhone, with the same models.</p>
+        <div class="actions"><a class="btn btn-dark" href="#"><svg class="ico"><use href="#apple"/></svg>App Store</a></div>
+      </div>
+      <div class="panel" id="p-android" role="tabpanel" hidden>
+        <p class="t">The native PayPerQ app for Android, with the same models.</p>
+        <div class="actions"><a class="btn btn-dark" href="#"><svg class="ico sm"><use href="#play"/></svg>Google Play</a></div>
+      </div>
+    </div>
+    <div class="c-stage" data-v="browser" aria-hidden="true">
+      <div class="win" id="c-win">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span>
+          <span class="url"><svg><use href="#lock"/></svg>ppq.ai/chat</span>
+          <span class="title"><img src="shots/ppq-icon.png" alt="">PayPerQ</span></div>
+        <div class="screen"><img src="shots/answer-dark.webp" alt="" loading="lazy"></div>
+      </div>
+      <div class="dock"><span></span><span></span><span class="me"></span><span></span></div>
+      <div class="phone"><img src="shots/m-answer-dark.webp" alt="" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+<div class="end"></div>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* A: scale the fixed-size stage to fit its sticky box */
+  const stage = document.querySelector('.stage');
+  const fit = () => {
+    const box = stage.parentElement.getBoundingClientRect();
+    stage.style.setProperty('--k', Math.min(1, (box.width - 8) / 680, (box.height - 16) / 540).toFixed(3));
+  };
+  addEventListener('resize', fit); fit();
+
+  /* A: the step in the middle of the viewport drives the stage */
+  let popTimer;
+  const setStep = (n) => {
+    if (stage.dataset.step === String(n)) return;
+    const win = stage.querySelector('.win');
+    stage.dataset.step = n;
+    clearTimeout(popTimer); stage.classList.remove('popping');
+    if (n >= 3) {
+      if (win.classList.contains('pwa') || reduce) { win.classList.add('pwa'); return; }
+      /* the install prompt appears from the address bar, then the tab becomes an app window */
+      stage.classList.add('popping');
+      popTimer = setTimeout(() => { stage.classList.remove('popping'); win.classList.add('pwa'); }, 1500);
+    } else {
+      win.classList.remove('pwa');
+    }
+  };
+  const steps = [...document.querySelectorAll('.step')];
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => { if (e.isIntersecting) {
+      steps.forEach((s) => s.classList.toggle('on', s === e.target));
+      setStep(+e.target.dataset.s);
+    } });
+  }, { rootMargin: matchMedia('(max-width: 900px)').matches ? '-72% 0px -24% 0px' : '-45% 0px -45% 0px' });
+  steps.forEach((s) => io.observe(s));
+  steps[0].classList.add('on');
+
+  /* C: tabs swap the one visual */
+  const cStage = document.querySelector('.c-stage');
+  const cWin = document.getElementById('c-win');
+  const tabs = [...document.querySelectorAll('.tabs [role=tab]')];
+  const pick = (t) => {
+    tabs.forEach((b) => { const on = b === t; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; document.getElementById(b.getAttribute('aria-controls')).hidden = !on; });
+    const v = t.dataset.v;
+    cStage.dataset.v = v;
+    cWin.classList.toggle('pwa', v === 'desktop');
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => pick(t));
+    t.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); pick(n); }
+    });
+  });
+</script>
+</body>
+</html>

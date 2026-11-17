@@ -1,0 +1,137 @@
+{
+  "vertex": "#version 300 es\nprecision highp float;\nprecision highp int;\nin vec3 aVertexPosition;\nin vec2 aTextureCoord;\nuniform vec2 uResolution;\nuniform vec2 uPos;\nuniform float uTime;\nuniform float uScale;\nuniform vec3 uRotation;\nuniform float uWidth;\nuniform float uThickness;\nuniform float uOpening;\nuniform float uBreath;\nuniform float uBreathSpeed;\nout vec2 vTextureCoord;\nout vec3 vNormal;\nout vec3 vWorld;\nout vec2 vSurface;\nconst float TAU = 6.28318530718;\nmat3 turn(vec3 a) {\n  vec3 c = cos(a);\n  vec3 s = sin(a);\n  return mat3(c.z,-s.z,0.0,s.z,c.z,0.0,0.0,0.0,1.0) * mat3(c.y,0.0,s.y,0.0,1.0,0.0,-s.y,0.0,c.y) * mat3(1.0,0.0,0.0,0.0,c.x,-s.x,0.0,s.x,c.x);\n}\nvec3 surface(float angle, float crossAngle, float phase) {\n  float ca = cos(angle);\n  float sa = sin(angle);\n  float doubleWave = sin(2.0 * angle + 0.4);\n  float openRadius = 0.75 + uOpening * 0.65;\n  vec3 center = vec3(1.85 * ca * openRadius, 1.06 * sa, 0.38 * doubleWave);\n  vec3 tangent = normalize(vec3(-1.85 * sa * openRadius, 1.06 * ca, 0.76 * cos(2.0 * angle + 0.4)));\n  vec3 radial = normalize(vec3(ca / 1.85, sa / 1.06, 0.0));\n  vec3 binormal = normalize(cross(radial, tangent));\n  radial = normalize(cross(tangent, binormal));\n  float twist = angle + 0.58 * doubleWave + 0.2 + uBreath * 0.65 * sin(phase + angle);\n  float wide = (0.14 + uWidth * 0.52) * (0.82 + 0.18 * cos(angle - 0.5));\n  float thick = 0.012 + 0.075 * uThickness;\n  vec2 section = vec2(cos(crossAngle), sin(crossAngle));\n  section = sign(section) * pow(abs(section), vec2(0.38));\n  float sx = section.x * wide;\n  float sy = section.y * thick;\n  return center + radial * (sx * cos(twist) - sy * sin(twist)) + binormal * (sx * sin(twist) + sy * cos(twist));\n}\nvoid main() {\n  float time = uTime * 0.025;\n  float phase = time * (0.28 + 0.72 * uBreathSpeed);\n  float angle = aTextureCoord.x * TAU;\n  float crossAngle = aTextureCoord.y * TAU;\n  vec3 point = surface(angle, crossAngle, phase);\n  vec3 du = surface(angle + 0.001, crossAngle, phase) - surface(angle - 0.001, crossAngle, phase);\n  vec3 dv = surface(angle, crossAngle + 0.001, phase) - surface(angle, crossAngle - 0.001, phase);\n  vec3 normal = normalize(cross(du, dv));\n  mat3 rotation = turn(uRotation * TAU);\n  point = rotation * point;\n  normal = rotation * normal;\n  float size = 0.65 + 0.95 * uScale;\n  point *= size;\n  float horizontalFit = min(uResolution.x / (uResolution.y * 1.6), 1.0);\n  point.x *= horizontalFit;\n  normal.x /= horizontalFit;\n  float viewDistance = 4.8 - point.z;\n  float focal = 3.7;\n  float aspect = uResolution.x / uResolution.y;\n  vec2 projected = vec2(point.x * focal / aspect, point.y * focal);\n  vec2 anchor = (uPos - 0.5) * 2.0;\n  float nearPlane = 0.1;\n  float farPlane = 20.0;\n  float depth = ((farPlane + nearPlane) / (farPlane - nearPlane)) * viewDistance - (2.0 * farPlane * nearPlane) / (farPlane - nearPlane);\n  gl_Position = vec4(projected + anchor * viewDistance, depth, viewDistance);\n  gl_Position.xy += aVertexPosition.xy * 0.00000001;\n  vWorld = point;\n  vNormal = normal;\n  vTextureCoord = aTextureCoord;\n  vSurface = vec2(angle, crossAngle);\n}",
+  "fragment": "#version 300 es\nprecision highp float;\nprecision highp int;\nin vec2 vTextureCoord;\nin vec3 vNormal;\nin vec3 vWorld;\nin vec2 vSurface;\nuniform vec3 uCopperColor;\nuniform vec3 uEdgeColor;\nuniform float uBrightness;\nuniform float uRoughness;\nuniform float uTime;\nuniform float uLightSpeed;\nuniform float uFilament;\nout vec4 fragColor;\nfloat studio(vec3 ray, vec3 axis, float sharpness) {\n  return pow(max(dot(ray, normalize(axis)), 0.0), sharpness);\n}\nfloat softbox(vec3 ray, vec3 direction, vec2 dimensions, float softness) {\n  vec3 axis = normalize(direction);\n  vec3 horizontal = normalize(cross(axis, vec3(0.0, 1.0, 0.0)));\n  vec3 vertical = cross(horizontal, axis);\n  float front = dot(ray, axis);\n  vec2 uv = vec2(dot(ray, horizontal), dot(ray, vertical)) / max(front, 0.001);\n  vec2 distanceToBox = abs(uv) - dimensions;\n  float outside = length(max(distanceToBox, 0.0));\n  float inside = min(max(distanceToBox.x, distanceToBox.y), 0.0);\n  float distanceToEdge = outside + inside;\n  return (1.0 - smoothstep(0.0, softness, distanceToEdge)) * step(0.0, front);\n}\nvoid main() {\n  float time = uTime * 0.025;\n  float phase = time * (0.18 + uLightSpeed * 0.82);\n  vec3 normal = normalize(vNormal);\n  vec3 view = normalize(vec3(0.0, 0.0, 4.8) - vWorld);\n  if (dot(normal, view) < 0.0) {\n    normal *= -1.0;\n  }\n  vec3 reflected = reflect(view * -1.0, normal);\n  float roughness = 0.1 + uRoughness * 0.65;\n  float exponent = mix(110.0, 15.0, roughness);\n  float softness = 0.025 + roughness * 0.18;\n  float key = softbox(reflected, vec3(-0.65, 0.55, 1.45), vec2(0.065, 1.3), softness);\n  float wide = studio(reflected, vec3(0.8, 0.25, 1.0), 5.0);\n  float strip = softbox(reflected, vec3(1.0, -0.2, 0.65), vec2(0.045, 1.4), softness);\n  float moving = softbox(reflected, vec3(0.45 * sin(phase), -0.55, 1.0), vec2(1.25, 0.025), softness * 1.4);\n  float diffuse = max(dot(normal, normalize(vec3(-0.45, 0.8, 1.2))), 0.0);\n  float grazing = pow(1.0 - max(dot(normal, view), 0.0), 3.0);\n  vec3 copper = pow(uCopperColor, vec3(2.2));\n  vec3 edge = pow(uEdgeColor, vec3(2.2));\n  vec3 radiance = copper * (0.015 + 0.10 * diffuse + 0.24 * wide);\n  radiance += mix(copper, edge, 0.45) * key * 1.4;\n  radiance += mix(copper, edge, 0.3) * strip * 2.0;\n  radiance += copper * (moving * 1.2 + grazing * 0.25);\n  float innerEdge = pow(max(-cos(vSurface.y), 0.0), 10.0);\n  float flow = 0.52 + 0.48 * cos(vSurface.x * 2.0 - phase);\n  float seam = innerEdge * (0.4 + 0.6 * flow);\n  float ribbonCoordinate = cos(vSurface.y);\n  float channels = pow(0.5 + 0.5 * sin(ribbonCoordinate * 28.0 + 1.25 * sin(vSurface.x * 2.0 - phase)), 12.0);\n  float moltenFace = pow(max(sin(vSurface.y), 0.0), 0.7);\n  float heat = moltenFace * (0.22 + 0.24 * flow + channels * 0.35);\n  radiance += copper * heat * uFilament * 1.8;\n  radiance += edge * seam * uFilament * 1.6;\n  radiance *= 0.45 + uBrightness * 1.8;\n  vec3 color = pow(radiance / (1.0 + radiance), vec3(0.454545));\n  fragColor = vec4(color, 1.0);\n}",
+  "properties": {
+    "pos": {
+      "label": "Position",
+      "value": {
+        "type": "Vec2",
+        "_x": 0.5,
+        "_y": 0.44
+      },
+      "tooltip": "Moves the sculpture around the hero"
+    },
+    "scale": {
+      "label": "Scale",
+      "value": 0.63,
+      "tooltip": "Higher values enlarge the sculpture",
+      "canvasControl": "size"
+    },
+    "rotation": {
+      "label": "Rotation",
+      "value": {
+        "type": "Vec3",
+        "_x": 0.018,
+        "_y": 0.04,
+        "_z": 0.97
+      },
+      "tooltip": "Turns the sculpture around its three axes"
+    },
+    "width": {
+      "label": "Ribbon width",
+      "value": 0.45,
+      "tooltip": "Higher values make the folded ribbon broader",
+      "header": "Sculpture"
+    },
+    "thickness": {
+      "label": "Edge thickness",
+      "value": 0.23,
+      "tooltip": "Higher values thicken the machined ribbon edge",
+      "header": "Sculpture"
+    },
+    "opening": {
+      "label": "Opening",
+      "value": 0.6,
+      "tooltip": "Higher values widen the protected central space",
+      "header": "Sculpture"
+    },
+    "copperColor": {
+      "label": "Lava",
+      "value": {
+        "type": "Vec3",
+        "_x": 0.88,
+        "_y": 0.2,
+        "_z": 0.045
+      },
+      "tooltip": "Sets the red orange molten surface color",
+      "header": "Material"
+    },
+    "edgeColor": {
+      "label": "Ember",
+      "value": {
+        "type": "Vec3",
+        "_x": 1,
+        "_y": 0.38,
+        "_z": 0.065
+      },
+      "tooltip": "Sets the hottest inner edge color",
+      "header": "Material"
+    },
+    "brightness": {
+      "label": "Brightness",
+      "value": 0.68,
+      "tooltip": "Higher values make the metal reflections brighter",
+      "header": "Material"
+    },
+    "roughness": {
+      "label": "Roughness",
+      "value": 0.4,
+      "tooltip": "Higher values soften the studio reflections",
+      "header": "Material"
+    },
+    "filament": {
+      "label": "Molten light",
+      "value": 0.8,
+      "tooltip": "Higher values brighten the flowing lava channels",
+      "header": "Material"
+    },
+    "amount": {
+      "label": "Opacity",
+      "value": 0.9,
+      "tooltip": "Higher values make the sculpture more visible",
+      "header": "Composition"
+    },
+    "quietCenter": {
+      "label": "Quiet center",
+      "value": 0.74,
+      "tooltip": "Higher values darken the area behind the headline",
+      "header": "Composition"
+    },
+    "speed": {
+      "label": "Speed",
+      "value": 0.32,
+      "tooltip": "Higher values accelerate the entire animation"
+    },
+    "breath": {
+      "label": "Flex",
+      "value": 0.62,
+      "tooltip": "Higher values increase the gentle ribbon flex",
+      "header": "Animation"
+    },
+    "breathSpeed": {
+      "label": "Flex speed",
+      "value": 0.45,
+      "tooltip": "Higher values speed up the ribbon flex",
+      "header": "Animation"
+    },
+    "lightSpeed": {
+      "label": "Light speed",
+      "value": 0.65,
+      "tooltip": "Higher values move reflections faster",
+      "header": "Animation"
+    },
+    "blendMode": {
+      "label": "Blend Mode",
+      "value": "NORMAL",
+      "uniformName": "uBlendMode",
+      "options": {
+        "NORMAL": "Normal",
+        "ADD": "Add",
+        "SCREEN": "Screen",
+        "MULTIPLY": "Multiply"
+      },
+      "tooltip": "Changes how the sculpture combines with the background"
+    }
+  },
+  "description": "An animated ember and lava fold protects an empty interior, with flowing orange red light around a quiet center for hero typography"
+}

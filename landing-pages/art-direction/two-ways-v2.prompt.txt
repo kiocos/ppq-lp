@@ -1,0 +1,44 @@
+Use case: ui-mockup. Edit the supplied PPQ / PayPerQ website concept into a significantly more spacious, more tasteful premium design. This image is the EDIT TARGET. Retain the exact Two ways architecture and the ink-black / copper art direction, but CORRECT the overly compressed full-page composition.
+
+CRITICAL CHANGE: EXPAND THE VERTICAL CANVAS. This is a LONG scrolling desktop webpage, with image height approximately THREE TIMES its width (aim 1024 x 3072 or 1280 x 3840). It must not remain a short 2:3 promotional poster. Preserve desktop-width proportions inside the tall canvas. Render the complete page with all eight chapters, in this order: hero, enclave, provider privacy, model choice, pay per use, API, wallet, closing. Put at least one generous blank band between every pair of chapters, about 100–140 px at a 1280 px desktop-width composition. Make the website breathe. Whitespace and visual hierarchy have priority over squeezing all small print into view. Body copy may be condensed to the supplied original key sentences, but do not invent claims or change any main headline.
+
+KEEP
+The hero title is CENTERED: “Your favorite AI models, with privacy you can verify.”
+Below it, centered supporting text and two CTAs “Start chatting” and “Explore API connections”.
+Below that, two equal-height product views side by side: OpenCode LEFT at 62%, PPQ chat RIGHT at 38%. The terminal remains larger and commercially prominent.
+Enclave is copy on the left and verification visual on the right.
+Provider privacy has heading left / intro right, then three UNBOXED columns: Anon, Zero Data Retention, End-to-end encrypted models.
+Model choice has copy left / a detailed chat model-picker crop right.
+Pay per use has headline left / intro right / three unboxed benefits.
+API has headline left / intro right, then the WIDEST product demonstration.
+Wallet has copy left / Bitcoin, Lightning, Monero stacked on the right.
+Closing is heading left / copy and two CTAs right.
+
+REFINE THE AESTHETIC
+This should look like an award-caliber product website with the clarity of Jitter and the premium art direction of Luma, not a dense infographic or generic AI SaaS template.
+Use bold but refined Geist-like typography. Main hero heading should have strong scale and two or three clean lines with very large breathing room above and below. Use smaller, lighter body text with comfortable line height. No serif.
+Use warm charcoal #151515, layered graphite panels, creamy white type, and rich burnt orange #bf3c1b with subtle lighter copper #e97d49 details. Keep the single copper grazing-light backdrop in the hero, but reduce it: precise, luxurious, almost photographic satin-charcoal texture. No broad orange haze. A little deliberate warm light on the edge of the product surfaces is enough. Let the backdrop gently disappear into plain charcoal around the next section.
+The page must show variation in scale, careful editorial cropping and beautifully rendered, practical interfaces. Deep soft shadows and thin precise edge highlights rather than a glowy orange border on every box.
+Make the hero product pair substantial, highly detailed and impeccably legible. The terminal can show a project file tree and “Explain this codebase.”, and the chat should show a graceful open model picker. Use ONLY the model family labels “Claude”, “GPT”, and “Open-weight models”, without old model versions, claimed capabilities or invented prices.
+Remove fabricated SDK names, fake import paths, verification hashes, performance numbers and tiny gibberish. In the API showcase use a believable OpenCode project interface and the prompt “Explain this codebase.” plus PPQ model access. Keep any code neutral and incidental.
+Remove repeated hard horizontal separators between EVERY chapter. Use true empty space as the primary separator; retain fine rules in the privacy comparison and wallet band. Avoid page-length vertical rules.
+
+MAIN HEADLINES, EXACTLY:
+“Your favorite AI models, with privacy you can verify.”
+“Your chat traffic stays unreadable to us.”
+“Know what your model provider can see.”
+“Choose the model for the task.”
+“Your AI spending follows your usage.”
+“Your models can work beyond this chat.”
+“Start from your wallet.”
+“More choice in AI. More control over how you use it.”
+
+Important subordinate copy:
+Hero: “Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.”
+Enclave: “Built to be checked”, “Published code”, “Reproducible builds”, “Independent verification”. Scope note: “This protection covers chat requests. Other features have different processing paths.”
+Privacy: “Anon” — “The provider can read your prompt and may retain it under its policies.”; “Zero Data Retention” — “The provider processes your request under an agreement not to store prompts or replies.”; “End-to-end encrypted models” — “The model itself runs inside a protected enclave, shielding the conversation’s contents from its hosting provider.”
+Usage: “Match the model to the job”, “Know what you’re paying for”, “Keep one balance”.
+API: “One connection to multiple providers”, “Start with a supported app”, “Find an app to connect ↗”.
+Wallet: “Fund your balance with Bitcoin, Lightning, or Monero. No email registration required.” “No PPQ subscription · One prepaid balance”.
+
+Do not add new sections, floating balls, padlocks, abstract chips, crypto coins, logos as confetti, testimonials, awards, annotations, wireframe labels, playback controls, browser or device frames. The output should be a beautiful, complete, tall desktop-webpage mockup with noticeably MORE NEGATIVE SPACE than the input.

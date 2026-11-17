@@ -1,0 +1,20 @@
+import { openApp, APP } from './app-common.mjs';
+const { ctx, page } = await openApp({ dpr: 1 });
+page.on('response', async (r) => { if (r.url().includes('/credit')) console.log('credit', (await r.text()).slice(0, 400)); });
+await page.goto(APP + '/chat', { waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(9000);
+const S = '../app-captures/_scratch/';
+await page.screenshot({ path: S + 'x-chat.png' });
+// open the model picker
+const picker = page.getByRole('button', { name: /GPT-6 Luna|Luna/ }).first();
+console.log('picker count', await picker.count());
+await picker.click().catch(e => console.log('picker click fail', e.message));
+await page.waitForTimeout(1500);
+await page.screenshot({ path: S + 'x-picker.png' });
+await page.keyboard.press('Escape');
+await page.waitForTimeout(500);
+await page.getByText('Verified', { exact: true }).first().click().catch(e => console.log('verified fail', e.message));
+await page.waitForTimeout(2500);
+await page.screenshot({ path: S + 'x-verified.png' });
+console.log('ls', await page.evaluate(() => JSON.stringify(Object.fromEntries(Object.entries(localStorage).map(([k, v]) => [k, v.slice(0, 80)])))));
+await ctx.close();

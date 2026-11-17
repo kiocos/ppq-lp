@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PPQ · Privacy, told by scroll (round 5 copy)</title>
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; }
+  :root { --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f; --panel: #141311; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-ink: #e97d49; --good: #5fd39a; --sans: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+    --ease: cubic-bezier(.2,.7,.2,1); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+  h2, h3, p { margin: 0; }
+  a { color: inherit; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+  .spacer { height: 40vh; display: grid; place-items: center; color: var(--fg-3); font-size: 14px; }
+
+  .intro { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; }
+  .label { font-size: 14px; font-weight: 500; color: var(--fg-3); margin-bottom: 14px; }
+  .intro h2 { font-size: 48px; font-weight: 400; letter-spacing: -0.032em; line-height: 1.08; }
+  .intro .sub { margin-top: 20px; font-size: 18px; color: var(--fg-2); max-width: 30em; text-wrap: pretty; }
+
+  .story { display: grid; grid-template-columns: 420px 1fr; gap: 72px; }
+  .steps { padding: 10vh 0 30vh; }
+  .step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; opacity: .2; transition: opacity .5s var(--ease); }
+  .step.on { opacity: 1; }
+  .step .n { font: 13px var(--mono); color: var(--fg-3); margin-bottom: 12px; }
+  .step h3 { font-size: 28px; font-weight: 400; letter-spacing: -0.022em; line-height: 1.18; text-wrap: balance; }
+  .step p { margin-top: 12px; font-size: 17px; color: var(--fg-2); max-width: 25em; text-wrap: pretty; }
+  .step .src { margin-top: 20px; font-size: 14px; color: var(--fg-3); }
+  .step .src a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+
+  .stage-wrap { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
+  .stage { position: relative; width: 640px; height: 440px; }
+  .stage > * { position: absolute; transition: opacity .6s var(--ease), transform .7s var(--ease), border-color .5s, background-color .5s, box-shadow .5s; }
+
+  .server { inset: 20px 40px; border: 1px dashed rgba(255,255,255,.22); border-radius: 16px; opacity: 0; }
+  .server .k { position: absolute; top: -10px; left: 18px; padding: 0 8px; background: var(--bg); font-size: 13px; font-weight: 500; color: var(--fg-3); }
+
+  .card { left: 50%; top: 50%; width: 380px; margin: -70px 0 0 -190px; min-height: 140px; padding: 20px 22px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+  .card .k { font-size: 13px; font-weight: 500; color: var(--fg-3); transition: color .5s; }
+  .card .txt { margin-top: 8px; font-size: 17px; line-height: 1.45; min-height: 3em; word-break: break-word; }
+  .card .txt.c { font: 14px/1.6 var(--mono); color: var(--fg-3); word-break: break-all; }
+
+  .meta { left: 50%; top: calc(50% + 92px); transform: translateX(-50%); display: flex; gap: 6px; align-items: center; opacity: 0; white-space: nowrap; font-size: 13px; color: var(--fg-3); }
+  .chip { font: 12px var(--mono); padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,.06); color: var(--fg-2); }
+
+  .ip { left: 0; top: 50%; transform: translate(0, -50%); opacity: 0; font-size: 13px; color: var(--fg-3); }
+  .ip .chip { display: inline-block; margin-top: 6px; text-decoration: line-through; text-decoration-color: rgba(255,255,255,.45); }
+
+  .fp { inset: 60px 0; opacity: 0; display: flex; flex-direction: column; justify-content: center; }
+  .fp .row { padding: 20px 0; border-top: 1px solid var(--line); }
+  .fp .row:last-child { border-bottom: 1px solid var(--line); }
+  .fp .k { font-size: 14px; color: var(--fg-3); }
+  .fp .hash { margin-top: 8px; font: 21px/1.3 var(--mono); letter-spacing: .02em; }
+  .fp .hash i { font-style: normal; color: var(--fg-3); }
+  .fp .eq { display: flex; align-items: center; gap: 10px; padding: 14px 0; font-size: 15px; color: var(--good); }
+  .fp .eq span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(95,211,154,.5); font-size: 12px; }
+
+  .term { left: 0; right: 0; top: 50%; transform: translateY(-50%); opacity: 0; padding: 26px 28px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font: 15px/1.9 var(--mono); }
+  .term .dim { color: var(--fg-3); }
+
+  /* states */
+  .stage[data-s="2"] .server, .stage[data-s="3"] .server { opacity: 1; }
+  .stage[data-s="2"] .meta { opacity: 1; }
+  .stage[data-s="3"] .card { border-color: rgba(233,125,73,.65); background: #17120f; box-shadow: 0 0 0 10px var(--bg), 0 0 70px rgba(191,60,27,.2); }
+  .stage[data-s="3"] .card .k { color: var(--brand-ink); }
+  .stage[data-s="4"] .card { transform: translateX(120px); }
+  .stage[data-s="4"] .ip { opacity: 1; }
+  .stage[data-s="5"] > :not(.fp), .stage[data-s="6"] > :not(.term) { opacity: 0; }
+  .stage[data-s="5"] .fp, .stage[data-s="6"] .term { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) { .stage > *, .step { transition: none; } }
+</style>
+</head>
+<body>
+<div class="spacer">↑ hero and earlier sections</div>
+
+<section class="wrap" id="privacy">
+  <div class="intro">
+    <p class="label">Privacy</p>
+    <h2>Your chats run inside AWS Nitro Enclaves.<br>Even we can’t read them.</h2>
+    <p class="sub">Follow one message from your keyboard to the model, and see who can read it along the way.</p>
+  </div>
+
+  <div class="story">
+    <div class="steps">
+      <div class="step" data-s="1"><p class="n">01</p>
+        <h3>TLS runs from your device straight into the enclave.</h3>
+        <p>On most AI services, TLS ends at the company’s servers, and your prompt is readable there in plain text.</p></div>
+      <div class="step" data-s="2"><p class="n">02</p>
+        <h3>Our servers only relay ciphertext.</h3>
+        <p>We see the metadata: your IP address, the model, the token count. Never a word you wrote.</p></div>
+      <div class="step" data-s="3"><p class="n">03</p>
+        <h3>It’s decrypted only inside the AWS Nitro Enclave.</h3>
+        <p>Nitro hardware cuts it off from the server it runs on: no SSH, no disk, no root access. Our engineers can’t look inside.</p></div>
+      <div class="step" data-s="4"><p class="n">04</p>
+        <h3>The model provider gets your prompt, not your IP.</h3>
+        <p>The enclave forwards it to the provider you picked, like Anthropic, OpenAI or Google. What they keep depends on each model’s privacy label.</p></div>
+      <div class="step" data-s="5"><p class="n">05</p>
+        <h3>Don’t trust us. Check the hash.</h3>
+        <p>AWS signs a hash of the exact code running in the enclave, called PCR0. Your browser compares it with our open-source build on GitHub, which anyone can reproduce.</p></div>
+      <div class="step" data-s="6"><p class="n">06</p>
+        <h3>Or check it from your terminal.</h3>
+        <p>Our open-source verifier reads the AWS attestation itself, and refuses to send anything if the hash doesn’t match.</p>
+        <p class="src">Source: <a href="https://github.com/PayPerQ/ppq-enclave-proxy">ppq-enclave-proxy</a> · <a href="https://github.com/PayPerQ/ppq-privacy-verifier">ppq-privacy-verifier</a></p></div>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage" id="stage" data-s="1">
+        <div class="server"><span class="k">PayPerQ’s servers</span></div>
+        <div class="card"><p class="k" id="ck">Your message</p><p class="txt" id="ct">Summarize these board notes into five decisions.</p></div>
+        <div class="meta">What we see <span class="chip">203.0.113.7</span><span class="chip">claude-sonnet-5.5</span><span class="chip">412 tokens</span></div>
+        <div class="ip">Not forwarded<br><span class="chip">203.0.113.7</span></div>
+        <div class="fp">
+          <div class="row"><p class="k">Signed by AWS · the enclave running now</p><p class="hash">PCR0 bd2b 83ae f6f4 d50c <i>…</i> 5de8 5c10</p></div>
+          <div class="eq"><span>✓</span>Match</div>
+          <div class="row"><p class="k">Our open-source build on GitHub · v0.75.0</p><p class="hash">PCR0 bd2b 83ae f6f4 d50c <i>…</i> 5de8 5c10</p></div>
+        </div>
+        <div class="term">
+          <p><span class="dim">$</span> PPQ_API_KEY=sk-… npx ppq-private-mode</p>
+          <p class="dim" style="margin-top:14px">Then point any OpenAI- or Anthropic-compatible client at</p>
+          <p>http://127.0.0.1:8787</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="spacer">↓ models, API, pricing</div>
+
+<script>
+  const PLAIN = 'Summarize these board notes into five decisions.';
+  const CIPHER = 'oJN0HMhgTqS4I1MvqAxwE/qLxaNbtOv1eQFURxw7Unut8u7096yYNWJgKK2PXxq0X';
+  const states = { // card label, text, is ciphertext
+    1: ['Encrypted with TLS', CIPHER, true], 2: ['Ciphertext', CIPHER, true], 3: ['AWS Nitro Enclave', PLAIN, false],
+    4: ['Delivered to Anthropic', PLAIN, false], 5: ['Delivered to Anthropic', PLAIN, false], 6: ['Delivered to Anthropic', PLAIN, false] };
+  const stage = document.getElementById('stage'), ck = document.getElementById('ck'), ct = document.getElementById('ct');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let timer, current = PLAIN, first = true;
+  function scramble(to, cipher, delay = 0, label) {
+    clearInterval(timer); clearTimeout(scramble.t);
+    scramble.t = setTimeout(() => {
+      ct.classList.toggle('c', cipher); current = to; if (label) ck.textContent = label;
+      if (reduce) { ct.textContent = to; return; }
+      let f = 0; const N = 16;
+      timer = setInterval(() => {
+        f++; const k = Math.floor(to.length * f / N);
+        ct.textContent = to.slice(0, k) + Array.from({ length: Math.max(0, to.length - k) }, () => A[Math.random() * 64 | 0]).join('');
+        if (f >= N) { clearInterval(timer); ct.textContent = to; }
+      }, 34);
+    }, delay);
+  }
+  function go(s) {
+    if (!first && stage.dataset.s === String(s)) return;
+    stage.dataset.s = s;
+    const [label, text, cipher] = states[s];
+    // the first time step 1 shows, let the plain message sit for a beat, then encrypt it
+    if (current !== text) scramble(text, cipher, first && s === 1 ? 700 : 0, label); else ck.textContent = label;
+    first = false;
+  }
+  const steps = [...document.querySelectorAll('.step')];
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    steps.forEach(x => x.classList.toggle('on', x === e.target)); go(+e.target.dataset.s);
+  }), { rootMargin: '-45% 0px -45% 0px' });
+  steps.forEach(s => io.observe(s));
+</script>
+</body>
+</html>

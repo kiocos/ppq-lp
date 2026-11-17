@@ -1,0 +1,18 @@
+{
+  "mouse": {
+    "left": {
+      "x": 0.1388888888888889,
+      "y": 0.6634638367034753,
+      "inBounds": true,
+      "moved": true
+    },
+    "right": {
+      "x": 0.7638888888888888,
+      "y": 0.5716812467135141,
+      "inBounds": true,
+      "moved": true
+    },
+    "visualChange": true
+  },
+  "fallback": "pass"
+}

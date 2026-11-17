@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Your favorite AI models, with privacy you can verify</title>
+<link rel="icon" href="../assets/flame2.png">
+<link rel="stylesheet" href="../assets/kit.css">
+<style>
+  :root {
+    --bg: #0a1430; --fg: #eef2fb; --fg-2: #a5b2cf; --fg-3: #6e7ea3;
+    --panel: #101d40; --panel-2: #16284f; --line: rgba(238,242,251,.1);
+    --accent: #ff8a4c; --accent-ink: #ffa877; --good: #7fe0b3;
+    --logo-invert: invert(1) brightness(1.1);
+    --btn-bg: #eef2fb; --btn-fg: #0a1430; --btn-bg-hover: #fff;
+    --dscale: 1;
+  }
+  .nav { position: absolute; inset: 0 0 auto; z-index: 20; }
+  .nav .wrap { display: flex; align-items: center; height: 76px; gap: 36px; }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--fg-2); }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-side { margin-left: auto; display: flex; gap: 18px; align-items: center; font-size: 14px; color: var(--fg-2); }
+
+  .hero { position: relative; padding: 168px 0 0; overflow: clip; }
+  .sky { position: absolute; inset: 0 0 auto; height: 980px; z-index: 0; }
+  .sky video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }
+  .sky::after { content: ''; position: absolute; inset: auto 0 0; height: 220px; background: linear-gradient(transparent, var(--bg)); }
+  .hero .wrap { position: relative; z-index: 1; }
+  .hero-copy { text-align: center; max-width: 920px; margin: 0 auto; }
+  .hero h1 { font-size: calc(clamp(44px, 6vw, 84px) * var(--dscale)); }
+  .hero .lede { margin: 28px auto 0; font-size: 21px; line-height: 1.5; max-width: 34em; color: var(--fg-2); }
+  .hero .lede b { color: var(--fg); font-weight: 400; }
+  .hero .ctas { display: flex; gap: 12px; justify-content: center; margin-top: 36px; }
+  .hero .micro { margin-top: 16px; font-size: 14px; color: var(--fg-3); }
+  .window { margin: 88px auto 0; max-width: 1120px; border-radius: 18px; overflow: hidden; box-shadow: 0 0 0 1px rgba(238,242,251,.14), 0 50px 120px -30px rgba(0,0,0,.6); aspect-ratio: 1920 / 1200; background: #111; }
+  .window video { width: 100%; height: 100%; object-fit: cover; }
+  .window-cap { text-align: center; margin-top: 16px; font-size: 13px; color: var(--fg-3); }
+
+  .sec { padding-top: 200px; }
+  h2.display { font-size: calc(clamp(34px, 4.2vw, 58px) * var(--dscale)); }
+  .head { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px; align-items: end; }
+  .head p { font-size: 19px; color: var(--fg-2); line-height: 1.55; }
+  .frame { margin-top: 56px; border-radius: var(--radius-lg); overflow: hidden; background: var(--panel); }
+  .frame video { width: 100%; height: 100%; object-fit: cover; }
+  .w19 { aspect-ratio: 1920 / 900; }
+  .w16 { aspect-ratio: 16 / 9; }
+
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+  .trio > div { padding: 28px; border-radius: var(--radius-lg); background: var(--panel); }
+  .trio h3 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+  .trio p { margin-top: 10px; color: var(--fg-2); font-size: 15px; }
+  .trio code { font: 400 13px/1.6 var(--f-mono); background: var(--panel-2); padding: 3px 7px; border-radius: 6px; color: var(--fg); }
+  .trio .k { margin-top: 18px; font: 400 12px/1.7 var(--f-mono); color: var(--fg-3); letter-spacing: .03em; }
+  .scope { margin-top: 22px; font-size: 14px; color: var(--fg-3); }
+
+  .api { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 16px; margin-top: 56px; }
+  .api .code { font-size: 14px; padding: 28px; border-radius: var(--radius-lg); background: var(--panel); }
+  .api .tools { border-radius: var(--radius-lg); background: var(--panel); padding: 12px 28px; }
+  .api .tools a { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .api .tools a:last-child { border-bottom: 0; }
+  .api .tools img { width: 24px; height: 24px; object-fit: contain; border-radius: 5px; }
+  .api .tools span { margin-left: auto; color: var(--fg-3); font-size: 13px; }
+
+  .pay { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px; margin-top: 56px; }
+  .pay > div { border-radius: var(--radius-lg); background: var(--panel); padding: 32px; }
+  .pay .tbl th, .pay .tbl td { padding: 12px 0; }
+  .pay h3 { font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+  .pay p { margin-top: 10px; color: var(--fg-2); }
+  .coins { display: flex; gap: 12px; margin-top: 28px; }
+  .coins img { width: 38px; height: 38px; }
+
+  .close { position: relative; margin-top: 200px; padding: 180px 0 140px; text-align: center; overflow: clip; }
+  .close::before { content: ''; position: absolute; inset: 0; background: url(../assets/motion/night-fire-poster.jpg) center 80% / cover no-repeat; opacity: .9; mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); }
+  .close .wrap { position: relative; }
+  .close h2 { font-size: calc(clamp(40px, 5.4vw, 76px) * var(--dscale)); max-width: 12em; margin: 0 auto; }
+  .close .ctas { display: flex; gap: 12px; justify-content: center; margin-top: 36px; }
+
+  @media (max-width: 960px) {
+    .nav-links { display: none; }
+    .head, .trio, .api, .pay { grid-template-columns: 1fr; }
+    .sec { padding-top: 140px; }
+  }
+</style>
+</head>
+<body data-pairings='[
+  {"name":"Funnel Display + Geist","note":"Distinct cuts with a calm body; quiet personality.","vars":{"--f-display":"\"Funnel Display\", sans-serif","--display-weight":"600","--display-stretch":"100%","--display-tracking":"-0.03em","--display-leading":"1.02","--dscale":"1","--f-brand":"\"Funnel Display\", sans-serif","--brand-weight":"700","--brand-tracking":"-0.02em"}},
+  {"name":"Mona Sans Wide + Geist Mono","note":"GitHub’s Mona at 112% width; mono for detail.","vars":{"--f-display":"\"Mona Sans\", sans-serif","--display-weight":"600","--display-stretch":"112%","--display-tracking":"-0.035em","--display-leading":"1.02","--dscale":"0.96","--f-brand":"\"Mona Sans\", sans-serif","--brand-weight":"700","--brand-stretch":"112%","--brand-tracking":"-0.02em"}},
+  {"name":"Schibsted Grotesk + Geist","note":"News-agency grotesk: sturdy, a little warmer.","vars":{"--f-display":"\"Schibsted Grotesk\", sans-serif","--display-weight":"600","--display-stretch":"100%","--display-tracking":"-0.035em","--display-leading":"1.02","--dscale":"1","--f-brand":"\"Schibsted Grotesk\", sans-serif","--brand-weight":"700","--brand-tracking":"-0.02em"}}
+]'>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="../assets/flame2.png" alt="">PayPerQ</a>
+    <nav class="nav-links" aria-label="Primary"><a href="#privacy">Privacy</a><a href="#models">Models</a><a href="#api">API</a><a href="#pricing">Pricing</a></nav>
+    <div class="nav-side"><a href="https://ppq.ai/auth">Sign in</a><a class="btn btn-primary btn-sm" href="https://ppq.ai/chat">Start chatting</a></div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="sky" aria-hidden="true">
+      <video data-inview autoplay muted loop playsinline preload="metadata" poster="../assets/motion/night-fire-poster.jpg"><source src="../assets/motion/night-fire.mp4" type="video/mp4"></video>
+    </div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1 class="display rise">Your favorite AI models, with privacy you can verify.</h1>
+        <p class="lede rise rise-2"><b>Chat and build privately.</b> Find the right model for writing, coding and everyday tasks. Use it in chat or through our API, all from one prepaid balance.</p>
+        <div class="ctas rise rise-3"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting <span class="arr">→</span></a><a class="btn btn-ghost" href="https://ppq.ai/api-docs">Get an API key</a></div>
+        <p class="micro rise rise-4">No account or email needed. Top up from $0.10 with Lightning.</p>
+      </div>
+      <div class="window rise rise-4">
+        <video data-inview autoplay muted loop playsinline preload="metadata" poster="../app-captures/video-picker-search-poster.jpg" aria-label="The PayPerQ chat: switching from Claude Opus 5.5 to Claude Sonnet 5.5 in a coding conversation.">
+          <source src="../app-captures/video-picker-search.webm" type="video/webm"><source src="../app-captures/video-picker-search.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p class="window-cap">The PayPerQ chat, recorded on Nov 13, 2026. The conversation is an example.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="privacy">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Your chat traffic stays unreadable to us.</h2>
+        <p>Chats run through a secure enclave, an isolated hardware environment that keeps your prompts and replies out of our ordinary servers and logs.</p>
+      </div>
+      <div class="frame w19">
+        <video data-inview autoplay muted loop playsinline preload="metadata" poster="../assets/motion/sealed-night-poster.jpg" aria-label="Animation: a message sealed in the browser, relayed unreadable by PayPerQ, opened only inside the enclave, then sent to the provider without your IP address.">
+          <source src="../assets/motion/sealed-night.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="trio">
+        <div><h3>Checked by your browser</h3><p>The chat verifies the enclave’s hardware attestation before anything is sent.</p><p class="k">AWS Nitro · build v0.73.0</p></div>
+        <div><h3>Published and reproducible</h3><p>The enclave code is public and its build can be reproduced and traced to a signed workflow run.</p><p class="k">PCR0 3ef8 468b feaf b866 …</p></div>
+        <div><h3>Verifiable by you</h3><p>Run the open-source verifier and point any client at it: <code>npx ppq-private-mode</code></p><p class="k">github.com/PayPerQ</p></div>
+      </div>
+      <p class="scope">This protection covers chat requests. Other features have different processing paths. What a provider keeps depends on the model’s label: Anon, Zero Data Retention or end-to-end encrypted.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="models">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Choose the model for the task.</h2>
+        <p>Use Claude for one project, GPT for another, or explore open-weight alternatives. Choose by capability, price and privacy, without a separate account for each provider.</p>
+      </div>
+      <div class="frame w16">
+        <video data-inview autoplay muted loop playsinline preload="metadata" poster="../assets/motion/wheel-night-poster.jpg" aria-label="Animation: models from the PayPerQ catalogue with their median cost per message and privacy label, deducted from one balance.">
+          <source src="../assets/motion/wheel-night.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="api">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Your models can work beyond this chat.</h2>
+        <p>Connect a coding assistant, research workspace or automation tool with your PayPerQ API key. Same models, same enclave, same balance.</p>
+      </div>
+      <div class="api">
+        <div class="code"><code>curl https://api.ppq.ai/v1/chat/completions \
+  -H <span class="s">"Authorization: Bearer $PPQ_API_KEY"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"model": "moonshotai/kimi-k3.1-pro",
+       "messages": [{"role": "user",
+                     "content": "Hello"}]}'</span></code></div>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="../assets/logos/tools/claude-code.png" alt="">Claude Code<span>Guide →</span></a>
+          <a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/cursor.svg" alt="">Cursor<span>Guide →</span></a>
+          <a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="../assets/logos/tools/opencode.png" alt="">OpenCode<span>Guide →</span></a>
+          <a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/goose.png" alt="">Goose<span>Guide →</span></a>
+          <a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/openclaw.svg" alt="">OpenClaw<span>Guide →</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Your AI spending follows your usage.</h2>
+        <p>Add prepaid credit and use it when you need AI. No PayPerQ subscription and no separate monthly plan for each model.</p>
+      </div>
+      <div class="pay">
+        <div>
+          <table class="tbl">
+            <thead><tr><th scope="col">Model</th><th scope="col">Privacy</th><th scope="col" class="r">Median per message</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Claude Haiku 5.5</th><td>Anon</td><td class="r mono">$0.0023</td></tr>
+              <tr><th scope="row">DeepSeek V4.1 Flash</th><td>ZDR</td><td class="r mono">$0.0098</td></tr>
+              <tr><th scope="row">GPT-6 Luna</th><td>Anon</td><td class="r mono">$0.0176</td></tr>
+              <tr><th scope="row">Kimi K3.1 Pro</th><td>ZDR</td><td class="r mono">$0.0431</td></tr>
+              <tr><th scope="row">Claude Opus 5.5</th><td>Anon</td><td class="r mono">$0.1340</td></tr>
+            </tbody>
+            <caption>Median cost of one chat message in PayPerQ, Nov 13, 2026.</caption>
+          </table>
+        </div>
+        <div>
+          <h3>Start from your wallet.</h3>
+          <p>Fund your balance with Bitcoin, Lightning or Monero. No email registration required.</p>
+          <div class="coins"><img src="../assets/logos/pay/bitcoin.svg" alt="Bitcoin"><img src="../assets/logos/pay/lightning-network.svg" alt="Lightning Network"><img src="../assets/logos/pay/monero.svg" alt="Monero"><img src="../assets/logos/pay/tether.svg" alt="Tether"><img src="../assets/logos/pay/usdc.svg" alt="USD Coin"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="wrap">
+      <h2 class="display">More choice in AI. More control over how you use it.</h2>
+      <div class="ctas"><a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting <span class="arr">→</span></a><a class="btn btn-ghost" href="https://ppq.ai/api-docs">API docs</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><img src="../assets/flame2.png" alt="">PayPerQ</a></div>
+      <div><h4>Product</h4><ul><li><a href="https://ppq.ai/chat">Chat</a></li><li><a href="https://ppq.ai/api-docs">API</a></li><li><a href="https://ppq.ai/models">Models</a></li><li><a href="https://ppq.ai/pricing">Pricing</a></li></ul></div>
+      <div><h4>Privacy</h4><ul><li><a href="https://ppq.ai/private-ai">Enclave router</a></li><li><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verify it yourself</a></li><li><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave source</a></li><li><a href="https://ppq.ai/privacy">Privacy policy</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="https://ppq.ai/blog">Blog</a></li><li><a href="https://ppq.ai/careers">Careers</a></li><li><a href="https://ppq.ai/terms">Terms</a></li></ul></div>
+      <div><h4>For agents</h4><ul><li><a class="mono" href="https://ppq.ai/llms.txt">llms.txt</a></li><li><a class="mono" href="https://api.ppq.ai/v1/models">v1/models</a></li></ul></div>
+    </div>
+    <div class="foot-base"><span>© 2026 PayPerQ</span><span>This page loads no third-party scripts.</span><span class="mono">Updated at block 975,697</span></div>
+  </div>
+</footer>
+<script src="../assets/kit.js"></script>
+</body>
+</html>

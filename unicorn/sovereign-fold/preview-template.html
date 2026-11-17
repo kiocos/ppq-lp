@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PPQ · Dobra soberana</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent;color:var(--foreground,#eee);font-family:var(--font-sans,Arial,sans-serif)}
+#ppq-preview .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#ppq-preview button{font:inherit;font-size:12px;padding:9px 12px;color:var(--foreground,#eee);background:transparent;border:1px solid var(--border,#333);border-radius:6px;cursor:pointer}
+#ppq-preview button[aria-pressed=true]{background:var(--primary,#eee);color:var(--primary-foreground,#111)}
+#ppq-preview button:focus-visible{outline:2px solid var(--ring,#ccc);outline-offset:3px}
+#ppq-preview #pause{margin-left:auto}
+#ppq-preview .stage{position:relative;aspect-ratio:2000/940;overflow:hidden;background:linear-gradient(140deg,#0c0b0a,#19100c);border-radius:var(--radius,8px)}
+#ppq-preview canvas{position:absolute;inset:0;width:100%;height:100%}
+#ppq-preview .composer-cover{position:absolute;left:22.36%;top:60.5%;width:55.4%;height:24.4%;border-radius:3%/17%;background:#1b1b1b;pointer-events:none}
+#ppq-preview .reference{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:lighten;pointer-events:none}
+#ppq-preview .stage.art-only .reference,#ppq-preview .stage.art-only .composer-cover{display:none}
+#ppq-preview .caption{font-size:12px;color:var(--muted-foreground,#aaa);line-height:1.5;margin:10px 0 0}
+#ppq-preview #error{margin-top:12px;color:var(--destructive,#f66)}
+</style>
+</head>
+<body>
+<main id="ppq-preview">
+<div class="toolbar" aria-label="Visualização da animação">
+<button type="button" id="composition" aria-pressed="true">Com sua hero</button>
+<button type="button" id="art" aria-pressed="false">Só a arte</button>
+<button type="button" id="pause" aria-pressed="false">Pausar</button>
+</div>
+<div class="stage" id="stage">
+<canvas id="scene" role="img" aria-label="Dobra escultórica em vermelho-brasa e laranja de lava, com movimento lento ao redor de um centro escuro"></canvas>
+<div class="composer-cover"></div>
+<img class="reference" src="/Users/kio/.t3/userdata/attachments/64d5aa09-886a-433f-aafe-b2025f8fcb1e-8db1b673-166a-444d-b180-8f54310d3903.png" alt="Sua referência de hero sobreposta à animação">
+</div>
+<p class="caption">Prévia de composição com a imagem enviada e o shader da cena salva no Unicorn Studio</p>
+<p id="error" role="alert" hidden></p>
+</main>
+<script id="scene-data" type="application/json">__SCENE_DATA__</script>
+<script>
+(() => {
+const root=document.getElementById('ppq-preview');
+const canvas=root.querySelector('#scene');
+const stage=root.querySelector('#stage');
+const pause=root.querySelector('#pause');
+const data=JSON.parse(document.getElementById('scene-data').textContent);
+const gl=canvas.getContext('webgl2',{alpha:true,antialias:true,premultipliedAlpha:true,powerPreference:'low-power'});
+if(!gl){const error=root.querySelector('#error');error.hidden=false;error.textContent='A prévia requer WebGL 2';return}
+function compile(type,source){
+ const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);
+ if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(shader));
+ return shader;
+}
+const program=gl.createProgram();
+try{gl.attachShader(program,compile(gl.VERTEX_SHADER,data.vertex));gl.attachShader(program,compile(gl.FRAGMENT_SHADER,data.fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));}
+catch(e){const error=root.querySelector('#error');error.hidden=false;error.textContent=e.message;return}
+gl.useProgram(program);
+const verts=[],indices=[],nx=128,ny=64;
+for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const u=i/nx,v=j/ny;verts.push(u*2-1,v*2-1,0,u,v)}
+for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;indices.push(a,b,c,b,d,c)}
+const vao=gl.createVertexArray();gl.bindVertexArray(vao);
+const vbo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vbo);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
+for(const [name,count,offset] of [['aVertexPosition',3,0],['aTextureCoord',2,12]]){const loc=gl.getAttribLocation(program,name);if(loc>=0){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,count,gl.FLOAT,false,20,offset)}}
+const ibo=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(indices),gl.STATIC_DRAW);
+const uniforms=new Map();
+function loc(name){if(!uniforms.has(name))uniforms.set(name,gl.getUniformLocation(program,name));return uniforms.get(name)}
+for(const [key,prop] of Object.entries(data.properties)){
+ const name='u'+key[0].toUpperCase()+key.slice(1),value=prop.value,location=loc(name);
+ if(location===null)continue;
+ if(typeof value==='number')gl.uniform1f(location,value);
+ else if(value&&value.type==='Vec2')gl.uniform2f(location,value._x,key==='pos'?1-value._y:value._y);
+ else if(value&&value.type==='Vec3')gl.uniform3f(location,value._x,value._y,value._z);
+}
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let playing=!reduced.matches,visible=true,time=0,last=0,raf=0,disposed=false;
+function resize(){
+ const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,1.5);
+ const w=Math.max(1,Math.round(rect.width*dpr)),h=Math.max(1,Math.round(rect.height*dpr));
+ if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}
+ gl.viewport(0,0,w,h);gl.uniform2f(loc('uResolution'),w,h);
+}
+function draw(){
+ if(disposed)return;
+ resize();gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ gl.uniform1f(loc('uTime'),time*60*data.properties.speed.value);
+ gl.drawElements(gl.TRIANGLES,indices.length,gl.UNSIGNED_SHORT,0);
+}
+function frame(now){
+ raf=0;
+ if(playing&&visible&&!document.hidden){if(last)time+=Math.min((now-last)/1000,.05);last=now;draw();raf=requestAnimationFrame(frame)}else last=0;
+}
+function sync(){
+ pause.textContent=playing?'Pausar':'Reproduzir';
+ pause.setAttribute('aria-pressed',String(!playing));
+ if(raf)cancelAnimationFrame(raf);raf=0;last=0;draw();
+ if(playing&&visible&&!document.hidden)raf=requestAnimationFrame(frame);
+}
+pause.addEventListener('click',()=>{playing=!playing;sync()});
+function view(artOnly){stage.classList.toggle('art-only',artOnly);root.querySelector('#composition').setAttribute('aria-pressed',String(!artOnly));root.querySelector('#art').setAttribute('aria-pressed',String(artOnly))}
+root.querySelector('#composition').addEventListener('click',()=>view(false));
+root.querySelector('#art').addEventListener('click',()=>view(true));
+reduced.addEventListener('change',()=>{playing=!reduced.matches;sync()});
+document.addEventListener('visibilitychange',sync);
+const resizeObserver=new ResizeObserver(()=>{draw()});resizeObserver.observe(stage);
+const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync()});observer.observe(stage);
+addEventListener('pagehide',()=>{disposed=true;cancelAnimationFrame(raf);observer.disconnect();resizeObserver.disconnect();gl.deleteBuffer(vbo);gl.deleteBuffer(ibo);gl.deleteVertexArray(vao);gl.deleteProgram(program)},{once:true});
+sync();
+})();
+</script>
+</body>
+</html>

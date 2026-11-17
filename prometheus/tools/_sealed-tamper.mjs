@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+import path from 'node:path';
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+const errs = []; p.on('pageerror', (e) => errs.push(e.message));
+await p.goto('file://' + path.resolve('../privacy/sealed.html')); await p.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
+await p.waitForTimeout(800);
+const go = async (v) => { await p.evaluate((v) => { const s = [...document.querySelectorAll('.en-step')]; const c = s.map((el) => el.getBoundingClientRect().top + scrollY + el.getBoundingClientRect().height / 2); const n = Math.min(c.length - 2, Math.floor(v)); scrollTo(0, c[n] + (c[n + 1] - c[n]) * (v - n) - innerHeight / 2); }, v); await p.waitForTimeout(1500); };
+for (const v of [1, 1.5, 2]) await go(v);
+await p.screenshot({ path: '../review/sealed-seq-p2.png', clip: { x: 680, y: 40, width: 760, height: 820 } });
+for (const v of [3, 4]) await go(v);
+await p.click('.sx-tamper'); await p.waitForTimeout(1500);
+await p.screenshot({ path: '../review/sealed-tamper.png', clip: { x: 680, y: 40, width: 760, height: 820 } });
+console.log(errs.join('\n') || 'no errors'); await b.close();

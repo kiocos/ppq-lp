@@ -1,0 +1,47 @@
+{
+  "_comment": [
+    "Machine-readable twin of PUBLISHED_PCR.md. That file is prose with a table",
+    "per release, which is right for a human and wrong for a fetch: parsing it",
+    "means regexing markdown, and a trust anchor should not depend on heading",
+    "punctuation. This file is the one clients read.",
+    "",
+    "accepted_pcr0 is a LIST, not a value. Normally it holds exactly one entry.",
+    "During a rollover it holds two -- the incoming measurement and the outgoing",
+    "one -- so a client whose bundle predates the swap still accepts the enclave",
+    "instead of silently falling back to the non-attested path. That overlap is",
+    "the thing enclave-cutover.yml names as the prerequisite for ever running a",
+    "cutover unattended.",
+    "",
+    "PRUNE THE OUTGOING ENTRY once the rollover is done. A stale entry here",
+    "silently re-admits a retired image, which is the failure mode an accept-list",
+    "trades for the one it removes.",
+    "",
+    "History lives in PUBLISHED_PCR.md, deliberately not duplicated here."
+  ],
+  "updated": "2026-11-13",
+  "current": {
+    "version": "v0.75.0",
+    "date": "2026-11-13",
+    "source_commit": "ea20ad8",
+    "pcr0": "bd2b83aef6f4d50c5c090e30e969101ba0bc0ea4c1696f0c6b19b25a5176fe2773143805bacf36808766c56f5de85c10",
+    "pcr1": "4b4d5b3661b3efc12920900c80e126e4ce783c522de6c02a2a5bf7af3a2b9327b86776f188e4be1c1c404a129dbda493",
+    "pcr2": "3551cc633456cc72b9968bfb8047c3f51775270b92fbac63574d5919b046fb416fc6229820ddae44cb030e3a9ec5b69f"
+  },
+  "accepted_pcr0": [
+    "bd2b83aef6f4d50c5c090e30e969101ba0bc0ea4c1696f0c6b19b25a5176fe2773143805bacf36808766c56f5de85c10"
+  ],
+  "provenance": {
+    "repo": "PayPerQ/ppq-enclave-proxy",
+    "workflow": ".github/workflows/enclave-build.yml",
+    "verify": "gh attestation verify PCR.json --repo PayPerQ/ppq-enclave-proxy",
+    "_comment": [
+      "Builds emit a Sigstore attestation over the PCR.json they produce, so the",
+      "measurement can be traced to a specific workflow run in this public repo",
+      "rather than taken on PayPerQ's word. Download PCR.json from the build",
+      "run's artifacts and run the command above.",
+      "",
+      "Attestations begin with builds after 2026-09-02; earlier releases in",
+      "PUBLISHED_PCR.md predate CI entirely and were built by hand over SSM."
+    ]
+  }
+}

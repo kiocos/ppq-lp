@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PPQ · Magma vivo</title>
+  <style>
+    body { margin: 0; background: #66170e; }
+    #art { position: fixed; inset: 0; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <div id="art" aria-hidden="true"></div>
+  <script src="../../prometheus/assets/unicorn/unicornStudio-2.6.0.umd.js"></script>
+  <script>
+    UnicornStudio.addScene({
+      element: document.getElementById('art'),
+      projectId: 'iN8ERNBuIx6r8XNnuMEl',
+      fps: 30,
+      dpi: 1,
+      scale: 1,
+      production: false,
+      interactivity: { mouse: { disableMobile: true } }
+    }).then(scene => { window.artScene = scene; });
+  </script>
+</body>
+</html>

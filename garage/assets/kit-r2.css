@@ -1,0 +1,17 @@
+/* Round 2 additions (round 1 keeps the original kit) */
+
+/* one grain for the whole page, so videos and chrome share the same texture (finding 1 and 14) */
+body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(grain.png) repeat; background-size: 192px 192px; opacity: .055; mix-blend-mode: soft-light; }
+
+/* stage videos never show their rectangle: every edge fades into the page */
+.fade-edges { -webkit-mask-image: linear-gradient(90deg, transparent, #000 13%, #000 87%, transparent), linear-gradient(180deg, transparent, #000 9%, #000 88%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 13%, #000 87%, transparent), linear-gradient(180deg, transparent, #000 9%, #000 88%, transparent); mask-composite: intersect; }
+
+/* lit cards also throw a faint reflection on the floor below them */
+.lit-edge::before { height: 64px; background: radial-gradient(ellipse 48% 100% at 50% 0%, rgba(var(--glow), .2), rgba(var(--glow), .05) 45%, rgba(var(--glow), 0) 72%); }
+
+h3 { text-wrap: balance; }
+
+/* hero model makers: real marks, shown monochrome so the light stays the only colour; colour returns on hover */
+.mono-logos img { filter: brightness(0) invert(1); opacity: .62; transition: opacity .25s, filter .25s; }
+.mono-logos a:hover img, .mono-logos a:focus-visible img { filter: none; opacity: 1; }
+.mono-logos a:hover img.inv, .mono-logos a:focus-visible img.inv { filter: invert(1) brightness(1.1); }

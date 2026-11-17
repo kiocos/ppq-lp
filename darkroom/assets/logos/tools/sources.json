@@ -1,0 +1,12 @@
+{
+  "kilo.svg": "https://kilo.ai/favicon/favicon.svg?v=3",
+  "roo.svg": "https://raw.githubusercontent.com/RooCodeInc/Roo-Code/main/src/assets/images/roo-logo.svg",
+  "opencode.png": "https://opencode.ai/favicon-96x96-v3.png",
+  "openclaw.svg": "https://openclaw.ai/brand/openclaw-mascot.svg",
+  "hermes.png": "https://web-assets.nousresearch.com/marketing/8ab7ec308f6a5ce1c1c5534344b0deffe0241155/assets/hermes-agent/icon.png",
+  "claude-code.png": "https://code.claude.com/docs/mintlify-assets/_mintlify/favicons/claude-code/pLsy-mRpNksna2sx/_generated/favicon/android-chrome-192x192.png",
+  "aider.png": "https://raw.githubusercontent.com/Aider-AI/aider/main/aider/website/assets/icons/android-chrome-192x192.png",
+  "cursor.svg": "https://cursor.com/marketing-static/favicon-light.svg",
+  "janitor.png": "../blog-images/using-janitorai-with-payperq/janitorai-logo.png",
+  "goose.png": "../goose-logo_dark.png"
+}

@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PayPerQ — Your favorite AI models, with privacy you can verify</title>
+  <meta name="description" content="Hundreds of AI models in chat or through an API. Every chat runs inside an attested enclave PayPerQ can’t read. No account, no email, no subscription. Pay per query with Bitcoin, Lightning, or Monero.">
+  <meta name="theme-color" content="#0e0d0c">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" href="assets/flame2.png">
+  <link rel="stylesheet" href="v1.css">
+  <script src="v1.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header" data-header>
+    <div class="wrap header-inner">
+      <a class="brand" href="https://ppq.ai" aria-label="PayPerQ home">
+        <img class="brand-flame" src="assets/flame2.png" alt="" width="26" height="26">
+        <span class="brand-word">PayPerQ</span>
+      </a>
+      <nav class="main-nav" aria-label="Main">
+        <a href="#verify">Privacy</a>
+        <a href="#models">Models</a>
+        <a href="#pay">Pricing</a>
+        <a href="#api">API</a>
+      </nav>
+      <a class="btn btn-small btn-flame" href="https://ppq.ai/chat">Open chat <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-art" data-anim aria-hidden="true">
+        <!--
+          UNICORN STUDIO SLOT
+          1. Paste your project id into data-us-project (or use data-us-project-src for a self-hosted JSON export).
+          2. Self-host the runtime at assets/unicornStudio.umd.js (see README.txt) so the page keeps loading zero third-party scripts.
+          When a project is present, main.js loads the runtime and hides the CSS eclipse below.
+        -->
+        <div class="unicorn-slot" data-us-project="" data-us-scale="1" data-us-dpi="1.5" data-us-lazyload="true"></div>
+        <div class="fallback-art">
+          <div class="aura aura-a"></div>
+          <div class="aura aura-b"></div>
+          <div class="dots"></div>
+          <div class="eclipse">
+            <div class="corona"></div>
+            <div class="corona corona-soft"></div>
+            <div class="disc"></div>
+          </div>
+        </div>
+        <div class="grain"></div>
+      </div>
+
+      <div class="wrap hero-inner">
+        <a class="announce" href="https://ppq.ai/blog/introducing-the-enclave-router">
+          <span class="announce-tag">New</span>
+          <span>Every chat now runs inside an attested enclave</span>
+          <span class="announce-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <h1 id="hero-title" class="hero-title">
+          Your favorite AI models, <span class="serif grad-flame">with privacy you can verify.</span>
+        </h1>
+
+        <p class="hero-lede">Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.</p>
+
+        <div class="cta-row">
+          <a class="btn btn-flame" href="https://ppq.ai/chat">Start chatting <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="https://ppq.ai/api-docs">Get an API key</a>
+        </div>
+
+        <ul class="facts" aria-label="Key facts">
+          <li>No account</li>
+          <li>No email</li>
+          <li>No subscription</li>
+          <li>Top up from $0.10</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ TAPES ============ -->
+    <div class="tapes" data-anim aria-hidden="true">
+      <div class="tape tape-indigo">
+        <div class="marquee-track marquee-reverse">
+          <span>Don’t trust, verify</span><i>✳</i><span>Open-source enclave</span><i>✳</i><span>Reproducible builds</span><i>✳</i><span>Signed routing receipts</span><i>✳</i><span>Hundreds of models</span><i>✳</i>
+          <span>Don’t trust, verify</span><i>✳</i><span>Open-source enclave</span><i>✳</i><span>Reproducible builds</span><i>✳</i><span>Signed routing receipts</span><i>✳</i><span>Hundreds of models</span><i>✳</i>
+        </div>
+      </div>
+      <div class="tape tape-amber">
+        <div class="marquee-track">
+          <span>Bitcoin</span><i>₿</i><span>Lightning</span><i>⚡︎</i><span>Monero</span><i>ɱ</i><span>No sign-up</span><i>✳</i><span>No email</span><i>✳</i><span>No subscription</span><i>✳</i><span>Pay per query</span><i>✳</i>
+          <span>Bitcoin</span><i>₿</i><span>Lightning</span><i>⚡︎</i><span>Monero</span><i>ɱ</i><span>No sign-up</span><i>✳</i><span>No email</span><i>✳</i><span>No subscription</span><i>✳</i><span>Pay per query</span><i>✳</i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MANIFESTO ============ -->
+    <section class="section paper manifesto" aria-labelledby="manifesto-title">
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x01</span> Manifesto</p>
+
+        <figure class="quote" data-reveal>
+          <blockquote>
+            <p id="manifesto-title"><span class="q-mark">“</span>Privacy is necessary for an open society in the electronic age.<span class="q-mark">”</span></p>
+          </blockquote>
+          <figcaption>Eric Hughes, <cite>A Cypherpunk’s Manifesto</cite>, 1993</figcaption>
+        </figure>
+
+        <div class="manifesto-body" data-reveal>
+          <p>Three decades later, the most private thing most people write is a prompt. <mark class="mk-amber">The symptom.</mark> <mark class="mk-violet">The contract.</mark> <mark class="mk-lime">The half-finished code.</mark> The question you’d never ask out loud.</p>
+          <p>Every AI router sits in the middle of that, able to read it. A promise not to look is only a policy, and policies change, leak, or get compelled.</p>
+        </div>
+
+        <p class="kicker serif" data-reveal>So we stopped asking for your trust.</p>
+
+        <ol class="principles">
+          <li data-reveal>
+            <span class="p-num p-amber">01</span>
+            <h3>No name required.</h3>
+            <p>Buy credits, get a credit id. That’s the whole account. Email is optional, never required.</p>
+          </li>
+          <li data-reveal>
+            <span class="p-num p-indigo">02</span>
+            <h3>No blind faith.</h3>
+            <p>Chat runs inside an attested enclave whose code is open source and reproducibly built. Check it yourself.</p>
+          </li>
+          <li data-reveal>
+            <span class="p-num p-lime">03</span>
+            <h3>No leash.</h3>
+            <p>No subscription, no lock-in, hundreds of models. Top up when you want. Leave when you want.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ VERIFY ============ -->
+    <section class="section indigo verify" id="verify" aria-labelledby="verify-title">
+      <div class="verify-bg" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x02</span> Don’t trust. Verify.</p>
+
+        <div class="split-head">
+          <h2 id="verify-title" class="h2" data-reveal>From “we won’t look” to <span class="serif lime-text">“we can’t.”</span></h2>
+          <div class="split-copy" data-reveal>
+            <p>Every chat request, from the web app or the API, is encrypted on your device and decrypted only inside an AWS Nitro enclave. PayPerQ’s servers, staff, and logs can’t read into it. Neither can AWS.</p>
+            <p>Our backend gets a credit check and a billing event: which model, how many tokens, when. Never your prompt. Never the reply.</p>
+          </div>
+        </div>
+
+        <!-- flow diagram -->
+        <div class="flow" data-anim data-reveal role="img" aria-label="Diagram: your device encrypts the request to the enclave. The enclave decrypts it, sends it to the model provider, and encrypts the reply back to you with a signed routing receipt. PayPerQ’s backend only receives a credit check and billing metadata, never content.">
+          <div class="node node-you">
+            <span class="node-k">01 · You</span>
+            <strong>Your device</strong>
+            <p>Encrypts the request to a key only the enclave holds.</p>
+          </div>
+          <div class="wire wire-1">
+            <span class="wire-label wl-top">request →</span>
+            <span class="packet packet-out"></span>
+            <span class="packet packet-back"></span>
+            <span class="wire-label wl-bottom">← reply + receipt</span>
+          </div>
+          <div class="node node-enclave">
+            <span class="node-k">02 · Enclave</span>
+            <strong>AWS Nitro enclave</strong>
+            <p>Decrypts, routes, encrypts the reply back to you. Published, measured code.</p>
+          </div>
+          <div class="wire wire-2">
+            <span class="wire-label wl-top">prompt →</span>
+            <span class="packet packet-out"></span>
+            <span class="packet packet-back"></span>
+            <span class="wire-label wl-bottom">← reply</span>
+          </div>
+          <div class="node node-provider">
+            <span class="node-k">03 · Provider</span>
+            <strong>Model provider</strong>
+            <p>Runs the model. Sees PayPerQ’s credentials, not you.</p>
+          </div>
+          <div class="wire wire-meta"><span class="wire-label">billing metadata only</span></div>
+          <div class="node node-backend">
+            <span class="node-k">PayPerQ backend</span>
+            <strong>Credit check · billing event</strong>
+            <p>Model, token counts, cost. No content.</p>
+          </div>
+          <div class="flow-legend">
+            <span><i class="lg-solid"></i>your content, encrypted to the enclave</span>
+            <span><i class="lg-dashed"></i>metadata only</span>
+          </div>
+        </div>
+
+        <div class="verify-grid">
+          <ul class="proofs">
+            <li data-reveal>
+              <span class="proof-k">Open source</span>
+              <h3>Published enclave code</h3>
+              <p>The only code that handles your prompt in the clear is public.</p>
+              <a href="https://github.com/PayPerQ/ppq-enclave-proxy">Read the code <span aria-hidden="true">↗</span></a>
+            </li>
+            <li data-reveal>
+              <span class="proof-k">Reproducible</span>
+              <h3>Builds you can repeat</h3>
+              <p>Rebuild it and compare the measurement with what runs in production.</p>
+            </li>
+            <li data-reveal>
+              <span class="proof-k">Signed</span>
+              <h3>Routing receipts</h3>
+              <p>Every response says which provider and model actually served it. No silent downgrades.</p>
+            </li>
+            <li data-reveal>
+              <span class="proof-k">Local</span>
+              <h3>Your own verifier</h3>
+              <p>If the enclave’s attestation doesn’t match the published build, nothing leaves your machine.</p>
+              <a href="https://github.com/PayPerQ/ppq-privacy-verifier">Get the verifier <span aria-hidden="true">↗</span></a>
+            </li>
+          </ul>
+
+          <figure class="terminal" data-reveal>
+            <figcaption class="terminal-bar"><span>verify.sh</span><span class="terminal-tag">optional · open source</span></figcaption>
+<pre><code><span class="c-prompt">$</span> export PPQ_API_KEY=<span class="c-str">"sk-…"</span>
+<span class="c-prompt">$</span> npx ppq-private-mode
+
+<span class="c-com"># fetches the enclave’s attestation</span>
+<span class="c-com"># compares it with the published build</span>
+<span class="c-com"># mismatch → nothing is sent</span>
+<span class="c-com"># match    → requests are encrypted to</span>
+<span class="c-com">#            the verified enclave</span>
+
+<span class="c-ok">→</span> point any OpenAI- or Anthropic-compatible
+  client at <span class="c-str">http://127.0.0.1:8787</span></code></pre>
+          </figure>
+        </div>
+
+        <p class="scope-note" data-reveal><span class="scope-k">Scope</span><span>The enclave covers chat completions. Media generation and research tools don’t run through it yet. <a href="#fine-print">Read the fine print</a>.</span></p>
+      </div>
+    </section>
+
+    <!-- ============ SEPARATION ============ -->
+    <section class="section ink separation" aria-labelledby="sep-title">
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x03</span> Separation of knowledge</p>
+        <div class="split-head">
+          <h2 id="sep-title" class="h2" data-reveal>Who you are and what you ask <span class="serif grad-amber">never meet.</span></h2>
+          <div class="split-copy" data-reveal>
+            <p>Pay with crypto and everything anyone could know about you splits into pieces that never sit in the same place.</p>
+          </div>
+        </div>
+
+        <div class="parties">
+          <article class="party" data-reveal>
+            <header>
+              <span class="party-k">The router</span>
+              <h3>PayPerQ</h3>
+            </header>
+            <div class="chips">
+              <span class="chip chip-who is-held">who · a credit id</span>
+              <span class="chip chip-what is-blocked">what · your prompt</span>
+            </div>
+            <p>Knows a credit id, how it was funded, which model, how many tokens, and when. Never sees your prompts or replies. By default, your chat history stays in your browser.</p>
+          </article>
+
+          <article class="party" data-reveal>
+            <header>
+              <span class="party-k">Claude, GPT, Gemini…</span>
+              <h3>Model provider</h3>
+            </header>
+            <div class="chips">
+              <span class="chip chip-who is-blocked">who · you</span>
+              <span class="chip chip-what is-held">what · your prompt</span>
+            </div>
+            <p>Sees your prompt, because that’s where the model runs. Doesn’t see you: requests arrive from the enclave under PayPerQ’s credentials.<a class="fn" href="#fine-print">*</a></p>
+          </article>
+
+          <article class="party party-sealed" data-reveal>
+            <header>
+              <span class="party-k">E2EE models</span>
+              <h3>Tinfoil enclave</h3>
+            </header>
+            <div class="chips">
+              <span class="chip chip-who is-blocked">who · you</span>
+              <span class="chip chip-what is-blocked">what · your prompt</span>
+            </div>
+            <p>Sees neither. Open-weight models like Kimi and GLM run inside their own hardware enclave, so not even the host can read your prompt.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TIERS ============ -->
+    <section class="section paper tiers" aria-labelledby="tiers-title">
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x04</span> Privacy tiers</p>
+        <div class="split-head">
+          <h2 id="tiers-title" class="h2" data-reveal>Know what your model provider <span class="serif ember-text">can see.</span></h2>
+          <div class="split-copy" data-reveal>
+            <p>PayPerQ can’t read your chats on any model. The badge on each model tells you what its provider can. Pick the tier that fits your threat model.</p>
+          </div>
+        </div>
+
+        <div class="tier-cards">
+          <article class="tier tier-anon" data-reveal>
+            <span class="badge">Anon</span>
+            <h3>Unlinked.</h3>
+            <p>The provider can read your prompt and may keep it under its own policy, but it arrives with no account attached. The widest selection.</p>
+            <dl class="specimen" aria-label="What the provider receives">
+              <div><dt>sender</dt><dd>PayPerQ, not you</dd></div>
+              <div><dt>prompt</dt><dd>what does this lab result mean?</dd></div>
+              <div><dt>kept</dt><dd>per provider policy</dd></div>
+            </dl>
+          </article>
+
+          <article class="tier tier-zdr" data-reveal>
+            <span class="badge">ZDR</span>
+            <h3>Read once. Kept never.</h3>
+            <p>Routed only to endpoints contractually bound not to store prompts or replies. Not logged, not used for training.</p>
+            <dl class="specimen" aria-label="What the provider receives">
+              <div><dt>sender</dt><dd>PayPerQ, not you</dd></div>
+              <div><dt>prompt</dt><dd class="fading">what does this lab result mean?</dd></div>
+              <div><dt>kept</dt><dd>nothing</dd></div>
+            </dl>
+          </article>
+
+          <article class="tier tier-e2ee" data-reveal>
+            <span class="badge">E2EE</span>
+            <h3>Sealed, even from the host.</h3>
+            <p>The model runs inside a hardware enclave. Your prompt is encrypted on your device and decrypted only where the model runs.</p>
+            <dl class="specimen" aria-label="What the host receives">
+              <div><dt>sender</dt><dd>PayPerQ, not you</dd></div>
+              <div><dt>prompt</dt><dd class="cipher" data-cipher aria-label="unreadable ciphertext">9f3a c1e0 7b44 e8d2 05af</dd></div>
+              <div><dt>kept</dt><dd>nothing readable</dd></div>
+            </dl>
+          </article>
+        </div>
+
+        <div class="glance" data-reveal>
+          <table>
+            <caption class="visually-hidden">Privacy tiers at a glance</caption>
+            <thead>
+              <tr><th scope="col">Tier</th><th scope="col">PayPerQ can read it</th><th scope="col">Provider can read it</th><th scope="col">Provider can store it</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row"><i class="dot dot-amber"></i>Anon</th><td class="no">No</td><td class="yes">Yes</td><td class="yes">Per its policy</td></tr>
+              <tr><th scope="row"><i class="dot dot-violet"></i>ZDR</th><td class="no">No</td><td class="mid">In memory only</td><td class="no">No</td></tr>
+              <tr><th scope="row"><i class="dot dot-lime"></i>E2EE</th><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+            </tbody>
+          </table>
+          <p class="note">API protections depend on configuration and supported features. Zero Data Retention must be enabled for API requests.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MODELS ============ -->
+    <section class="section ink models" id="models" aria-labelledby="models-title">
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x05</span> Models</p>
+        <div class="split-head">
+          <h2 id="models-title" class="h2" data-reveal>Hundreds of models. <span class="serif grad-violet">No loyalty oath.</span></h2>
+          <div class="split-copy" data-reveal>
+            <p>Claude for one project, GPT for another, Kimi, GLM, DeepSeek or Qwen when you’d rather go open-weight. Choose on capability, price, and privacy, without opening an account with every provider.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="labs" data-anim aria-label="Model makers available through PayPerQ">
+        <div class="labs-row">
+          <div class="marquee-track">
+            <span class="w-fill">Anthropic</span><i class="sep-flame"></i><span class="w-out">OpenAI</span><i class="sep-flame"></i><span class="w-amber">Google</span><i class="sep-flame"></i><span class="w-fill">xAI</span><i class="sep-flame"></i><span class="w-out">DeepSeek</span><i class="sep-flame"></i><span class="w-lime">Qwen</span><i class="sep-flame"></i>
+            <span class="w-fill" aria-hidden="true">Anthropic</span><i class="sep-flame"></i><span class="w-out" aria-hidden="true">OpenAI</span><i class="sep-flame"></i><span class="w-amber" aria-hidden="true">Google</span><i class="sep-flame"></i><span class="w-fill" aria-hidden="true">xAI</span><i class="sep-flame"></i><span class="w-out" aria-hidden="true">DeepSeek</span><i class="sep-flame"></i><span class="w-lime" aria-hidden="true">Qwen</span><i class="sep-flame"></i>
+          </div>
+        </div>
+        <div class="labs-row">
+          <div class="marquee-track marquee-reverse">
+            <span class="w-violet">Moonshot AI</span><i class="sep-flame"></i><span class="w-fill">Z.ai</span><i class="sep-flame"></i><span class="w-out">Mistral</span><i class="sep-flame"></i><span class="w-flame">Meta</span><i class="sep-flame"></i><span class="w-fill">NVIDIA</span><i class="sep-flame"></i><span class="w-out">Cohere</span><i class="sep-flame"></i>
+            <span class="w-violet" aria-hidden="true">Moonshot AI</span><i class="sep-flame"></i><span class="w-fill" aria-hidden="true">Z.ai</span><i class="sep-flame"></i><span class="w-out" aria-hidden="true">Mistral</span><i class="sep-flame"></i><span class="w-flame" aria-hidden="true">Meta</span><i class="sep-flame"></i><span class="w-fill" aria-hidden="true">NVIDIA</span><i class="sep-flame"></i><span class="w-out" aria-hidden="true">Cohere</span><i class="sep-flame"></i>
+          </div>
+        </div>
+        <div class="labs-row">
+          <div class="marquee-track">
+            <span class="w-out">MiniMax</span><i class="sep-flame"></i><span class="w-fill">Perplexity</span><i class="sep-flame"></i><span class="w-lime">Tinfoil</span><i class="sep-flame"></i><span class="w-out">Tencent</span><i class="sep-flame"></i><span class="w-amber">Venice</span><i class="sep-flame"></i><span class="w-fill">Xiaomi</span><i class="sep-flame"></i>
+            <span class="w-out" aria-hidden="true">MiniMax</span><i class="sep-flame"></i><span class="w-fill" aria-hidden="true">Perplexity</span><i class="sep-flame"></i><span class="w-lime" aria-hidden="true">Tinfoil</span><i class="sep-flame"></i><span class="w-out" aria-hidden="true">Tencent</span><i class="sep-flame"></i><span class="w-amber" aria-hidden="true">Venice</span><i class="sep-flame"></i><span class="w-fill" aria-hidden="true">Xiaomi</span><i class="sep-flame"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <ul class="stats">
+          <li data-reveal><strong>Hundreds</strong><span>of chat models, from the big labs to the open-weight frontier</span></li>
+          <li data-reveal><strong>3 tiers</strong><span>of privacy, labeled on every model in the picker</span></li>
+          <li data-reveal><strong>1 balance</strong><span>for chat and for every app you connect to the API</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ PAY ============ -->
+    <section class="section flame pay" id="pay" aria-labelledby="pay-title">
+      <div class="wrap">
+        <p class="eyebrow eyebrow-ink"><span class="hex">0x06</span> It’s in the name</p>
+        <h2 id="pay-title" class="pay-title" data-reveal>Pay. <span class="serif">Per.</span> Query.</h2>
+
+        <div class="pay-intro">
+          <p class="pay-lede" data-reveal>Top up from $0.10 and pay for what you use, about a cent per query on average. No subscription quietly renewing. No plan per model.</p>
+          <figure class="formula" data-reveal>
+            <figcaption>How a text request is priced</figcaption>
+            <code><span class="f-var">cost</span> = <span class="f-var">input_tokens</span> × <span class="f-rate">model_input_rate</span><br>     + <span class="f-var">output_tokens</span> × <span class="f-rate">model_output_rate</span></code>
+            <p>Input includes the conversation context you send along.</p>
+          </figure>
+        </div>
+
+        <ul class="benefits">
+          <li data-reveal><h3>Match the model to the job</h3><p>Choose a lower-cost model for straightforward tasks and a more capable one for demanding work.</p></li>
+          <li data-reveal><h3>Know what you’re paying for</h3><p>Text requests are charged by the model’s rates and the amount of input and output processed, including conversation context.</p></li>
+          <li data-reveal><h3>Keep one balance</h3><p>Use your credit across PayPerQ chat and requests from connected apps.</p></li>
+        </ul>
+
+        <div class="wallet" data-reveal>
+          <div class="wallet-copy">
+            <h3 class="wallet-title">Start from your wallet.</h3>
+            <p>Fund your balance with Bitcoin, Lightning, or Monero. No email registration required.</p>
+            <p class="wallet-note">No PayPerQ subscription · One prepaid balance</p>
+          </div>
+          <ul class="coins" aria-label="Payment methods">
+            <li class="coin coin-btc"><span class="coin-glyph" aria-hidden="true">₿</span><span class="coin-name">Bitcoin</span><span class="coin-k">on-chain</span></li>
+            <li class="coin coin-ln"><span class="coin-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em"><path d="M13.5 2 4 13.5h6.5L9 22l10-12h-6.6L13.5 2Z" fill="currentColor"/></svg></span><span class="coin-name">Lightning</span><span class="coin-k">sats</span></li>
+            <li class="coin coin-xmr"><span class="coin-glyph" aria-hidden="true">ɱ</span><span class="coin-name">Monero</span><span class="coin-k">XMR</span></li>
+            <li class="coin coin-usd"><span class="coin-glyph" aria-hidden="true">$</span><span class="coin-name">Stablecoins</span><span class="coin-k">&amp; other coins</span></li>
+            <li class="coin coin-card"><span class="coin-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 9.5h19" stroke="currentColor" stroke-width="2.4"/></svg></span><span class="coin-name">Card</span><span class="coin-k">works, leaves a trail</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ API ============ -->
+    <section class="section ink api" id="api" aria-labelledby="api-title">
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x07</span> API</p>
+        <div class="api-grid">
+          <div class="api-copy">
+            <h2 id="api-title" class="h2" data-reveal>Your models can work <span class="serif grad-lime">beyond this chat.</span></h2>
+            <p data-reveal>An API lets other apps use the models available through PayPerQ. Connect a compatible coding assistant, research workspace, or automation tool with your PayPerQ API key.</p>
+            <p data-reveal>OpenAI- and Anthropic-compatible: change the base URL, keep your tools. Usage comes out of the same balance.</p>
+            <a class="text-link" href="https://ppq.ai/api-docs" data-reveal>Read the API docs <span aria-hidden="true">↗</span></a>
+          </div>
+
+          <figure class="code" data-reveal>
+            <figcaption class="terminal-bar"><span>request.sh</span><span class="terminal-tag">OpenAI-compatible</span></figcaption>
+<pre><code>curl https://api.ppq.ai/v1/chat/completions \
+  <span class="c-flag">-H</span> <span class="c-str">"Authorization: Bearer $PPQ_API_KEY"</span> \
+  <span class="c-flag">-H</span> <span class="c-str">"Content-Type: application/json"</span> \
+  <span class="c-flag">-d</span> <span class="c-str">'{
+    "model": "private/kimi-k3-1-pro",
+    "messages": [
+      { "role": "user",
+        "content": "Explain this codebase." }
+    ]
+  }'</span></code></pre>
+          </figure>
+        </div>
+
+        <div class="tools" data-reveal>
+          <p class="tools-k">Works with the tools you already run</p>
+          <ul class="tool-list">
+            <li><a href="https://ppq.ai/blog/using-claude-code-with-payperq">Claude Code</a></li>
+            <li><a href="https://ppq.ai/blog/using-cursor-with-payperq">Cursor</a></li>
+            <li><a href="https://ppq.ai/blog/using-opencode-with-payperq">OpenCode</a></li>
+            <li><a href="https://ppq.ai/blog/using-cline-with-payperq">Cline</a></li>
+            <li><a href="https://ppq.ai/blog/using-aider-with-payperq">Aider</a></li>
+            <li><a href="https://ppq.ai/blog/using-goose-with-payperq">Goose</a></li>
+            <li><a href="https://ppq.ai/blog/using-roo-with-payperq">Roo Code</a></li>
+            <li><a href="https://ppq.ai/blog/using-kilocode-with-payperq">Kilo Code</a></li>
+            <li><a href="https://ppq.ai/blog/using-codex-with-payperq">OpenAI Codex</a></li>
+            <li><a href="https://ppq.ai/blog/using-openwebui-with-payperq">Open WebUI</a></li>
+            <li><a href="https://ppq.ai/blog/using-msty-with-payperq">Msty Studio</a></li>
+            <li><a href="https://ppq.ai/blog/using-openclaw-with-payperq">OpenClaw</a></li>
+            <li><a href="https://ppq.ai/blog/using-hermes-with-payperq">Hermes Agent</a></li>
+            <li><a href="https://ppq.ai/blog/using-mkstacks-with-payperq">MKStack for Nostr</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FINE PRINT ============ -->
+    <section class="section paper fine" id="fine-print" aria-labelledby="fine-title">
+      <div class="wrap">
+        <p class="eyebrow"><span class="hex">0x08</span> Limits</p>
+        <div class="split-head">
+          <h2 id="fine-title" class="h2" data-reveal>The fine print, <span class="serif ember-text">in large print.</span></h2>
+          <div class="split-copy" data-reveal>
+            <p>A privacy claim that hides its edges isn’t worth much. Here are ours.</p>
+          </div>
+        </div>
+
+        <ol class="limits">
+          <li data-reveal>
+            <span class="limit-tag tag-amber">Media</span>
+            <h3>Media isn’t in the enclave yet.</h3>
+            <p>Image, video, music, speech, and research tools still run on our backend. We don’t log those queries, but we can’t prove it yet. Moving them into the enclave is planned.</p>
+          </li>
+          <li data-reveal>
+            <span class="limit-tag tag-flame">Payment</span>
+            <h3>Cards leave a trail.</h3>
+            <p>Pay by card and your card details are tied to your credit id at PayPerQ, though never at the provider. Pay with crypto if that matters to you.</p>
+          </li>
+          <li data-reveal>
+            <span class="limit-tag tag-violet">Network</span>
+            <h3>Your IP reaches our edge.</h3>
+            <p>Like any web request. Use a VPN if you want it hidden too.</p>
+          </li>
+          <li data-reveal>
+            <span class="limit-tag tag-lime">OpenAI</span>
+            <h3>OpenAI asks for a customer tag.<span class="fn-target" aria-hidden="true">*</span></h3>
+            <p>For OpenAI models, the enclave attaches a keyed hash of your credit id. OpenAI can tell requests came from the same customer, but can’t turn the hash back into a credit id, let alone a person.</p>
+          </li>
+          <li data-reveal>
+            <span class="limit-tag tag-ink">Trust</span>
+            <h3>This isn’t zero trust.</h3>
+            <p>You still trust that Amazon built Nitro the way it says, and the independent reviewers who checked. You no longer have to trust us.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ CLOSING ============ -->
+    <section class="closing" aria-labelledby="close-title">
+      <div class="closing-art" data-anim aria-hidden="true">
+        <!-- Optional second Unicorn Studio slot. Leave empty to keep the CSS eclipse. -->
+        <div class="unicorn-slot" data-us-project="" data-us-scale="1" data-us-dpi="1.5" data-us-lazyload="true"></div>
+        <div class="fallback-art">
+          <div class="eclipse eclipse-closing">
+            <div class="corona"></div>
+            <div class="corona corona-soft"></div>
+            <div class="disc"></div>
+          </div>
+        </div>
+        <div class="grain"></div>
+      </div>
+      <div class="wrap closing-inner">
+        <p class="eyebrow"><span class="hex">0x09</span> Your move</p>
+        <h2 id="close-title" class="closing-title" data-reveal>Your questions are <span class="serif grad-flame">your business.</span></h2>
+        <p class="closing-lede" data-reveal>Choose your models and privacy protections. Start in chat or connect your tools through the API, paying as you go.</p>
+        <div class="cta-row" data-reveal>
+          <a class="btn btn-flame" href="https://ppq.ai/chat">Start chatting <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="https://github.com/PayPerQ/ppq-enclave-proxy">Read the enclave code <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="https://ppq.ai" aria-label="PayPerQ home">
+            <img class="brand-flame" src="assets/flame2.png" alt="" width="26" height="26">
+            <span class="brand-word">PayPerQ</span>
+          </a>
+          <p class="serif footer-motto">Cypherpunks write code. We publish ours.</p>
+        </div>
+        <nav class="footer-cols" aria-label="Footer">
+          <div>
+            <h4>Product</h4>
+            <a href="https://ppq.ai/chat">Chat</a>
+            <a href="https://ppq.ai/pricing">Models &amp; pricing</a>
+            <a href="https://ppq.ai/api-docs">API docs</a>
+            <a href="https://ppq.ai/blog/using-claude-code-with-payperq">Setup guides</a>
+          </div>
+          <div>
+            <h4>Privacy</h4>
+            <a href="https://ppq.ai/privacy">Privacy policy</a>
+            <a href="https://ppq.ai/blog/anon-vs-zdr-vs-tee-privacy-tiers">Privacy tiers</a>
+            <a href="https://ppq.ai/blog/introducing-the-enclave-router">Enclave Router</a>
+          </div>
+          <div>
+            <h4>Verify</h4>
+            <a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave code ↗</a>
+            <a href="https://github.com/PayPerQ/ppq-privacy-verifier">Privacy verifier ↗</a>
+            <a href="https://api.ppq.ai/v1/models">Model catalog ↗</a>
+          </div>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 PayPerQ</span>
+        <span class="footer-clean"><i class="dot dot-lime"></i>This page loads no third-party scripts, fonts, or trackers.</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

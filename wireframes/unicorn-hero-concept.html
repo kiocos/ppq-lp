@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PPQ — proposta de animação na hero</title>
+<style>
+:root{color-scheme:dark;--ink:var(--foreground,#efefec);--dim:var(--muted-foreground,#aaa);--line:var(--border,#333);--panel:var(--card,#171717);--base:var(--background,#101010);--radius:10px}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:transparent;color:var(--ink);font-family:var(--font-sans,Arial,sans-serif)}button,a{font:inherit}a{color:inherit;text-underline-offset:3px}button:focus-visible,a:focus-visible{outline:2px solid var(--ink);outline-offset:4px}.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}button{cursor:pointer;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--dim);padding:10px 13px;font-size:12px}button[aria-pressed=true]{background:var(--ink);color:var(--base)}#pause{margin-left:auto}.hero-copy{text-align:center;max-width:610px;margin:32px auto 34px}h1{font-size:clamp(31px,5.5vw,43px);font-weight:550;letter-spacing:-.045em;line-height:1.08;margin:0;text-wrap:balance}.hero-copy p{font-size:14px;line-height:1.65;max-width:520px;color:var(--dim);margin:20px auto}.cta{display:inline-block;font-size:12px;font-weight:600;background:var(--ink);color:var(--base);padding:12px 18px;border-radius:5px}.stage{position:relative;height:365px;background:var(--panel);border-radius:var(--radius);padding:16px;overflow:hidden;isolation:isolate}.scene{position:absolute;inset:0;width:100%;height:365px;z-index:-2}.shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,transparent 65%,var(--base));pointer-events:none}.scene-caption{font:10px/1.5 var(--font-mono,monospace);color:var(--ink);padding:6px 9px;background:color-mix(in srgb,var(--base) 70%,transparent);border-radius:4px;position:absolute;top:16px;left:16px;pointer-events:none}.product{position:absolute;top:93px;left:12%;width:76%;height:225px;border:1px solid color-mix(in srgb,var(--ink) 22%,var(--base));border-radius:8px;background:var(--base);box-shadow:0 18px 45px color-mix(in srgb,var(--base) 70%,transparent);pointer-events:none;display:flex;flex-direction:column}.window-top{height:31px;padding:10px 12px;display:flex;gap:5px;align-items:center;border-bottom:1px solid var(--line)}.dot{width:4px;height:4px;border-radius:50%;background:var(--dim)}.window-label{margin-left:auto;font:9px var(--font-mono,monospace);color:var(--dim)}.product-body{display:grid;grid-template-columns:18% 1fr;flex:1}.sidebar{border-right:1px solid var(--line);padding:20px 12px}.skeleton{height:4px;background:color-mix(in srgb,var(--ink) 18%,var(--base));margin-bottom:10px;border-radius:2px}.short{width:65%}.product-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:16px;text-align:center}.model-tags{display:flex;gap:6px;font:9px var(--font-mono,monospace);color:var(--dim)}.model-tags span{border:1px solid var(--line);border-radius:4px;padding:5px 8px}.product-center strong{font-size:14px;font-weight:500;max-width:230px;line-height:1.5}.prompt{width:90%;height:30px;border:1px solid var(--line);border-radius:4px;margin-top:4px}.art-only .product{display:none}.art-only .shade{opacity:.5}.detail{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.detail p{font-size:12px;line-height:1.6;color:var(--dim);margin:0}.detail strong{display:block;font-size:12px;color:var(--ink);font-weight:550;margin-bottom:5px}.status{font:10px/1.6 var(--font-mono,monospace);color:var(--dim);margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line)}.source{font-size:11px;line-height:1.6;color:var(--dim);margin-top:8px}#state{color:var(--ink)}@media(max-width:480px){.hero-copy{margin-top:22px}.hero-copy h1{font-size:34px}.hero-copy p{font-size:13px}.stage,.scene{height:320px}.product{top:85px;left:6%;width:88%;height:210px}.product-center{padding:12px}.product-center strong{font-size:12px}.sidebar{padding:20px 8px}.detail{grid-template-columns:1fr}.controls{gap:6px}.controls button{padding:9px 10px;font-size:11px}.model-tags span{padding:4px 5px;font-size:8px}.scene-caption{font-size:9px;max-width:85%}}
+.scene{background:var(--base);overflow:hidden;--px:0px;--py:0px}.warm-field{position:absolute;inset:-30%;background:radial-gradient(ellipse at 55% 45%,color-mix(in srgb,var(--warning,#ce6e35) 48%,transparent),transparent 47%);animation:drift 16s ease-in-out infinite alternate;filter:blur(22px)}.light-band{position:absolute;left:9%;top:-130px;width:78%;height:360px;border-radius:50%;background:linear-gradient(150deg,transparent 28%,color-mix(in srgb,var(--warning,#ce6e35) 55%,transparent) 48%,color-mix(in srgb,var(--ink) 45%,transparent) 50%,transparent 55%);transform:translate(var(--px),var(--py));filter:blur(5px);transition:transform 1.8s ease-out}.ribs{position:absolute;inset:0;background:repeating-linear-gradient(102deg,transparent 0px,transparent 15px,color-mix(in srgb,var(--ink) 5%,transparent) 17px,color-mix(in srgb,var(--base) 25%,transparent) 21px,transparent 23px);mask-image:linear-gradient(transparent,black 15%,black 60%,transparent)}.paused .warm-field{animation-play-state:paused}.paused .light-band{transform:none;transition:none}@keyframes drift{from{transform:translate(-45px,-15px) rotate(-8deg)}to{transform:translate(55px,30px) rotate(5deg)}}@media(prefers-reduced-motion:reduce){.warm-field{animation:none}.light-band{transition:none;transform:none}}
+</style>
+</head>
+<body>
+<div class="controls" aria-label="Visualização da proposta">
+<button id="composition" aria-pressed="true">Com produto</button>
+<button id="art" aria-pressed="false">Só a animação</button>
+<button id="pause">Pausar esboço</button>
+</div>
+<div class="hero-copy" lang="en">
+<h1>Your favorite AI models, with privacy you can verify.</h1>
+<p>Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.</p>
+<span class="cta">Start chatting</span>
+</div>
+<div class="stage" id="stage">
+<div class="scene" aria-hidden="true"><div class="warm-field"></div><div class="light-band"></div><div class="ribs"></div></div>
+<div class="shade"></div>
+<span class="scene-caption">ESBOÇO EM CSS · ÁREA PARA A ANIMAÇÃO DO UNICORN</span>
+<div class="product">
+<div class="window-top"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="window-label">PPQ / PRODUTO</span></div>
+<div class="product-body"><div class="sidebar"><div class="skeleton"></div><div class="skeleton short"></div><div class="skeleton"></div></div><div class="product-center"><div class="model-tags"><span>Claude</span><span>GPT</span><span>Open-weight</span></div><strong>Aqui entra o screenshot ou a demo real da PPQ</strong><div class="prompt"></div></div></div>
+</div>
+</div>
+<div class="detail"><p><strong>Onde colocar</strong>Na área visual da hero editorial, abaixo da copy e envolvendo a apresentação do produto.</p><p><strong>O que refinar no Unicorn</strong>Textura de vidro, luz quente pontual, movimento lento e resposta discreta ao mouse. Manter o centro limpo.</p></div>
+<p class="status"><span id="state" role="status">Esboço de posição e atmosfera em HTML/CSS</span> · A animação final seria criada no Unicorn Studio</p>
+<p class="source">Referência para desenvolver a cena: <a href="https://www.unicorn.studio/docs/example-projects/#fluted-gradient" target="_blank" rel="noopener noreferrer">Fluted Gradient</a> · <a href="https://unicorn.studio/remix/fm3SGqj3RIArJn9tbgCK" target="_blank" rel="noopener noreferrer">Abrir para remixar no Unicorn Studio ↗</a></p>
+<script>
+const stage=document.getElementById('stage');
+const scene=document.querySelector('.scene');
+const pauseButton=document.getElementById('pause');
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+function selectView(artOnly){
+ stage.classList.toggle('art-only',artOnly);
+ document.getElementById('composition').setAttribute('aria-pressed',String(!artOnly));
+ document.getElementById('art').setAttribute('aria-pressed',String(artOnly));
+}
+document.getElementById('composition').addEventListener('click',()=>selectView(false));
+document.getElementById('art').addEventListener('click',()=>selectView(true));
+pauseButton.addEventListener('click',()=>{
+ stage.classList.toggle('paused');
+ pauseButton.textContent=stage.classList.contains('paused')?'Reproduzir esboço':'Pausar esboço';
+});
+stage.addEventListener('pointermove',event=>{
+ if(reduced.matches||stage.classList.contains('paused')||event.pointerType==='touch')return;
+ const rect=stage.getBoundingClientRect();
+ scene.style.setProperty('--px',((event.clientX-rect.left)/rect.width-.5)*22+'px');
+ scene.style.setProperty('--py',((event.clientY-rect.top)/rect.height-.5)*10+'px');
+});
+stage.addEventListener('pointerleave',()=>{scene.style.setProperty('--px','0px');scene.style.setProperty('--py','0px');});
+if(reduced.matches){stage.classList.add('paused');pauseButton.disabled=true;pauseButton.textContent='Movimento reduzido';}
+</script>
+</body>
+</html>

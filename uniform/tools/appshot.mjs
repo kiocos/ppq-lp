@@ -1,0 +1,17 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, colorScheme: 'dark' });
+const p = await ctx.newPage();
+const reqs = [];
+p.on('request', r => { const u = r.url(); if (!u.includes('localhost:3000/_next') && !u.startsWith('data:')) reqs.push(r.method() + ' ' + u.slice(0, 120)); });
+p.on('console', m => { if (m.type() === 'error') console.log('console.error', m.text().slice(0, 160)); });
+await p.goto('http://localhost:3000/chat', { waitUntil: 'domcontentloaded', timeout: 120000 });
+await p.waitForTimeout(12000);
+await p.screenshot({ path: '../app-captures/_scratch/app-chat.png' });
+console.log('URL', p.url());
+console.log([...new Set(reqs)].slice(0, 60).join('\n'));
+const ls = await p.evaluate(() => Object.keys(localStorage));
+console.log('localStorage keys', ls);
+const idb = await p.evaluate(async () => (await indexedDB.databases()).map(d => d.name + '@' + d.version));
+console.log('idb', idb);
+await b.close();

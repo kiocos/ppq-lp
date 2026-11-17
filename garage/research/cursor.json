@@ -1,0 +1,598 @@
+{
+ "title": "AI Coding Agent for Building Ambitious Software | Cursor",
+ "bodyBg": "rgb(247, 247, 244)",
+ "bodyColor": "rgb(38, 37, 30)",
+ "pageH": 8199,
+ "fonts": [
+  "CursorGothic 400",
+  "CursorGothic Fallback normal",
+  "berkeleyMono 400",
+  "EB Garamond 500",
+  "EB Garamond 400",
+  "Lato 400",
+  "Lato 700",
+  "CursorIcons16 normal"
+ ],
+ "h1": [
+  {
+   "tag": "h1",
+   "text": "Cursor is your coding agent for building ambitious software.",
+   "font": "CursorGothic",
+   "size": "26px",
+   "weight": "400",
+   "lh": "32.5px",
+   "ls": "-0.325px",
+   "color": "rgb(38, 37, 30)",
+   "w": 658,
+   "y": 164
+  }
+ ],
+ "h2": [
+  {
+   "tag": "h2",
+   "text": "Trusted every day by teams that build world-class software",
+   "font": "CursorGothic",
+   "size": "14px",
+   "weight": "400",
+   "lh": "21px",
+   "ls": "0.14px",
+   "color": "rgb(38, 37, 30)",
+   "w": 1300,
+   "y": 1138
+  },
+  {
+   "tag": "h2",
+   "text": "Mission Control Interface",
+   "font": "system-ui",
+   "size": "20px",
+   "weight": "700",
+   "lh": "31px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 452,
+   "y": 1551
+  },
+  {
+   "tag": "h2",
+   "text": "Trigger",
+   "font": "system-ui",
+   "size": "14px",
+   "weight": "600",
+   "lh": "21.7px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 452,
+   "y": 1646
+  },
+  {
+   "tag": "h2",
+   "text": "View Behavior",
+   "font": "system-ui",
+   "size": "14px",
+   "weight": "600",
+   "lh": "21.7px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 452,
+   "y": 1724
+  },
+  {
+   "tag": "h2",
+   "text": "#feature-realtime-sync",
+   "font": "Lato",
+   "size": "16px",
+   "weight": "600",
+   "lh": "21.3333px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 166,
+   "y": 3081
+  },
+  {
+   "tag": "h2",
+   "text": "The new way to build software.",
+   "font": "CursorGothic",
+   "size": "36px",
+   "weight": "400",
+   "lh": "43.2px",
+   "ls": "-0.72px",
+   "color": "rgb(38, 37, 30)",
+   "w": 810,
+   "y": 4585
+  },
+  {
+   "tag": "h2",
+   "text": "Stay on the frontier",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 486,
+   "y": 5285
+  },
+  {
+   "tag": "h2",
+   "text": "All Repos",
+   "font": "system-ui",
+   "size": "19px",
+   "weight": "510",
+   "lh": "20.9px",
+   "ls": "-0.26px",
+   "color": "rgba(0, 0, 0, 0.82)",
+   "w": 250,
+   "y": 5595
+  },
+  {
+   "tag": "h2",
+   "text": "Changelog",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 1300,
+   "y": 6024
+  },
+  {
+   "tag": "h2",
+   "text": "Recent highlights",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 1300,
+   "y": 7052
+  },
+  {
+   "tag": "h2",
+   "text": "Try Cursor now.",
+   "font": "CursorGothic",
+   "size": "72px",
+   "weight": "400",
+   "lh": "79.2px",
+   "ls": "-2.16px",
+   "color": "rgb(38, 37, 30)",
+   "w": 810,
+   "y": 7394
+  }
+ ],
+ "h3": [
+  {
+   "tag": "h3",
+   "text": "Agents turn ideas into code",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 383,
+   "y": 1663
+  },
+  {
+   "tag": "h3",
+   "text": "Works autonomously, runs in parallel",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 383,
+   "y": 2464
+  },
+  {
+   "tag": "h3",
+   "text": "In every tool, at every step",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 383,
+   "y": 3244
+  },
+  {
+   "tag": "h3",
+   "text": "Hand work to AI teammates",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 383,
+   "y": 4028
+  },
+  {
+   "tag": "h3",
+   "text": "Use the best model for every task",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 5352
+  },
+  {
+   "tag": "h3",
+   "text": "Build with autonomous agents",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 5352
+  },
+  {
+   "tag": "h3",
+   "text": "Develop enduring software",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 5352
+  },
+  {
+   "tag": "h3",
+   "text": "Cursor is an applied research team focused on building the future of software de",
+   "font": "CursorGothic",
+   "size": "22px",
+   "weight": "400",
+   "lh": "28.6px",
+   "ls": "-0.11px",
+   "color": "rgb(38, 37, 30)",
+   "w": 383,
+   "y": 6576
+  }
+ ],
+ "p": [
+  {
+   "tag": "p",
+   "text": "Software creation is changing. We are a group of researchers, engineers, and tec",
+   "font": "EB Garamond",
+   "size": "17.28px",
+   "weight": "400",
+   "lh": "23.328px",
+   "ls": "normal",
+   "color": "rgba(38, 37, 30, 0.55)",
+   "w": 398,
+   "y": 553
+  },
+  {
+   "tag": "p",
+   "text": "We have much to learn, try, and build.",
+   "font": "EB Garamond",
+   "size": "17.28px",
+   "weight": "400",
+   "lh": "23.328px",
+   "ls": "normal",
+   "color": "rgba(38, 37, 30, 0.55)",
+   "w": 398,
+   "y": 639
+  },
+  {
+   "tag": "p",
+   "text": "A grid view of all open windows as scaled previews, allowing quick selection to ",
+   "font": "system-ui",
+   "size": "13px",
+   "weight": "400",
+   "lh": "20.15px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 452,
+   "y": 1592
+  },
+  {
+   "tag": "p",
+   "text": "Menu item in MenuBar.tsx (View > Mission Control), hotkey F3, or double-tap desk",
+   "font": "system-ui",
+   "size": "13px",
+   "weight": "400",
+   "lh": "20.15px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 452,
+   "y": 1670
+  },
+  {
+   "tag": "p",
+   "text": "Overlay existing windows into a grid of live previews with spring-based layout a",
+   "font": "system-ui",
+   "size": "13px",
+   "weight": "400",
+   "lh": "20.15px",
+   "ls": "normal",
+   "color": "rgb(38, 37, 30)",
+   "w": 452,
+   "y": 1748
+  },
+  {
+   "tag": "p",
+   "text": "“It was night and day from one batch to another, adoption went from single digit",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 4700
+  },
+  {
+   "tag": "p",
+   "text": "“My favorite enterprise AI service is Cursor. Every one of our engineers, some 4",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 4700
+  },
+  {
+   "tag": "p",
+   "text": "“The best LLM applications have an autonomy slider: you control how much indepen",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 4700
+  },
+  {
+   "tag": "p",
+   "text": "“Cursor quickly grew from hundreds to thousands of extremely enthusiastic Stripe",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 4926
+  },
+  {
+   "tag": "p",
+   "text": "“The most useful AI tool that I currently pay for, hands down, is Cursor. It's f",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 4926
+  },
+  {
+   "tag": "p",
+   "text": "“It's definitely becoming more fun to be a programmer. We are at the 1% of what'",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 392,
+   "y": 4926
+  },
+  {
+   "tag": "p",
+   "text": "Recents",
+   "font": "system-ui",
+   "size": "11px",
+   "weight": "400",
+   "lh": "16.5px",
+   "ls": "normal",
+   "color": "rgba(0, 0, 0, 0.48)",
+   "w": 250,
+   "y": 5632
+  },
+  {
+   "tag": "p",
+   "text": "Voice Chat with Agents",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 283,
+   "y": 6115
+  },
+  {
+   "tag": "p",
+   "text": "Build Live Apps in Cursor",
+   "font": "CursorGothic",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "0.08px",
+   "color": "rgb(38, 37, 30)",
+   "w": 283,
+   "y": 6115
+  }
+ ],
+ "sections": [
+  {
+   "tag": "section",
+   "y": 52,
+   "h": 1086,
+   "pt": "112px",
+   "pb": "67.2px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 1138,
+   "h": 177,
+   "pt": "0px",
+   "pb": "33.6px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 1315,
+   "h": 3203,
+   "pt": "67.2px",
+   "pb": "67.2px",
+   "bg": "rgba(0, 0, 0, 0)"
+  },
+  {
+   "tag": "section",
+   "y": 4518,
+   "h": 700,
+   "pt": "67.2px",
+   "pb": "67.2px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 5218,
+   "h": 739,
+   "pt": "67.2px",
+   "pb": "67.2px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 5957,
+   "h": 334,
+   "pt": "67.2px",
+   "pb": "67.2px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 6291,
+   "h": 694,
+   "pt": "67.2px",
+   "pb": "67.2px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 6985,
+   "h": 341,
+   "pt": "67.2px",
+   "pb": "67.2px",
+   "bg": "rgb(247, 247, 244)"
+  },
+  {
+   "tag": "section",
+   "y": 7327,
+   "h": 346,
+   "pt": "67.2px",
+   "pb": "134.4px",
+   "bg": "rgb(247, 247, 244)"
+  }
+ ],
+ "buttons": [
+  {
+   "text": "Skip to content",
+   "bg": "rgb(38, 37, 30)",
+   "color": "rgb(247, 247, 244)",
+   "radius": "3.35544e+07px",
+   "h": 13,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Cursor",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 24,
+   "font": "16px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Models",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "↓",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Product",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "↓",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Enterprise",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Pricing",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Resources",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "↓",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(38, 37, 30)",
+   "radius": "0px",
+   "h": 34,
+   "font": "14px/400",
+   "shadow": "none"
+  }
+ ]
+}

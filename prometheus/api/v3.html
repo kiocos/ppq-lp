@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · API section D</title>
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1); --radius: 6px; --radius-card: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul, ol { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: var(--radius); }
+  ::selection { background: var(--brand); color: #fff; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-weight: 400; letter-spacing: -0.025em; line-height: 1.12; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .mono { font-family: var(--f-mono); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 20px; border-radius: var(--radius); border: 1px solid transparent; font: 500 15px/1 var(--f-body); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s; }
+  .btn-light { background: #fff; color: #1a1714; }
+  .btn-light:hover { background: #efebe6; }
+  .textlink { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 4px; transition: color .15s; }
+  .textlink:hover { color: var(--fg); }
+
+  /* study chrome */
+  .study { padding-top: 40px; padding-bottom: 0; font-size: 13px; color: var(--fg-3); display: flex; gap: 16px; flex-wrap: wrap; }
+  .study a { color: var(--fg-2); }
+  .study a:hover { color: var(--fg); }
+
+  /* ---------- section ---------- */
+  .api { padding: 112px 0 96px; }
+  .head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+  .label { margin-bottom: 14px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  .head h2 { font-size: clamp(28px, 2.6vw, 36px); }
+  .lead { margin-top: 14px; font-size: 17px; color: var(--fg-2); max-width: 35em; }
+  .head .textlink { font-size: 14px; white-space: nowrap; }
+
+  .scenes { margin-top: 56px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px 32px; }
+  .scene { min-width: 0; }
+  .screen { position: relative; height: 300px; border-radius: var(--radius-card); background: var(--panel); border: 1px solid var(--line); overflow: hidden; box-shadow: 0 40px 70px -50px rgba(0,0,0,.95); }
+  .screen .bar { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--fg-3); }
+  .screen .bar .dots { display: flex; gap: 5px; margin-right: 4px; }
+  .screen .bar .dots i { width: 7px; height: 7px; border-radius: 50%; background: #2c2a27; }
+  .screen .bar .r { margin-left: auto; font: 11.5px var(--f-mono); color: var(--fg-3); }
+  .live { display: inline-flex; align-items: center; gap: 6px; }
+  .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--brand-ink); box-shadow: 0 0 0 3px rgba(233,125,73,.16); animation: pulse 2s ease-in-out infinite; }
+  .scene.done .live::before { background: var(--good); box-shadow: 0 0 0 3px rgba(95,211,154,.14); animation: none; }
+  @keyframes pulse { 50% { opacity: .45; } }
+  .cap { margin-top: 20px; display: grid; gap: 6px; }
+  .cap h3 { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+  .cap p { font-size: 15px; color: var(--fg-2); max-width: 32em; }
+  .cap .with { font-size: 13.5px; color: var(--fg-3); }
+  .cap .with a { color: var(--fg-2); }
+  .cap .with a:hover { color: var(--fg); }
+
+  /* steps appear in order (JS adds .on); without JS everything shows */
+  .js [data-s] { opacity: 0; transform: translateY(4px); transition: opacity .45s var(--ease), transform .45s var(--ease); }
+  .js [data-s].on { opacity: 1; transform: none; }
+
+  /* 1 · terminal */
+  .term { padding: 16px 18px; font: 12.5px/1.75 var(--f-mono); color: var(--fg-2); }
+  .term .p { color: var(--fg-3); }
+  .term .you { color: var(--fg); }
+  .term .act { display: grid; grid-template-columns: 14px minmax(0, 1fr); }
+  .term .act::before { content: '●'; font-size: 8px; line-height: 21px; color: var(--fg-3); }
+  .term .act.now::before { color: var(--brand-ink); }
+  .term .act b { font-weight: 400; color: var(--fg); }
+  .term .diff { color: var(--fg-3); }
+  .term .diff .a { color: var(--good); } .term .diff .d { color: #d77a6a; }
+  .term .pass { margin-top: 6px; color: var(--good); }
+  .term-foot { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; padding: 9px 18px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--fg-3); background: var(--panel); }
+
+  /* 2 · messages */
+  .thread { padding: 16px 16px 0; display: grid; gap: 8px; align-content: start; font-size: 13.5px; line-height: 1.45; }
+  .msg { max-width: 82%; padding: 9px 12px; border-radius: 12px; }
+  .msg.me { justify-self: end; background: #2a2724; color: var(--fg); border-bottom-right-radius: 4px; }
+  .msg.ai { justify-self: start; background: var(--panel-2); border: 1px solid var(--line); color: var(--fg-2); border-bottom-left-radius: 4px; }
+  .msg.ai b { color: var(--fg); font-weight: 500; }
+  .msg small { display: block; margin-top: 3px; font-size: 11px; color: var(--fg-3); }
+  .msg .ok { color: var(--good); }
+  .typing { justify-self: start; display: inline-flex; gap: 4px; padding: 10px 12px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); }
+  .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--fg-3); animation: dot 1.2s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes dot { 30% { transform: translateY(-3px); opacity: .6; } }
+
+  /* 3 · support ticket */
+  .ticket { padding: 14px 18px; display: grid; gap: 12px; font-size: 13.5px; line-height: 1.5; }
+  .ticket .k { font-size: 11.5px; font-weight: 500; color: var(--fg-3); margin-bottom: 3px; display: flex; gap: 8px; align-items: center; }
+  .ticket .k .mono { font-weight: 400; color: var(--brand-ink); }
+  .ticket .in { color: var(--fg); }
+  .ticket .seen { padding: 9px 12px; border-radius: 8px; background: rgba(191,60,27,.1); box-shadow: inset 2px 0 0 var(--brand); color: var(--fg-2); font-family: var(--f-mono); font-size: 12.5px; }
+  .ticket .ph { color: var(--brand-ink); }
+  .ticket .out { padding: 9px 12px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); color: var(--fg-2); }
+  .ticket .out b { color: var(--fg); font-weight: 500; }
+
+  /* 4 · invoices to table */
+  .sheet { font-size: 12.5px; }
+  .sheet table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .sheet th { text-align: left; font-weight: 500; color: var(--fg-3); padding: 9px 14px; border-bottom: 1px solid var(--line); font-size: 11.5px; }
+  .sheet td { padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--fg-2); white-space: nowrap; }
+  .sheet td:first-child { font-family: var(--f-mono); font-size: 11.5px; color: var(--fg-3); }
+  .sheet td:last-child, .sheet th:last-child { text-align: right; }
+  .sheet td:last-child { color: var(--fg); font-family: var(--f-mono); }
+  .sheet tr.new td { animation: rowlit 1.4s var(--ease); }
+  @keyframes rowlit { from { background: rgba(191,60,27,.16); } to { background: transparent; } }
+  .sheet .prog { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); background: var(--panel); font-size: 11.5px; color: var(--fg-3); }
+  .sheet .prog .track { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .sheet .prog .track i { display: block; height: 100%; width: 0; background: var(--brand); transition: width .5s linear; }
+  .scene.done .sheet .prog .track i { background: var(--good); }
+  .sheet .prog b { font: 400 11.5px var(--f-mono); color: var(--fg-2); }
+
+  /* ---------- connect ---------- */
+  .connect { margin-top: 88px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px 56px; align-items: center; }
+  .connect h3 { font-size: clamp(22px, 2vw, 26px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.2; text-wrap: balance; }
+  .connect .steps { margin-top: 12px; font-size: 14.5px; color: var(--fg-2); }
+  .connect .steps b { font-weight: 500; color: var(--fg); }
+  .line { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 8px 0 18px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font: 14px var(--f-mono); color: var(--fg-2); min-width: 0; }
+  .line code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; }
+  .line .s { color: var(--brand-ink); }
+  .line button { height: 34px; padding: 0 12px; border-radius: var(--radius); font: 500 13px var(--f-body); color: var(--fg-2); border: 1px solid var(--line); }
+  .line button:hover { color: var(--fg); border-color: var(--border); }
+  .logos { margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; font-size: 13.5px; color: var(--fg-3); }
+  .logos span { display: inline-flex; align-items: center; gap: 7px; color: var(--fg-2); opacity: .8; }
+  .logos img { width: 16px; height: 16px; object-fit: contain; filter: grayscale(1) brightness(1.5); }
+  .logos img.inv { filter: invert(1) grayscale(1); }
+  .logos a.textlink { font-size: 13.5px; }
+
+  /* ---------- funding bar (from C) ---------- */
+  .fund { position: relative; margin-top: 64px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 40px; align-items: center; padding: 28px 32px; border-radius: var(--radius-card); overflow: hidden; background: var(--brand); color: #fff; }
+  .fund::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .18; }
+  .fund > * { position: relative; z-index: 1; }
+  .fund h3 { font-size: 22px; font-weight: 400; letter-spacing: -0.02em; }
+  .fund p { margin-top: 6px; font-size: 15px; color: rgba(255,255,255,.92); }
+  .fund .right { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .pay-row { display: flex; gap: 8px; }
+  .pay-row i { width: 32px; height: 32px; border-radius: 50%; background: #1c0c06; display: grid; place-items: center; }
+  .pay-row img { width: 18px; height: 18px; }
+
+  @media (max-width: 960px) {
+    .head, .connect, .fund { grid-template-columns: minmax(0, 1fr); }
+    .scenes { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  }
+  @media (max-width: 600px) {
+    .api { padding-top: 72px; }
+    .screen { height: auto; min-height: 290px; }
+    .term { padding-bottom: 46px; } .thread, .ticket { padding-bottom: 16px; } .sheet { padding-bottom: 40px; }
+    .fund { padding: 26px 22px; }
+    .line { font-size: 12.5px; padding-left: 14px; }
+    .sheet td:nth-child(3), .sheet th:nth-child(3) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .live::before, .typing i { animation: none; } }
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<div class="wrap study"><span>API section · D (round 3)</span><a href="index.html">Round 2: A, B, C</a><a href="REVIEW.md">Review</a><a href="../r7/prometheus.html#api">Current (r7)</a></div>
+
+<section class="api" id="api" aria-labelledby="api-h">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="label">API</p>
+        <h2 class="display" id="api-h">The chat answers. The API does the work.</h2>
+        <p class="lead">Connect the same models to your code, your messages, your product and your files, and they keep working without you in the loop.</p>
+      </div>
+      <a class="textlink" href="https://ppq.ai/api-docs">Read the API docs</a>
+    </div>
+
+    <div class="scenes">
+      <!-- 1 · coding agent -->
+      <article class="scene" data-scene>
+        <div class="screen" aria-label="A coding agent fixes a failing test and the test suite passes.">
+          <div class="bar"><span class="dots"><i></i><i></i><i></i></span>~/shop<span class="r live">claude-sonnet-5.5</span></div>
+          <div class="term" aria-hidden="true">
+            <div data-s><span class="p">&gt;</span> <span class="you">fix the failing checkout test</span></div>
+            <div class="act" data-s><span>Reading <b>src/checkout/total.ts</b></span></div>
+            <div class="act" data-s><span>Tax was applied twice to discounted items</span></div>
+            <div class="act" data-s><span>Edited <b>total.ts</b> <span class="diff"><span class="a">+4</span> <span class="d">−6</span></span></span></div>
+            <div class="act" data-s><span>Running <b>npm test</b></span></div>
+            <div class="pass" data-s>✓ 128 passed · 0 failed</div>
+            <div class="act" data-s><span>Committed <b>fix(checkout): apply tax once</b></span></div>
+          </div>
+          <div class="term-foot"><span>via api.ppq.ai</span><span>$0.03</span></div>
+        </div>
+        <div class="cap">
+          <h3>Code with an agent</h3>
+          <p>It reads your repository, edits the files and runs the tests until they pass. You choose the model for each task.</p>
+          <p class="with"><a href="https://ppq.ai/blog/using-claude-code-with-payperq">Claude Code</a> · <a href="https://ppq.ai/blog/using-codex-with-payperq">Codex</a> · <a href="https://ppq.ai/blog/using-cursor-with-payperq">Cursor</a> · <a href="https://ppq.ai/blog/using-opencode-with-payperq">OpenCode</a></p>
+        </div>
+      </article>
+
+      <!-- 2 · assistant in your messages -->
+      <article class="scene" data-scene>
+        <div class="screen" aria-label="A personal assistant in a messaging app reports on the inbox and saves a draft reply.">
+          <div class="bar">Assistant<span class="r live">on your server</span></div>
+          <div class="thread" aria-hidden="true">
+            <div class="msg me" data-s>Anything urgent before my 10am?</div>
+            <div class="typing" data-s data-transient><i></i><i></i><i></i></div>
+            <div class="msg ai" data-s>Two things. <b>Your landlord accepted the 5% raise.</b> And the 10am moved to 10:30, so I pushed your gym slot. Draft a thank-you?</div>
+            <div class="msg me" data-s>Yes, keep it short.</div>
+            <div class="msg ai" data-s><span class="ok">✓</span> Draft saved in your email.</div>
+          </div>
+        </div>
+        <div class="cap">
+          <h3>An assistant in your messages</h3>
+          <p>Runs on your own machine and answers in Telegram, WhatsApp, Slack or email. It reads, drafts, reminds and acts for you.</p>
+          <p class="with"><a href="https://ppq.ai/blog/using-openclaw-with-payperq">OpenClaw</a> · <a href="https://ppq.ai/blog/using-hermes-with-payperq">Hermes Agent</a> · <a href="https://ppq.ai/blog/using-astrbot-with-payperq">AstrBot</a></p>
+        </div>
+      </article>
+
+      <!-- 3 · AI inside your product -->
+      <article class="scene" data-scene>
+        <div class="screen" aria-label="A support ticket: the customer's name and email are replaced with placeholders before the model sees them, and the reply restores them.">
+          <div class="bar">Support · ticket 4471<span class="r live">claude-haiku-5.5</span></div>
+          <div class="ticket" aria-hidden="true">
+            <div data-s><p class="k">Customer wrote</p><p class="in">Hi, I’m Ana Souza, ana.souza@mail.com. My order 4471 still hasn’t arrived.</p></div>
+            <div data-s><p class="k">The model sees <span class="mono">pii_redaction</span></p><p class="seen">Hi, I’m <span class="ph">⟦PERSON_1⟧</span>, <span class="ph">⟦EMAIL_1⟧</span>. My order 4471 still hasn’t arrived.</p></div>
+            <div data-s><p class="k">Draft reply</p><p class="out">Hi <b>Ana</b>, sorry for the wait. Order 4471 left the warehouse this morning; tracking is on its way to <b>ana.souza@mail.com</b>.</p></div>
+          </div>
+        </div>
+        <div class="cap">
+          <h3>AI inside your product</h3>
+          <p>Support replies, search over your docs, summaries. Names and emails are swapped for placeholders inside the enclave before any model sees them.</p>
+          <p class="with">OpenAI and Anthropic SDKs · <a href="https://ppq.ai/blog/pii-redaction">PII redaction</a></p>
+        </div>
+      </article>
+
+      <!-- 4 · paperwork -->
+      <article class="scene" data-scene>
+        <div class="screen sheet" aria-label="Five hundred invoices are read one by one into a spreadsheet with vendor, date and total.">
+          <div class="bar">invoices/ → invoices.csv<span class="r live">gpt-6-luna</span></div>
+          <table aria-hidden="true">
+            <thead><tr><th>File</th><th>Vendor</th><th>Date</th><th>Total</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <div class="prog" aria-hidden="true"><span class="track"><i id="prog-i"></i></span><b id="prog-n">0 of 500</b></div>
+        </div>
+        <div class="cap">
+          <h3>Paperwork on autopilot</h3>
+          <p>Invoices, contracts and emails turned into clean, structured data, thousands at a time, while nobody watches.</p>
+          <p class="with">Structured output · images, video and audio on the same key</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="connect">
+      <div>
+        <h3>Already using the OpenAI or Anthropic SDK? Change one line.</h3>
+        <p class="steps"><b>Get a key</b>, no email needed · <b>add credit</b> · <b>point your client</b> at PayPerQ.</p>
+      </div>
+      <div>
+        <div class="line"><code>base_url=<span class="s">"https://api.ppq.ai/v1"</span></code><button type="button" data-copy="https://api.ppq.ai/v1">Copy</button></div>
+        <div class="logos">
+          <span><img src="../assets/logos/tools/claude-code.png" alt="">Claude Code</span>
+          <span><img class="inv" src="../assets/logos/models/openai.svg" alt="">Codex</span>
+          <span><img src="../assets/logos/tools/cursor.svg" alt="">Cursor</span>
+          <span><img src="../assets/logos/tools/openclaw.svg" alt="">OpenClaw</span>
+          <span><img src="../assets/logos/tools/goose.png" alt="">Goose</span>
+          <a class="textlink" href="https://ppq.ai/integrate">24 guides</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="fund">
+      <div>
+        <h3>One key, one balance, every tool.</h3>
+        <p>Top up from $0.10 and use it everywhere. No subscription, no email.</p>
+      </div>
+      <div class="right">
+        <div class="pay-row">
+          <i><img src="../assets/logos/pay/lightning-network.svg" alt="Lightning"></i>
+          <i><img src="../assets/logos/pay/bitcoin.svg" alt="Bitcoin"></i>
+          <i><img src="../assets/logos/pay/monero.svg" alt="Monero"></i>
+          <i><img src="../assets/logos/pay/tether.svg" alt="Tether"></i>
+        </div>
+        <a class="btn btn-light" href="https://ppq.ai/api-docs">Add credit</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select'; }
+    setTimeout(() => (b.textContent = 'Copy'), 1300);
+  }));
+
+  // invoices: rows stream into the table while the counter runs to 500
+  const vendors = [['inv-0496.pdf', 'Nordic Hosting', 'Oct 02', '€38.20'], ['inv-0497.pdf', 'Atlas Print Co.', 'Oct 03', '$412.00'], ['inv-0498.pdf', 'Kestrel Freight', 'Oct 03', '$1,180.50'], ['inv-0499.pdf', 'Blue Fern Café', 'Oct 04', '$64.90'], ['inv-0500.pdf', 'Orbit Telecom', 'Oct 05', '$89.00']];
+  const early = [['inv-0491.pdf', 'Halden Tools', 'Sep 29', '$230.00'], ['inv-0492.pdf', 'Nordic Hosting', 'Sep 30', '€38.20'], ['inv-0493.pdf', 'Juniper Legal', 'Sep 30', '$950.00'], ['inv-0494.pdf', 'Atlas Print Co.', 'Oct 01', '$76.40'], ['inv-0495.pdf', 'Orbit Telecom', 'Oct 01', '$89.00']];
+  const rows = document.getElementById('rows'), progI = document.getElementById('prog-i'), progN = document.getElementById('prog-n');
+  const MAX = 5;
+  const addRow = (r, lit) => {
+    const tr = document.createElement('tr'); if (lit) tr.className = 'new';
+    tr.innerHTML = r.map((c) => `<td>${c}</td>`).join('');
+    rows.appendChild(tr); while (rows.children.length > MAX) rows.firstChild.remove();
+  };
+  const setProg = (n) => { progI.style.width = (n / 500 * 100) + '%'; progN.textContent = `${n} of 500`; };
+
+  async function playSheet(scene) {
+    rows.innerHTML = ''; early.slice(0, 2).forEach((r) => addRow(r)); setProg(480);
+    for (let n = 481; n <= 500; n++) {
+      setProg(n);
+      const pick = n >= 491 ? (n <= 495 ? early[n - 491] : vendors[n - 496]) : null;
+      if (pick && !rows.textContent.includes(pick[0])) addRow(pick, true);
+      await wait(n >= 491 ? 420 : 90);
+    }
+    scene.classList.add('done');
+  }
+  const sheetFinal = (scene) => { rows.innerHTML = ''; [...early.slice(-1), ...vendors].forEach((r) => addRow(r)); setProg(500); scene.classList.add('done'); };
+
+  // each scene plays once when it scrolls into view, then holds its end state
+  async function play(scene) {
+    if (scene.querySelector('.sheet')) return playSheet(scene);
+    const steps = [...scene.querySelectorAll('[data-s]')];
+    const acts = scene.querySelectorAll('.act');
+    for (const s of steps) {
+      if (s.dataset.transient !== undefined) { s.classList.add('on'); await wait(1100); s.remove(); continue; }
+      acts.forEach((a) => a.classList.remove('now'));
+      if (s.classList.contains('act')) s.classList.add('now');
+      s.classList.add('on');
+      await wait(s.classList.contains('me') ? 700 : 950);
+    }
+    acts.forEach((a) => a.classList.remove('now'));
+    scene.classList.add('done');
+  }
+  const final = (scene) => {
+    if (scene.querySelector('.sheet')) return sheetFinal(scene);
+    scene.querySelectorAll('[data-transient]').forEach((t) => t.remove());
+    scene.querySelectorAll('[data-s]').forEach((s) => s.classList.add('on'));
+    scene.classList.add('done');
+  };
+  const scenes = document.querySelectorAll('[data-scene]');
+  if (reduce || !('IntersectionObserver' in window)) scenes.forEach(final);
+  else {
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); play(e.target); } }), { threshold: 0.45 });
+    scenes.forEach((s) => io.observe(s));
+  }
+})();
+</script>
+</body>
+</html>

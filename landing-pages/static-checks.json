@@ -1,0 +1,62 @@
+[
+  {
+    "page": "01-studio.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "02-workspace.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "03-panorama.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "04-editorial.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "05-chapters.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "06-two-ways.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "07-developer.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "08-reading-room.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "09-focus.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  },
+  {
+    "page": "10-atelier.html",
+    "copy_blocks": 41,
+    "unique_ids": true,
+    "anchors_valid": true
+  }
+]

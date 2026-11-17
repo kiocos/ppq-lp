@@ -1,0 +1,642 @@
+{
+ "barlow": {
+  "links": [
+   {
+    "href": "https://fontsinuse.com/typefaces/249564/mister-barlow",
+    "text": "Mister Barlow"
+   }
+  ],
+  "page": "https://fontsinuse.com/typefaces/249564/mister-barlow",
+  "pairedWith": [
+   [
+    "Acumin(75)",
+    1
+   ],
+   [
+    "Adobe Caslon(93)",
+    1
+   ],
+   [
+    "LL Akkurat(94)",
+    1
+   ],
+   [
+    "Aktiv Grotesk(81)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk(443)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk Condensed(98)",
+    1
+   ],
+   [
+    "Albertus(82)",
+    1
+   ],
+   [
+    "Alternate Gothic(179)",
+    1
+   ],
+   [
+    "GT America(178)",
+    1
+   ],
+   [
+    "ITC American Typewriter(91)",
+    1
+   ],
+   [
+    "Ano(71)",
+    1
+   ],
+   [
+    "Antique Olive(87)",
+    1
+   ],
+   [
+    "Anzeigen-Grotesk / Neue Aurora IX(79)",
+    1
+   ],
+   [
+    "Aperçu(96)",
+    1
+   ],
+   [
+    "Apoc(167)",
+    1
+   ],
+   [
+    "Arial(244)",
+    1
+   ],
+   [
+    "Atlas Grotesk(72)",
+    1
+   ],
+   [
+    "ITC Avant Garde Gothic(362)",
+    1
+   ],
+   [
+    "Avenir(108)",
+    1
+   ],
+   [
+    "Baskerville(89)",
+    1
+   ],
+   [
+    "Benton Sans(91)",
+    1
+   ],
+   [
+    "Bodoni(174)",
+    1
+   ],
+   [
+    "Bookman Swash(68)",
+    1
+   ],
+   [
+    "Brandon Grotesque(114)",
+    1
+   ],
+   [
+    "LL Brown(88)",
+    1
+   ],
+   [
+    "Brush Script(90)",
+    1
+   ],
+   [
+    "Century Expanded(105)",
+    1
+   ],
+   [
+    "Century Schoolbook(81)",
+    1
+   ],
+   [
+    "Cheltenham(87)",
+    1
+   ],
+   [
+    "LL Circular(84)",
+    1
+   ]
+  ],
+  "uses": [
+   "Business/Finance(841)",
+   "Education/Academia(2395)",
+   "Fashion/Apparel(1689)",
+   "Governmental/Civic(791)",
+   "Industrial Design(659)",
+   "Performing Arts(1101)",
+   "Religion/Spirituality(473)",
+   "Retail/Shopping(1208)",
+   "Art/Illustration(513)",
+   "Booklets/Pamphlets(2600)",
+   "Branding/Identity(9315)",
+   "Exhibition/Installation(1331)",
+   "Infographics/Maps(599)",
+   "Magazines/Periodicals(1971)",
+   "Akzidenz-Grotesk(443)",
+   "Akzidenz-Grotesk Condensed(98)",
+   "Alternate Gothic(179)",
+   "ITC American Typewriter(91)",
+   "Anzeigen-Grotesk / Neue Aurora IX(79)",
+   "ITC Avant Garde Gothic(362)"
+  ]
+ },
+ "big shoulders": {
+  "links": [
+   {
+    "href": "https://fontsinuse.com/typefaces/5648/bigticy",
+    "text": "Bigticy"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/7891/big-top",
+    "text": "Big Top"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/14872/big-bad",
+    "text": "Big Bad"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/14877/big-boy",
+    "text": "Big Boy"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/14885/big-mom",
+    "text": "Big Mom"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/167207/big-sur",
+    "text": "Big Sur"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/181262/big-neo",
+    "text": "Big Neo"
+   }
+  ],
+  "page": "https://fontsinuse.com/typefaces/5648/bigticy",
+  "pairedWith": [
+   [
+    "Acumin(75)",
+    1
+   ],
+   [
+    "Adobe Caslon(93)",
+    1
+   ],
+   [
+    "LL Akkurat(94)",
+    1
+   ],
+   [
+    "Aktiv Grotesk(81)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk(443)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk Condensed(98)",
+    1
+   ],
+   [
+    "Albertus(82)",
+    1
+   ],
+   [
+    "Alternate Gothic(179)",
+    1
+   ],
+   [
+    "GT America(178)",
+    1
+   ],
+   [
+    "ITC American Typewriter(91)",
+    1
+   ],
+   [
+    "Ano(71)",
+    1
+   ],
+   [
+    "Antique Olive(87)",
+    1
+   ],
+   [
+    "Anzeigen-Grotesk / Neue Aurora IX(79)",
+    1
+   ],
+   [
+    "Aperçu(96)",
+    1
+   ],
+   [
+    "Apoc(167)",
+    1
+   ],
+   [
+    "Arial(244)",
+    1
+   ],
+   [
+    "Atlas Grotesk(72)",
+    1
+   ],
+   [
+    "ITC Avant Garde Gothic(362)",
+    1
+   ],
+   [
+    "Avenir(108)",
+    1
+   ],
+   [
+    "Baskerville(89)",
+    1
+   ],
+   [
+    "Benton Sans(91)",
+    1
+   ],
+   [
+    "Bodoni(174)",
+    1
+   ],
+   [
+    "Bookman Swash(68)",
+    1
+   ],
+   [
+    "Brandon Grotesque(114)",
+    1
+   ],
+   [
+    "LL Brown(88)",
+    1
+   ],
+   [
+    "Brush Script(90)",
+    1
+   ],
+   [
+    "Century Expanded(105)",
+    1
+   ],
+   [
+    "Century Schoolbook(81)",
+    1
+   ],
+   [
+    "Cheltenham(87)",
+    1
+   ],
+   [
+    "LL Circular(84)",
+    1
+   ]
+  ],
+  "uses": [
+   "Business/Finance(841)",
+   "Education/Academia(2395)",
+   "Fashion/Apparel(1689)",
+   "Governmental/Civic(791)",
+   "Industrial Design(659)",
+   "Performing Arts(1101)",
+   "Religion/Spirituality(473)",
+   "Retail/Shopping(1208)",
+   "Art/Illustration(513)",
+   "Booklets/Pamphlets(2600)",
+   "Branding/Identity(9315)",
+   "Exhibition/Installation(1331)",
+   "Infographics/Maps(599)",
+   "Magazines/Periodicals(1971)",
+   "Akzidenz-Grotesk(443)",
+   "Akzidenz-Grotesk Condensed(98)",
+   "Alternate Gothic(179)",
+   "ITC American Typewriter(91)",
+   "Anzeigen-Grotesk / Neue Aurora IX(79)",
+   "ITC Avant Garde Gothic(362)"
+  ]
+ },
+ "archivo": {
+  "links": [
+   {
+    "href": "https://fontsinuse.com/typefaces/13941/archivo-scholtz-fonts",
+    "text": "Archivo (Scholtz Fonts)"
+   }
+  ],
+  "page": "https://fontsinuse.com/typefaces/13941/archivo-scholtz-fonts",
+  "pairedWith": [
+   [
+    "Acumin(75)",
+    1
+   ],
+   [
+    "Adobe Caslon(93)",
+    1
+   ],
+   [
+    "LL Akkurat(94)",
+    1
+   ],
+   [
+    "Aktiv Grotesk(81)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk(443)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk Condensed(98)",
+    1
+   ],
+   [
+    "Albertus(82)",
+    1
+   ],
+   [
+    "Alternate Gothic(179)",
+    1
+   ],
+   [
+    "GT America(178)",
+    1
+   ],
+   [
+    "ITC American Typewriter(91)",
+    1
+   ],
+   [
+    "Ano(71)",
+    1
+   ],
+   [
+    "Antique Olive(87)",
+    1
+   ],
+   [
+    "Anzeigen-Grotesk / Neue Aurora IX(79)",
+    1
+   ],
+   [
+    "Aperçu(96)",
+    1
+   ],
+   [
+    "Apoc(167)",
+    1
+   ],
+   [
+    "Arial(244)",
+    1
+   ],
+   [
+    "Atlas Grotesk(72)",
+    1
+   ],
+   [
+    "ITC Avant Garde Gothic(362)",
+    1
+   ],
+   [
+    "Avenir(108)",
+    1
+   ],
+   [
+    "Baskerville(89)",
+    1
+   ],
+   [
+    "Benton Sans(91)",
+    1
+   ],
+   [
+    "Bodoni(174)",
+    1
+   ],
+   [
+    "Bookman Swash(68)",
+    1
+   ],
+   [
+    "Brandon Grotesque(114)",
+    1
+   ],
+   [
+    "LL Brown(88)",
+    1
+   ],
+   [
+    "Brush Script(90)",
+    1
+   ],
+   [
+    "Century Expanded(105)",
+    1
+   ],
+   [
+    "Century Schoolbook(81)",
+    1
+   ],
+   [
+    "Cheltenham(87)",
+    1
+   ],
+   [
+    "LL Circular(84)",
+    1
+   ]
+  ],
+  "uses": [
+   "Business/Finance(841)",
+   "Education/Academia(2395)",
+   "Fashion/Apparel(1689)",
+   "Governmental/Civic(791)",
+   "Industrial Design(659)",
+   "Performing Arts(1101)",
+   "Religion/Spirituality(473)",
+   "Retail/Shopping(1208)",
+   "Art/Illustration(513)",
+   "Booklets/Pamphlets(2600)",
+   "Branding/Identity(9315)",
+   "Exhibition/Installation(1331)",
+   "Infographics/Maps(599)",
+   "Magazines/Periodicals(1971)",
+   "Akzidenz-Grotesk(443)",
+   "Akzidenz-Grotesk Condensed(98)",
+   "Alternate Gothic(179)",
+   "ITC American Typewriter(91)",
+   "Anzeigen-Grotesk / Neue Aurora IX(79)",
+   "ITC Avant Garde Gothic(362)"
+  ]
+ },
+ "geist": {
+  "links": [
+   {
+    "href": "https://fontsinuse.com/typefaces/19903/geist",
+    "text": "Geist"
+   },
+   {
+    "href": "https://fontsinuse.com/typefaces/19904/geistig",
+    "text": "Geistig"
+   }
+  ],
+  "page": "https://fontsinuse.com/typefaces/19903/geist",
+  "pairedWith": [
+   [
+    "Acumin(75)",
+    1
+   ],
+   [
+    "Adobe Caslon(93)",
+    1
+   ],
+   [
+    "LL Akkurat(94)",
+    1
+   ],
+   [
+    "Aktiv Grotesk(81)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk(443)",
+    1
+   ],
+   [
+    "Akzidenz-Grotesk Condensed(98)",
+    1
+   ],
+   [
+    "Albertus(82)",
+    1
+   ],
+   [
+    "Alternate Gothic(179)",
+    1
+   ],
+   [
+    "GT America(178)",
+    1
+   ],
+   [
+    "ITC American Typewriter(91)",
+    1
+   ],
+   [
+    "Ano(71)",
+    1
+   ],
+   [
+    "Antique Olive(87)",
+    1
+   ],
+   [
+    "Anzeigen-Grotesk / Neue Aurora IX(79)",
+    1
+   ],
+   [
+    "Aperçu(96)",
+    1
+   ],
+   [
+    "Apoc(167)",
+    1
+   ],
+   [
+    "Arial(244)",
+    1
+   ],
+   [
+    "Atlas Grotesk(72)",
+    1
+   ],
+   [
+    "ITC Avant Garde Gothic(362)",
+    1
+   ],
+   [
+    "Avenir(108)",
+    1
+   ],
+   [
+    "Baskerville(89)",
+    1
+   ],
+   [
+    "Benton Sans(91)",
+    1
+   ],
+   [
+    "Bodoni(174)",
+    1
+   ],
+   [
+    "Bookman Swash(68)",
+    1
+   ],
+   [
+    "Brandon Grotesque(114)",
+    1
+   ],
+   [
+    "LL Brown(88)",
+    1
+   ],
+   [
+    "Brush Script(90)",
+    1
+   ],
+   [
+    "Century Expanded(105)",
+    1
+   ],
+   [
+    "Century Schoolbook(81)",
+    1
+   ],
+   [
+    "Cheltenham(87)",
+    1
+   ],
+   [
+    "LL Circular(84)",
+    1
+   ]
+  ],
+  "uses": [
+   "Business/Finance(841)",
+   "Education/Academia(2395)",
+   "Fashion/Apparel(1689)",
+   "Governmental/Civic(791)",
+   "Industrial Design(659)",
+   "Performing Arts(1101)",
+   "Religion/Spirituality(473)",
+   "Retail/Shopping(1208)",
+   "Art/Illustration(513)",
+   "Booklets/Pamphlets(2600)",
+   "Branding/Identity(9315)",
+   "Exhibition/Installation(1331)",
+   "Infographics/Maps(599)",
+   "Magazines/Periodicals(1971)",
+   "Akzidenz-Grotesk(443)",
+   "Akzidenz-Grotesk Condensed(98)",
+   "Alternate Gothic(179)",
+   "ITC American Typewriter(91)",
+   "Anzeigen-Grotesk / Neue Aurora IX(79)",
+   "ITC Avant Garde Gothic(362)"
+  ]
+ }
+}

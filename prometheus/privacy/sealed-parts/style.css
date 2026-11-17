@@ -1,0 +1,123 @@
+  /* ---------- privacy, "sealed" study: the message travels through recognisable objects — a browser window,
+     PayPerQ's server with the enclave as a lit bay inside it, the provider's logo. The only label is the enclave's. ---------- */
+  .story.en-story { --privacy-height: min(640px, calc(100svh - 112px)); }
+  /* both columns pin together while the page scrolls through a tall track (its height is set by the script);
+     the copy shows one step at a time and swaps when the animation arrives at that step's stage */
+  .story.en-story { margin-top: 24px; }
+  .story.en-story .sx-pin { position: sticky; top: calc(64px + (100svh - 64px - var(--privacy-height)) / 2); height: var(--privacy-height); align-items: center; }
+  .story.en-story .en-pin-wrap { position: relative; top: auto; height: 100%; }
+  .sx-copy { position: relative; display: grid; align-content: center; height: 100%; }
+  .story.en-story .en-steps { display: grid; margin: 0; padding: 0; }
+  .story.en-story .story-step, .story.en-story .story-step:first-child { grid-area: 1 / 1; min-height: 0; margin: 0; padding: 0; display: block;
+    opacity: 0; transform: translateY(28px); transition: opacity .35s var(--ease), transform .55s var(--spring); pointer-events: none; }
+  .story.en-story .story-step.past { transform: translateY(-28px); }
+  .story.en-story .story-step.on { opacity: 1; transform: none; transition-delay: .12s; pointer-events: auto; }
+  .sx-ticks { display: flex; gap: 6px; margin-top: 32px; }
+  .sx-ticks i { width: 24px; height: 2px; border-radius: 1px; background: rgba(255,255,255,.14); transition: background-color .4s; }
+  .sx-ticks i.on { background: var(--fg-2); }
+  .sx-ticks i.now { background: var(--brand-ink); }
+  .sx { position: relative; width: 100%; height: 100%; overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 7%, #000 93%, transparent 100%); }
+  .sx::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 1px 1px, rgba(255,255,255,.045) 1px, transparent 0) 0 0 / 22px 22px; pointer-events: none; }
+  .sx-cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+  .sx-cam > * { position: absolute; }
+
+  /* fibre: a faint glass thread; the comet is the light that carries the message */
+  .sx-fibre { width: 2px; margin-left: -1px; border-radius: 1px; background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.1) 20%, rgba(255,255,255,.1) 80%, rgba(255,255,255,0)); }
+  .sx-fibre::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgba(243,162,114,0), rgba(243,162,114,.55), rgba(243,162,114,0)); opacity: var(--lit, 0); }
+  .sx-comet { width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: #fff4e8; opacity: 0;
+    box-shadow: 0 0 10px 3px rgba(243,162,114,.75), 0 0 32px 8px rgba(191,60,27,.45); z-index: 1; }
+  .sx-comet::before { content: ''; position: absolute; left: 50%; bottom: 3px; width: 2px; height: 70px; margin-left: -1px; border-radius: 1px; background: linear-gradient(0deg, rgba(255,244,232,.8), rgba(243,162,114,0)); }
+
+  /* the browser window */
+  .sx-browser { border-radius: 12px; border: 1px solid rgba(255,255,255,.12); background: linear-gradient(180deg, #181614, #121110); box-shadow: 0 30px 60px -40px #000, inset 0 1px rgba(255,255,255,.05); overflow: hidden; }
+  .sx-bar { position: relative; display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-bottom: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.025); }
+  .sx-bar > i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.14); }
+  .sx-url { position: absolute; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 12px; border-radius: 6px; background: rgba(255,255,255,.05); font-size: 12px; color: var(--fg-2); }
+  .sx-url svg, .sx-lock svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sx-composer { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 6px 0 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.1); background: #1c1a18; }
+  .sx-plus { color: var(--fg-3); font-size: 18px; line-height: 1; }
+  .sx-ph { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.06); max-width: 40%; }
+  .sx-send { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--brand); color: #fff; transition: transform .2s var(--ease); }
+  .sx-send svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .sx-dev.sent .sx-send { transform: scale(.88); }
+
+  /* PayPerQ's server */
+  .sx-server { border-radius: 14px; border: 1px solid rgba(255,255,255,.1); background: linear-gradient(180deg, #1f1d1b, #151412 40%, #121110); box-shadow: 0 40px 70px -46px #000, inset 0 1px rgba(255,255,255,.07), inset 0 -1px rgba(0,0,0,.6); }
+  .sx-server > * { position: absolute; }
+  .sx-face { left: 16px; right: 16px; top: 14px; display: flex; align-items: center; gap: 14px; height: 22px; }
+  .sx-face img { width: 20px; height: 20px; border-radius: 5px; }
+  .sx-vent { flex: 1; height: 10px; border-radius: 3px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.55) 0 3px, rgba(255,255,255,.05) 3px 4px, transparent 4px 7px); box-shadow: inset 0 1px 2px rgba(0,0,0,.6); }
+  .sx-leds { display: flex; gap: 6px; }
+  .sx-leds i { width: 5px; height: 5px; border-radius: 50%; background: #3b3632; }
+  .sx-leds i:nth-child(1) { background: var(--good); box-shadow: 0 0 6px rgba(95,211,154,.7); }
+  .sx-leds i:nth-child(2) { animation: sx-led 1.3s steps(1) infinite; }
+  .sx-leds i:nth-child(3) { animation: sx-led 2.1s .4s steps(1) infinite; }
+  @keyframes sx-led { 0%, 60% { background: #3b3632; box-shadow: none; } 61%, 100% { background: var(--hot); box-shadow: 0 0 6px rgba(243,162,114,.7); } }
+  .sx-foot { left: 16px; right: 16px; display: flex; }
+  /* the scanner: what PayPerQ can read is the envelope, not the letter */
+  .sx-scan { left: 10px; right: 10px; height: 1px; opacity: 0; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.7), rgba(255,255,255,0)); box-shadow: 0 0 12px rgba(255,255,255,.35); z-index: 4; }
+
+  /* the enclave bay: a sealed window, lit from inside */
+  .sx-bay { border-radius: 10px; border: 1px solid rgba(233,125,73,.55); background: radial-gradient(80% 90% at 50% 60%, rgba(191,60,27,calc(.1 + var(--warm, 0) * .22)), rgba(191,60,27,0) 75%), #0f0d0c;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,.8), 0 0 calc(var(--warm, 0) * 40px) rgba(191,60,27,calc(var(--warm, 0) * .35)); }
+  .sx-bay::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 30%); }
+  .sx-bay-name { position: absolute; left: 16px; top: 14px; font: 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--brand-ink); }
+  .sx-screw { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #6b625b, #2a2622); }
+  .sx-screw:nth-of-type(1) { left: 6px; top: 6px; } .sx-screw:nth-of-type(2) { right: 6px; top: 6px; }
+  .sx-screw:nth-of-type(3) { left: 6px; bottom: 6px; } .sx-screw:nth-of-type(4) { right: 6px; bottom: 6px; }
+
+  /* the provider */
+  .sx-provider { border-radius: 14px; border: 1px solid rgba(255,255,255,.1); background: radial-gradient(60% 80% at 50% 0%, rgba(217,119,87,calc(.04 + var(--pl, 0) * .1)), rgba(217,119,87,0) 70%), linear-gradient(180deg, #181614, #121110); box-shadow: 0 30px 60px -40px #000, inset 0 1px rgba(255,255,255,.05); }
+  .sx-logos { position: absolute; left: 16px; top: 14px; display: flex; gap: 14px; align-items: center; }
+  .sx-logos img { width: 22px; height: 22px; opacity: .22; filter: grayscale(1); transition: opacity .4s, filter .4s; }
+  .sx-logos img.mono { filter: invert(1) grayscale(1); }
+  .sx-logos img.on { opacity: 1; filter: none; }
+
+  /* the message */
+  .sx-card { z-index: 2; padding: 12px 14px 13px; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); background: linear-gradient(160deg, #22201d, #171513); box-shadow: 0 18px 40px -24px #000; transition: border-color .4s, box-shadow .4s; }
+  .sx-card.hot { border-color: rgba(233,125,73,.6); box-shadow: 0 0 0 4px rgba(191,60,27,.1), 0 18px 40px -24px #000; }
+  .sx-lock { position: absolute; right: 12px; top: 12px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; color: var(--fg-3); background: rgba(255,255,255,.04); transition: color .3s, background-color .3s; }
+  .sx-lock .sh { transition: transform .3s var(--ease); transform-origin: 16px 11px; }
+  .sx-msg.sealed .sx-lock { color: var(--fg); background: rgba(255,255,255,.08); }
+  .sx-msg.open .sx-lock .sh { transform: translateY(-2px) rotate(18deg); }
+  .sx-card.hot .sx-lock { color: var(--brand-ink); background: rgba(191,60,27,.14); }
+  .sx-t { padding-right: 30px; font: 13px/1.6 var(--f-mono); white-space: pre; color: var(--fg); min-height: 3.2em; }
+  .sx-t .c { color: var(--fg-3); }
+  .sx-t .n { color: var(--hot); }
+  .sx-t .cur { display: inline-block; width: 7px; height: 1.1em; vertical-align: -2px; background: var(--fg-2); animation: sx-blink 1s steps(1) infinite; }
+  @keyframes sx-blink { 50% { opacity: 0; } }
+  .sx-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .sx-chip { font: 11px/1 var(--f-mono); padding: 4px 6px; border-radius: 4px; background: rgba(255,255,255,.05); color: var(--fg-3); transition: background-color .3s, color .3s, box-shadow .3s; }
+  .sx-msg.read .sx-chip { background: rgba(255,255,255,.1); color: var(--fg); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+  .sx-chip.ip { position: relative; }
+  .sx-chip.ip::after { content: ''; position: absolute; left: 4px; right: 4px; top: 50%; height: 1px; background: currentColor; transform: scaleX(var(--strike, 0)); transform-origin: left; }
+
+  /* verification, in place */
+  .sx-ver { position: absolute; left: 50%; top: 50%; transform-origin: 50% 50%; visibility: hidden; }
+  .sx-check { display: grid; gap: 10px; padding: 22px 20px 20px; justify-items: start; }
+  .sx-row { display: flex; align-items: center; gap: 12px; }
+  .sx-src { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 7px; background: rgba(255,255,255,.05); color: var(--fg-2); }
+  .sx-src.enc i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--brand-ink); box-shadow: 0 0 8px rgba(191,60,27,.6), inset 0 0 6px rgba(191,60,27,.5); }
+  .sx-src.gh svg { width: 15px; height: 15px; fill: currentColor; }
+  .sx-hash { font: 14px/1.5 var(--f-mono); color: var(--fg-2); white-space: pre; }
+  .sx-pub { color: var(--fg); }
+  .sx-got .ok { color: var(--good); }
+  .sx-got .no { color: var(--bad); }
+  .sx-verdict { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14px; color: var(--good); opacity: var(--vo, 0); }
+  .sx-verdict svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .sx-verdict .tick { stroke-dasharray: 1; stroke-dashoffset: var(--ck, 1); }
+  .sx-verdict .x { display: none; }
+  .sx-ver.bad .sx-verdict { color: var(--bad); }
+  .sx-ver.bad .sx-verdict .x { display: inline; }
+  .sx-ver.bad .sx-verdict .tick { display: none; }
+  .sx-tamper { white-space: nowrap; height: 30px; margin-top: 6px; padding: 0 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 13px; color: var(--fg-2); transition: border-color .15s, color .15s; }
+  .sx-tamper:hover { color: var(--fg); border-color: rgba(255,255,255,.4); }
+  @media (max-width: 900px) {
+    .story.en-story { --privacy-height: clamp(280px, 44svh, 400px); }
+    /* phones: the frame on top, the step underneath, both pinned below the nav */
+    .story.en-story .sx-pin { top: 64px; height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: flex-start; gap: 0; }
+    .story.en-story .en-pin-wrap { order: -1; flex: none; height: var(--privacy-height); }
+    .sx-copy { height: auto; flex: 1; align-content: start; padding-top: 20px; }
+    .sx-ticks { margin-top: 20px; }
+  }

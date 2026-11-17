@@ -1,0 +1,77 @@
+REVISÃO DAS DEZ PROPOSTAS
+
+Revisão adicional de animação:
+Foram adicionadas sequências visíveis às 30 áreas de demonstração: cursor,
+abertura de seletor, escolha de modelos e digitação de pedidos de exemplo.
+Heroes com abas alternam OpenCode e chat. Pausa, replay, exploração pela barra
+e pausa global permitem controlar a sequência. As animações não fazem pedidos.
+Foram corrigidos saltos de altura em Chapters e na área dos controles de mídia.
+360 estados foram conferidos: 30 demos × 3 larguras × 4 momentos da sequência,
+sem overflow horizontal ou alteração de altura durante a reprodução.
+Autoplay, pausa, retomada, pausa global, replay, exploração pela barra e parada
+ao trocar de versão ou sair da tela foram verificados no renderizador.
+A condição de movimento reduzido foi simulada: sem autoplay, com avanço manual
+entre estados estáticos. As regras CSS também respeitam a preferência do sistema.
+
+Revisão adicional de espaço negativo:
+Após o feedback de que os capítulos estavam colados, o espaçamento foi
+ampliado nas dez páginas. Uma grade comum agora mantém a separação real
+entre os capítulos, incluindo o fechamento, sem colapso de margens.
+Em 1280 px, as distâncias medidas ficaram entre 200 e 275 px conforme a
+direção; em 728 px, 160 px; em 390 px, 128 px. Foram conferidas 60 transições
+em cada largura, sem divergência da escala e sem overflow horizontal.
+As seções com divisória também receberam mais espaço antes do título.
+Os 41 blocos de copy continuam presentes em cada versão.
+
+Identidade conferida no chat publicado e nos tokens do frontend local
+Referências visuais analisadas: Jitter, Luma premiado de 2025 e Framer
+Revisão visual: dez heroes em desktop e celular, dez seções de API,
+composição integral das dez páginas e finais de página em celular
+
+Melhorias aplicadas depois da primeira implementação:
+- API editorial: removida a dependência de margens que poderia sobrepor
+  a introdução aos passos de conexão; cada conteúdo ocupa sua própria linha
+- Chapters: hero redesenhada para se distinguir da Studio
+- Developer: terminal passou para a esquerda e API virou o CTA principal
+- Focus: removida a linha dupla de navegação no celular
+- Privacidade: corpo mantido em pelo menos 16 px também em tablets
+- Marca: reutilizada a chama original em vez de um marcador inventado
+- Controles de modelo: área de toque ampliada no celular
+- Comparador: modo desktop de 1280 px com ajuste de escala, sem forçar
+  todas as composições a parecerem a mesma coluna estreita no painel
+
+Verificações executadas:
+- 10 páginas × 6 larguras: 1280, 820, 728, 560, 390 e 320 px
+- Nenhum elemento de conteúdo fora dos limites horizontais
+- Nenhum texto medido com overflow horizontal
+- Sem sobreposição da introdução da API com os passos de conexão
+- 41 blocos de copy por página, preservados integralmente
+- IDs únicos nos documentos individuais e no comparador
+- Âncoras internas existentes e assets locais presentes
+- Abas por clique, setas, Home/End no código e retorno por ArrowLeft validado
+- Troca de modelo local e fechamento do seletor validados
+- Troca entre versões validada
+- Fonte Geist carregada na renderização
+- Nenhum erro de console nas prévias revisadas
+- Sintaxe JavaScript conferida com node --check
+
+Direções que eu priorizaria:
+01 Studio: equilíbrio entre aquisição, confiança e demonstração
+04 Editorial: composição mais autoral sem perder a leitura
+07 Developer: entrada mais direta para quem já usa ferramentas via API
+
+Tradeoffs das demais:
+02 Workspace: primeira dobra objetiva, porém exige mídia legível no painel
+03 Panorama: oferece mais impacto, mas depende de ótimas gravações amplas
+05 Chapters: ajuda a navegação de uma copy longa, com mais elementos de UI
+06 Two ways: torna os dois usos claros; no celular são duas cenas sequenciais
+08 Reading room: favorece leitura cuidadosa, com maior comprimento de página
+09 Focus: familiar e compacto, com menos espaço para expressão visual
+10 Atelier: palco vertical expressivo, mas precisa de mídia recortada com critério
+
+Limites desta revisão:
+As verificações são dos HTMLs locais pelo renderizador de preview, não da
+aplicação de produção. Nenhum fluxo de cobrança ou envio de prompt foi usado.
+Não foi feita uma auditoria completa de acessibilidade ou teste em Safari e
+Firefox. Os assets reais e o projeto do Unicorn ainda precisam ser inseridos.
+Sem dados de conversão, as preferências de direção são julgamento de design.

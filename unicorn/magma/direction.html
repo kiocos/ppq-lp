@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PPQ · Magma vivo · Direção e implementação</title>
+<style>
+body{max-width:1000px;margin:48px auto;padding:0 24px;background:#100e0d;color:#ecebe8;font:16px/1.65 system-ui,sans-serif}h1,h2{font-weight:500;line-height:1.2}h2{margin-top:40px}p{max-width:80ch}a{color:#f59a6d}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;vertical-align:top;padding:14px 10px;border-bottom:1px solid #453027}th{color:#f59a6d}code{color:#f59a6d}
+</style>
+<h1>Magma vivo</h1>
+<p>Fogo abstrato em movimento contínuo: correntes vermelhas, laranja e âmbar ocupam o canvas inteiro. As formas se misturam, sem objeto central ou silhueta fechada. A personalidade vem da chama da PPQ; a confiança vem da cadência calma e da mensagem legível.</p>
+<p>A orientação mais recente substitui a escultura sólida do estudo anterior. O tratamento de leitura pertence ao HTML: a arte no Unicorn mantém sua intensidade integral.</p>
+<h2>Dez direções reavaliadas</h2>
+<div class="table"><table>
+<tr><th>Ideia animada</th><th>Crítica</th><th>Refinamento</th></tr>
+<tr><td>Convecção de magma</td><td>Contraste extremo pode parecer textura de jogo</td><td>Fluxos amplos, bordas difusas e variação contínua; reduzir contraste somente na hero</td></tr>
+<tr><td>Véus de chama</td><td>Fumaça comum pode parecer um template genérico</td><td>Combinar véus vermelhos com filamentos de âmbar em escalas diferentes</td></tr>
+<tr><td>Aurora térmica</td><td>Cortinas bem delimitadas lembram fitas sólidas</td><td>Mesclar faixas em um campo volumétrico sem limites estáveis</td></tr>
+<tr><td>Maré incandescente</td><td>Ondas horizontais sugerem água e criam uma divisão no fundo</td><td>Retirar horizonte, cruzar correntes e usar somente cores quentes</td></tr>
+<tr><td>Nuvem de brasas</td><td>Muitos pontos criam ruído e lembram espaço sideral</td><td>Manter poucas faíscas como detalhe secundário sobre um campo fluido</td></tr>
+<tr><td>Seda térmica</td><td>Dobras iluminadas tornam a forma material e sólida</td><td>Dissolver as dobras continuamente; eliminar contorno e iluminação metálica</td></tr>
+<tr><td>Topografia líquida</td><td>Linhas isoladas parecem mapas ou impressões digitais</td><td>Transformar as linhas em transições de luminosidade que se misturam</td></tr>
+<tr><td>Plasma difuso</td><td>Pulsos rápidos e cores neon podem gerar agressividade</td><td>Restringir a vermelho e âmbar, com mudanças lentas sem flashes</td></tr>
+<tr><td>Fendas de lava</td><td>Uma crosta escura viola a preferência por fundo preenchido</td><td>Eliminar a crosta e manter somente correntes de calor sem superfície rígida</td></tr>
+<tr><td>Vórtice aberto</td><td>Um centro forte compete com o título e lembra um olho</td><td>Distribuir pequenas convecções pelo campo sem um ponto focal único</td></tr>
+</table></div>
+<h2>Três finalistas e decisão</h2>
+<p><strong>Véus de chama:</strong> leve e atmosférico, mas pode perder identidade depois da redução de opacidade.</p>
+<p><strong>Aurora térmica:</strong> cria profundidade e movimento elegante, mas exige cuidado para não voltar a faixas sólidas.</p>
+<p><strong>Convecção de magma, escolhida:</strong> mantém cor e movimento perceptíveis atrás da tipografia. Combina fluxos amplos com detalhes difusos, responde levemente ao mouse e funciona sem um objeto central. O desenho transmite a energia da marca; não pretende demonstrar mecanismos técnicos de privacidade.</p>
+<h2>Implementação</h2>
+<p>Cena <strong>PPQ Hero / Magma vivo v1.0.0 LIVE</strong>, no <a href="https://www.unicorn.studio/edit/fRolMufru6LdogJmEX2c?canvasId=c31e8171-1665-4b93-9015-409ed1d2a247">projeto do Unicorn Studio</a>. Um efeito principal procedural produz o campo fluido com ruído tridimensional e deformação contínua. Uma camada independente de Wisps acrescenta faíscas escassas.</p>
+<p>Variáveis de integração: <code>Motion</code>, <code>Mouse influence</code> e <code>Flow speed</code>. O runtime local usa 30 fps, escala 0,75 e dpi 1. O SDK gerencia pausa fora da viewport e visibilidade da página. A hero tem controle de pausa, respeita movimento reduzido e usa uma captura real da arte como alternativa se o carregamento falhar.</p>
+<p>No HTML, <code>--hero-art-opacity: .66</code> e <code>--hero-art-shade: .38</code> controlam a presença da arte. A transição inferior se funde à seção seguinte. O subtítulo recebe uma cor mais clara para conservar o contraste.</p>
+<h2>Verificação e limite de publicação</h2>
+<p>Movimento e mouse verificados no Unicorn e no embed. Integração testada em Chromium a 1440 e 390 pixels: canvas cobre a hero, sem overflow horizontal, campo de chat e seletor de modelos funcionam, pausa segura o frame, movimento reduzido é respeitado e a cena deixa de renderizar fora da viewport. A classificação de custo do Unicorn é <strong>Very Light</strong>; não é um benchmark de hardware móvel.</p>
+<p>A publicação retornou <code>freePlan: true</code>. O embed contém marcas d’água do Unicorn. Segundo a <a href="https://www.unicorn.studio/docs/pricing/">documentação oficial dos planos</a>, publicação sem marca e licença comercial exigem Legend. A integração local está funcionando; a publicação final sem marca depende de republicar a cena com esse plano.</p>
+<p><a href="../../prometheus/r11/prometheus.html">Landing integrada</a> · <a href="art.html">Arte em intensidade integral</a> · <a href="https://www.unicorn.studio/unicornstudio-llms.txt">API do runtime</a> · <a href="https://www.unicorn.studio/docs/mcp/">MCP</a> · <a href="https://www.unicorn.studio/docs/performance/">Desempenho</a></p>
+</html>

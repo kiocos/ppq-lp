@@ -1,0 +1,10 @@
+.DS_Store
+node_modules
+# Remotion render scratch; final videos live in each study's assets/
+out/
+# grain/index.html plays this render straight from out/
+!grain/motion/out/
+grain/motion/out/*
+!grain/motion/out/hero-r1.mp4
+# browser profiles used for app captures (cookies, credit IDs)
+.chrome-profile/

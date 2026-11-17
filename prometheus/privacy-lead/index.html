@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy intro: less paragraph, more picture (study)</title>
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  /* tokens and base copied from r11/prometheus.html so the study matches the page */
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Instrument Sans'; src: url(../assets/fonts/InstrumentSans-normal.woff2) format('woff2'); font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-display: 'Instrument Sans', system-ui, sans-serif; --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --section-space: clamp(72px, 9vw, 128px);
+    --ease: cubic-bezier(.2,.7,.2,1); --spring: cubic-bezier(.22,.8,.25,1);
+    --radius: 6px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img, video { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul, figure { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-family: var(--f-display); font-weight: 400; letter-spacing: -0.02em; line-height: 1.12; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .sec { padding: var(--section-space) 0; }
+  .sec h2 { font-size: calc(clamp(24px, 2.3vw, 32px) * 1.02); }
+  .ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* study chrome: not part of the design */
+  .study-top { padding: 40px 0 0; color: var(--fg-3); font-size: 14px; }
+  .study-top h1 { font: 500 14px var(--f-mono); color: var(--fg-2); margin-bottom: 6px; }
+  .study-top nav { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; }
+  .study-top nav a { color: var(--fg-2); border-bottom: 1px solid var(--border); }
+  .tag { display: flex; align-items: baseline; gap: 12px; margin-bottom: 40px; font: 500 13px var(--f-mono); color: var(--fg-3); }
+  .tag b { color: var(--brand-ink); font-weight: 500; }
+  .tag .fav { color: var(--good); }
+  .sec + .sec { border-top: 1px dashed rgba(255,255,255,.1); }
+
+  /* film player, from r11 */
+  .vp { position: relative; margin: 48px 0 8px; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; isolation: isolate; background: #0a0908 center / cover no-repeat; border: 1px solid rgba(255,255,255,.08); box-shadow: 0 60px 120px -60px #000; }
+  .vp video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #0a0908; }
+  .vp::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at center, rgba(10,9,8,.3), rgba(10,9,8,0) 60%); }
+  .vp-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; white-space: nowrap; display: inline-flex; align-items: center; gap: 14px; padding: 8px 22px 8px 8px; border-radius: 999px; background: rgba(16,15,14,.72); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); box-shadow: 0 20px 50px -20px #000; transition: transform .25s var(--spring), border-color .2s; }
+  .vp-play:hover { transform: translate(-50%, -50%) scale(1.03); border-color: rgba(255,255,255,.3); }
+  .vp-disc { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 6px rgba(191,60,27,.18); }
+  .vp-disc svg { width: 20px; height: 20px; margin-left: 3px; fill: #fff; }
+  .vp-label { display: grid; gap: 2px; text-align: left; }
+  .vp-label b { font-weight: 500; font-size: 16px; letter-spacing: -.01em; }
+  .vp-label small { font: 13px var(--f-mono); color: var(--fg-2); }
+  .vp.tall { aspect-ratio: 4 / 5; margin: 0; }
+
+  /* the scope note, shared: small, honest, one line */
+  .scope { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--fg-3); }
+  .scope .ico { width: 16px; height: 16px; color: var(--fg-3); }
+  .scope a { color: var(--fg-2); border-bottom: 1px solid var(--border); margin-left: 4px; white-space: nowrap; }
+
+  /* ---------- A: three icon points ---------- */
+  .a-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 40px; max-width: 980px; }
+  .a-points li { display: grid; gap: 8px; }
+  .a-points .ico { width: 22px; height: 22px; color: var(--fg-2); margin-bottom: 6px; }
+  .a-points .lit .ico { color: var(--brand-ink); }
+  .a-points .ok .ico { color: var(--good); }
+  .a-points h3 { font: 500 16px/1.35 var(--f-body); color: var(--fg); letter-spacing: -.01em; }
+  .a-points p { font-size: 15px; color: var(--fg-2); max-width: 22em; }
+  .a .scope { margin-top: 32px; }
+
+  /* ---------- B: copy beside a tall film ---------- */
+  .b-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: clamp(40px, 6vw, 96px); align-items: center; }
+  .b-steps { padding: 0; list-style: none; margin: 36px 0 0; display: grid; gap: 26px; }
+  .b-steps li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .b-steps .dot { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.02); color: var(--fg-2); }
+  .b-steps .lit .dot { color: var(--brand-ink); border-color: rgba(233,125,73,.35); background: rgba(191,60,27,.08); }
+  .b-steps .ok .dot { color: var(--good); border-color: rgba(95,211,154,.28); background: rgba(95,211,154,.05); }
+  .b-steps h3 { font: 500 16px/1.35 var(--f-body); letter-spacing: -.01em; padding-top: 1px; }
+  .b-steps p { margin-top: 3px; font-size: 15px; color: var(--fg-2); max-width: 26em; }
+  .b .scope { margin-top: 32px; padding-left: 0; }
+
+  /* ---------- C: micro-illustrations that rhyme with the film ---------- */
+  .c-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 44px; }
+  .c-pic { height: 112px; display: flex; align-items: center; margin-bottom: 20px; }
+  .c-row h3 { font: 500 16px/1.35 var(--f-body); letter-spacing: -.01em; }
+  .c-row p { margin-top: 6px; font-size: 15px; color: var(--fg-2); max-width: 23em; }
+  .c .scope { margin-top: 36px; }
+  .chip { font: 13px/1.3 var(--f-mono); border-radius: 8px; padding: 10px 12px; background: #151311; border: 1px solid rgba(255,255,255,.1); color: var(--fg); white-space: nowrap; }
+
+  /* C1: a prompt with a name tag hanging under it; on reveal the thread fades and the tag drops away */
+  .c1 { display: flex; flex-direction: column; align-items: flex-start; }
+  .c1 .thread { width: 1px; height: 14px; margin-left: 22px; background: rgba(255,255,255,.3); transform-origin: top; transition: transform .6s var(--ease) .8s, opacity .5s .8s; }
+  .c1 .who { display: inline-flex; align-items: center; gap: 7px; font: 12px var(--f-mono); color: var(--fg-2); padding: 5px 10px 5px 6px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.03); transition: transform .9s var(--ease) 1s, opacity .9s 1s; }
+  .c1 .who i { width: 14px; height: 14px; border-radius: 50%; background: #55504a; }
+  .c1 .who s { text-decoration-color: transparent; transition: text-decoration-color .3s .7s; }
+  .in .c1 .thread { transform: scaleY(0); opacity: 0; }
+  .in .c1 .who { transform: translate(6px, 6px) rotate(-4deg); opacity: .35; }
+  .in .c1 .who s { text-decoration-color: var(--fg-2); }
+
+  /* C2: the hatched enclave frame from the film, ciphertext outside, plain text inside */
+  .c2 { display: flex; align-items: center; gap: 10px; }
+  .c2 .cipher { font: 13px var(--f-mono); color: var(--fg-3); letter-spacing: .02em; white-space: nowrap; }
+  .c2 .vault { position: relative; padding: 11px; border-radius: 12px; border: 1px solid rgba(233,125,73,.55);
+    background: repeating-linear-gradient(-45deg, rgba(233,125,73,.42) 0 1px, transparent 1px 7px); box-shadow: 0 0 40px -10px rgba(191,60,27,.5); }
+  .c2 .vault .chip { background: #17110e; border-color: rgba(233,125,73,.45); }
+  .c2 .vault b { position: absolute; left: 10px; top: -10px; font: 500 10px/1 var(--f-mono); letter-spacing: .06em; color: #1a0f0a; background: var(--brand-ink); padding: 4px 6px; border-radius: 3px; }
+
+  /* C3: the PCR0 measurement settles, then matches */
+  .c3 { display: flex; align-items: center; gap: 10px; }
+  .c3 .chip { display: inline-flex; gap: 10px; align-items: center; }
+  .c3 .k { color: var(--fg-3); }
+  .c3 .ok { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(95,211,154,.12); color: var(--good); opacity: 0; transform: scale(.6); transition: opacity .4s, transform .5s var(--spring); }
+  .c3 .ok .ico { width: 15px; height: 15px; stroke-width: 2.2; }
+  .c3.done .ok { opacity: 1; transform: none; }
+
+  @media (max-width: 900px) {
+    .a-points, .c-row { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .c-pic { height: auto; min-height: 64px; margin-bottom: 14px; }
+    .b-grid { grid-template-columns: minmax(0, 1fr); }
+    .b .vp.tall { max-width: 460px; }
+  }
+  @media (max-width: 700px) {
+    .vp { aspect-ratio: 4 / 5; border-radius: 12px; margin-top: 36px; }
+    .scope { align-items: flex-start; flex-wrap: wrap; } .scope .ico { margin-top: 3px; } .scope a { margin-left: 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-unlink" viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 4.6 7M8 12h3M3 3l18 18"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-dash" viewBox="0 0 24 24"><path d="M10.1 2.2a10 10 0 0 1 3.8 0M17.6 3.7a10 10 0 0 1 2.7 2.7M21.8 10.1a10 10 0 0 1 0 3.8M20.3 17.6a10 10 0 0 1-2.7 2.7M13.9 21.8a10 10 0 0 1-3.8 0M6.4 20.3a10 10 0 0 1-2.7-2.7M2.2 13.9a10 10 0 0 1 0-3.8M3.7 6.4a10 10 0 0 1 2.7-2.7"/></symbol>
+</svg>
+
+<div class="wrap study-top">
+  <h1>privacy-lead · study · Nov 16</h1>
+  <p>Three ways to turn the privacy paragraph into parts you can scan. Same facts, same film, r11 styles. r11 itself is untouched.</p>
+  <nav><a href="#a">A · Icon points</a><a href="#b">B · Beside the film</a><a href="#c">C · Small pictures</a></nav>
+</div>
+
+<!-- ======================= A ======================= -->
+<section class="sec a" id="a">
+  <div class="wrap">
+    <p class="tag"><b>A</b> Icon points: the paragraph split into three facts, scope as a footnote</p>
+    <h2 class="display">Privacy is a right, not a feature.</h2>
+    <ul class="a-points">
+      <li><svg class="ico"><use href="#i-unlink"/></svg><h3>Not linked to your name</h3><p>Most AI services tie your prompts to an account. PayPerQ works without one.</p></li>
+      <li class="lit"><svg class="ico"><use href="#i-lock"/></svg><h3>Decrypted in an AWS Nitro Enclave</h3><p>Protected chats are opened only inside it. PayPerQ staff can’t log in to it.</p></li>
+      <li class="ok"><svg class="ico"><use href="#i-shield"/></svg><h3>Checked by your browser first</h3><p>It verifies the enclave’s code before it sends a word.</p></li>
+    </ul>
+    <figure class="vp" data-teaser>
+      <video muted loop playsinline autoplay preload="auto" poster="../assets/motion/enclave-teaser-poster.jpg" src="../assets/motion/enclave-teaser.mp4" aria-hidden="true"></video>
+      <button class="vp-play" type="button"><span class="vp-disc"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span><span class="vp-label"><b>See how the enclave works</b><small>0:43</small></span></button>
+    </figure>
+  </div>
+</section>
+
+<!-- ======================= B ======================= -->
+<section class="sec b" id="b">
+  <div class="wrap">
+    <p class="tag"><b>B</b> Beside the film: the same three facts as a vertical path, film in its 4:5 cut on the right</p>
+    <div class="b-grid">
+      <div>
+        <h2 class="display">Privacy is a right, not a feature.</h2>
+        <ol class="b-steps">
+          <li><span class="dot"><svg class="ico"><use href="#i-unlink"/></svg></span><div><h3>Not linked to your name</h3><p>Most AI services tie your prompts to an account. PayPerQ works without one.</p></div></li>
+          <li class="lit"><span class="dot"><svg class="ico"><use href="#i-lock"/></svg></span><div><h3>Decrypted in an AWS Nitro Enclave</h3><p>Protected chats are opened only inside it. PayPerQ staff can’t log in to it.</p></div></li>
+          <li class="ok"><span class="dot"><svg class="ico"><use href="#i-shield"/></svg></span><div><h3>Checked by your browser first</h3><p>It verifies the enclave’s code before it sends a word.</p></div></li>
+        </ol>
+      </div>
+      <figure class="vp tall" data-teaser>
+        <video muted loop playsinline autoplay preload="auto" poster="../assets/motion/enclave-teaser-tall-poster.jpg" src="../assets/motion/enclave-teaser-tall.mp4" aria-hidden="true"></video>
+        <button class="vp-play" type="button"><span class="vp-disc"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span><span class="vp-label"><b>See how it works</b><small>0:43</small></span></button>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= C ======================= -->
+<section class="sec c" id="c">
+  <div class="wrap">
+    <p class="tag"><b>C</b> Small pictures instead of generic icons, drawn from the film: name tag, hatched enclave, PCR0 <span class="fav">· my pick</span></p>
+    <h2 class="display">Privacy is a right, not a feature.</h2>
+    <div class="c-row" data-reveal>
+      <div>
+        <div class="c-pic" aria-hidden="true"><div class="c1"><span class="chip">Summarize these board notes…</span><span class="thread"></span><span class="who"><i></i><s>alex@mail.com</s></span></div></div>
+        <h3>Not linked to your name</h3>
+        <p>Most AI services tie your prompts to an account. PayPerQ works without one.</p>
+      </div>
+      <div>
+        <div class="c-pic" aria-hidden="true"><div class="c2"><span class="cipher" data-scramble>x9#Kq…</span><span class="vault"><b>AWS NITRO ENCLAVE</b><span class="chip">Summarize these…</span></span></div></div>
+        <h3>Opened only in an AWS Nitro Enclave</h3>
+        <p>Our servers relay ciphertext. Protected chats are decrypted inside the enclave, which PayPerQ staff can’t log in to.</p>
+      </div>
+      <div>
+        <div class="c-pic" aria-hidden="true"><div class="c3"><span class="chip"><span class="k">PCR0</span><span data-hash>07cb03ca95c9…</span></span><span class="ok"><svg class="ico"><use href="#i-check"/></svg></span></div></div>
+        <h3>Checked by your browser first</h3>
+        <p>It matches the enclave’s PCR0 with the published build before it sends a word.</p>
+      </div>
+    </div>
+    <figure class="vp" data-teaser>
+      <video muted loop playsinline autoplay preload="auto" poster="../assets/motion/enclave-teaser-poster.jpg" src="../assets/motion/enclave-teaser.mp4" aria-hidden="true"></video>
+      <button class="vp-play" type="button"><span class="vp-disc"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span><span class="vp-label"><b>See how the enclave works</b><small>0:43</small></span></button>
+    </figure>
+  </div>
+</section>
+
+<script>
+  // C: on reveal the name tag comes loose, the ciphertext keeps shifting, the PCR0 settles left to right and then matches
+  (() => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hexes = '0123456789abcdef', junk = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789#$%&*+=';
+    const row = document.querySelector('[data-reveal]');
+    const hash = row.querySelector('[data-hash]'), final = hash.textContent;
+    const cipher = row.querySelector('[data-scramble]'), check = row.querySelector('.c3');
+    const rnd = (set, n) => Array.from({ length: n }, () => set[Math.random() * set.length | 0]).join('');
+    const settle = () => {
+      if (reduce) { check.classList.add('done'); return; }
+      let i = 0;
+      const t = setInterval(() => {
+        hash.textContent = final.slice(0, i) + rnd(hexes, Math.max(0, 12 - i)) + '…';
+        if (++i > 12) { clearInterval(t); hash.textContent = final; setTimeout(() => check.classList.add('done'), 150); }
+      }, 70);
+    };
+    if (!reduce) setInterval(() => { cipher.textContent = rnd(junk, 5) + '…'; }, 140);
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting) return;
+      row.classList.add('in'); setTimeout(settle, 700); o.disconnect();
+    }, { threshold: 0.5 }).observe(row);
+  })();
+  // teasers only loop while on screen
+  document.querySelectorAll('[data-teaser] video').forEach((v) => new IntersectionObserver(([e]) => e.isIntersecting ? v.play().catch(() => {}) : v.pause(), { threshold: .2 }).observe(v));
+</script>
+</body>
+</html>

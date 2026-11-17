@@ -1,0 +1,27 @@
+/* PayPerQ · darkroom safelight · round 3 re-take: "the print in daylight".
+   The brand stands in daylight on warm paper. The darkroom is one contained object, the hero frame, where the work develops. */
+:root {
+  --bg: #f3efe8;
+  --bg-2: #ebe5dc;
+  --panel: #e8e1d6;
+  --panel-2: #ded6ca;
+  --line: rgba(46, 34, 22, 0.11);
+  --fg: #17130f;
+  --fg-2: rgba(23, 19, 15, 0.72);
+  --fg-3: rgba(23, 19, 15, 0.58);
+  --amber-ink: #a8481a;
+}
+body::after { mix-blend-mode: multiply; opacity: 0.07; }
+::selection { color: #160b03; }
+.nav { background: rgba(243, 239, 232, .8); }
+.btn-ghost { background: rgba(46, 34, 22, .05); }
+.btn-ghost:hover { background: rgba(46, 34, 22, .09); }
+.btn-lit { box-shadow: 0 0 0 1px rgba(var(--amber-glow), .7), 0 10px 30px -12px rgba(var(--amber-glow), .8); }
+.code { background: #eae3d8; }
+.code .copy { background: rgba(46, 34, 22, .06); }
+.pair-btn, .pair-list { background: rgba(250, 247, 242, .96); }
+/* prints on paper: under the safelight the paper reads warm; it clears to neutral once developed */
+.print { background: var(--panel); }
+.print::after { opacity: 0; }
+.js-develop .print:not(.developed)::after { opacity: .55; }
+.js-develop .print:not(.developed) > img { filter: grayscale(1) contrast(.7) brightness(1.15); opacity: .3; }

@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Chat section, round 2 (composer on the page)</title>
+<link rel="icon" href="../../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1); --radius: 6px; --radius-card: 12px; --jump: 52px;
+    /* the chat app's own dark theme (PPQdotAI styles/foundation/theme.css .dark) */
+    --app-surface: #1d1d1d; --app-muted: #292929; --app-border: #2e2e2e; --app-border-strong: #3b3b3b; --app-fg: #ededed; --app-fg-2: #bbbbbb; --app-fg-3: #8f8f8f;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul, figure { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button, textarea, input { font: inherit; color: inherit; background: none; border: 0; padding: 0; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: var(--radius); }
+  ::selection { background: var(--brand); color: #fff; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  p { text-wrap: pretty; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-weight: 400; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+  .label { margin-bottom: 14px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  .lead { margin-top: 16px; font-size: 18px; line-height: 1.55; color: var(--fg-2); max-width: 32em; }
+  svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- study chrome ---------- */
+  .study-top { padding-top: 56px; padding-bottom: 8px; }
+  .study-top h1 { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .study-top p { margin-top: 8px; color: var(--fg-2); max-width: 54em; font-size: 15px; }
+  .study-top ul { margin-top: 14px; display: grid; gap: 4px; font-size: 14px; color: var(--fg-3); max-width: 62em; }
+  .study-top li::before { content: '–'; margin-right: 8px; }
+  .jump { position: sticky; top: 0; z-index: 60; background: rgba(12,11,10,.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .jump .wrap { display: flex; gap: 6px; height: var(--jump); align-items: center; overflow-x: auto; }
+  .jump a { padding: 6px 10px; border-radius: var(--radius); font-size: 13px; font-weight: 500; color: var(--fg-2); white-space: nowrap; }
+  .jump a:hover { background: rgba(255,255,255,.06); color: var(--fg); }
+  .jump a b { color: var(--brand-ink); font-weight: 500; margin-right: 6px; }
+  .note { margin-top: 112px; padding: 18px 0 0; border-top: 1px dashed rgba(255,255,255,.18); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 18px; font-size: 14px; color: var(--fg-2); scroll-margin-top: 64px; }
+  .note b.v { font: 500 13px var(--f-mono); color: var(--brand-ink); padding-top: 2px; }
+  .note h3 { font-size: 16px; font-weight: 500; color: var(--fg); }
+  .note p, .note .sw { grid-column: 2; max-width: 62em; }
+  .sw { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .sw button { height: 30px; padding: 0 10px; border-radius: var(--radius); border: 1px solid var(--line); font-size: 13px; color: var(--fg-2); }
+  .sw button[aria-pressed="true"] { border-color: var(--border); color: var(--fg); background: rgba(255,255,255,.05); }
+
+  /* ---------- buttons ---------- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 44px; padding: 0 18px; border-radius: var(--radius); border: 1px solid transparent; font: 500 15px/1 var(--f-body); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s, border-color .15s; }
+  .btn-light { background: #fff; color: #1a1714; }
+  .btn-light:hover { background: #efebe6; }
+  .btn-secondary { border-color: rgba(255,255,255,.34); color: var(--fg); }
+  .btn-secondary:hover { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.05); }
+  .btn svg.mark { width: 18px; height: 18px; fill: currentColor; margin-top: -2px; }
+  .btn svg.mark.sm { width: 15px; height: 15px; margin-top: 0; }
+
+  /* ---------- section layouts ---------- */
+  .sec { padding-top: 96px; }
+  .a-head { text-align: center; display: grid; justify-items: center; }
+  .a-head h2 { font-size: clamp(32px, 3.4vw, 48px); max-width: 15em; }
+  .a-head .lead { max-width: 30em; }
+  .b-head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 64px; align-items: end; }
+  .b-head h2 { font-size: clamp(32px, 3.4vw, 48px); max-width: 10em; }
+  .b-head .lead { margin: 0 0 6px; }
+  .demo { margin: 56px auto 0; max-width: 780px; }
+  .b-demo { max-width: none; }
+  .proof { margin-top: 14px; font-size: 13px; color: var(--fg-3); text-align: center; text-wrap: balance; }
+  .proof svg.i { display: inline-block; width: 14px; height: 14px; color: var(--good); vertical-align: -2px; margin-right: 6px; }
+  .proof a { margin-left: 4px; white-space: nowrap; }
+  .proof a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+  .proof a:hover { color: var(--fg); }
+  .b-demo .proof { text-align: left; }
+
+  /* ======================================================= the composer (replica of PPQdotAI ChatInput) */
+  .cmp { position: relative; }
+  .modes { display: flex; justify-content: center; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
+  .b-demo .modes { justify-content: flex-start; }
+  .modes button { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; font-size: 15px; color: var(--app-fg-2); transition: background-color .15s, color .15s; }
+  .modes button:hover { color: var(--app-fg); }
+  .modes button[aria-pressed="true"] { background: var(--app-muted); color: var(--app-fg); }
+  .box { position: relative; border-radius: 24px; background: var(--app-surface); border: 1px solid var(--app-border); box-shadow: 0 30px 70px -40px rgba(0,0,0,.9); transition: border-color .2s, box-shadow .2s; }
+  .box:focus-within { border-color: var(--app-border-strong); }
+  .box .top { position: relative; display: flex; align-items: flex-start; gap: 0; padding: 14px 16px 2px; }
+  .box .shield { flex: none; margin-top: 3px; color: var(--app-fg-2); }
+  .box textarea { flex: 1; min-width: 0; resize: none; outline: none; padding: 2px 10px; min-height: 52px; max-height: 200px; font-size: 16px; line-height: 1.55; color: var(--app-fg); }
+  .box textarea::placeholder { color: var(--app-fg-3); }
+  .ghost { position: absolute; left: 50px; top: 16px; right: 20px; font-size: 16px; line-height: 1.55; color: var(--app-fg-3); pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ghost .car { display: inline-block; width: 1.5px; height: 1.05em; margin-left: 1px; background: var(--app-fg-3); vertical-align: -0.15em; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .box .bot { display: flex; align-items: center; gap: 4px; padding: 6px 10px 10px; }
+  .ib { position: relative; width: 38px; height: 38px; border-radius: 999px; display: grid; place-items: center; color: var(--app-fg-2); transition: background-color .15s, color .15s; flex: none; }
+  .ib:hover { background: var(--app-muted); color: var(--app-fg); }
+  .trig { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 10px 0 8px; border-radius: 999px; font-size: 15px; font-weight: 500; color: var(--app-fg); min-width: 0; transition: background-color .15s; }
+  .trig:hover, .trig[aria-expanded="true"] { background: var(--app-muted); }
+  .trig .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .trig .chev { width: 15px; height: 15px; color: var(--app-fg-3); transition: transform .2s; }
+  .trig[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .trig .bub { color: var(--app-fg-2); }
+  .lg { width: 20px; height: 20px; flex: none; border-radius: 5px; object-fit: contain; }
+  .lg.inv { filter: invert(1); }
+  .lg.ini { display: grid; place-items: center; border-radius: 50%; background: #3a3936; color: #e8e6e1; font: 600 10.5px/1 var(--f-body); }
+  .rsn { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 10px; border-radius: 999px; font-size: 14px; color: var(--app-fg-2); transition: background-color .15s; }
+  .rsn:hover { background: var(--app-muted); color: var(--app-fg); }
+  .rsn .chev { width: 14px; height: 14px; }
+  .rsn[hidden] { display: none; }
+  .sp { flex: 1; }
+  .send { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #f2f2f2; color: #151515; flex: none; transition: transform .15s, background-color .15s; }
+  .send:hover { background: #fff; }
+  .send:active { transform: scale(.94); }
+  .send .up { display: none; }
+  .cmp.has-text .send .up { display: block; }
+  .cmp.has-text .send .wave { display: none; }
+  .tip { position: absolute; bottom: calc(100% + 8px); left: 50%; translate: -50% 0; padding: 6px 9px; border-radius: 6px; background: #f2f2f2; color: #151515; font-size: 12px; font-weight: 500; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s; z-index: 5; }
+  .ib:hover .tip, .ib:focus-visible .tip { opacity: 1; }
+
+  /* model picker popover */
+  .pick { position: absolute; left: 0; right: 0; bottom: calc(100% + 10px); z-index: 20; max-width: 640px; border-radius: 16px; background: #1f1f1f; border: 1px solid var(--app-border-strong); box-shadow: 0 30px 80px -20px rgba(0,0,0,.9); display: flex; flex-direction: column; max-height: min(520px, 70vh); overflow: hidden; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .18s var(--ease), transform .22s var(--ease); }
+  .cmp.open .pick { opacity: 1; transform: none; pointer-events: auto; }
+  .cmp.down .pick { bottom: auto; top: calc(100% + 10px); transform: translateY(-6px); }
+  .cmp.down.open .pick { transform: none; }
+  .pick .srch { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--app-border); color: var(--app-fg-3); }
+  .pick .srch input { flex: 1; min-width: 0; outline: none; font-size: 15px; color: var(--app-fg); }
+  .pick .srch input::placeholder { color: var(--app-fg-3); }
+  .pick .tabs { display: flex; gap: 2px; padding: 8px 10px 0; border-bottom: 1px solid var(--app-border); overflow-x: auto; scrollbar-width: none; }
+  .pick .tabs button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px 10px; font-size: 14px; color: var(--app-fg-3); border-bottom: 2px solid transparent; white-space: nowrap; }
+  .pick .tabs button svg.i { width: 16px; height: 16px; }
+  .pick .tabs button[aria-selected="true"] { color: var(--app-fg); border-bottom-color: var(--app-fg); }
+  .pick .tiers { display: flex; gap: 6px; padding: 10px 14px 4px; flex-wrap: wrap; }
+  .pick .tiers button { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--app-border-strong); font-size: 12.5px; color: var(--app-fg-2); display: inline-flex; gap: 6px; align-items: center; }
+  .pick .tiers button span { color: var(--app-fg-3); }
+  .pick .tiers button[aria-pressed="true"] { background: var(--app-fg); border-color: var(--app-fg); color: #151515; }
+  .pick .tiers button[aria-pressed="true"] span { color: #555; }
+  .pick > :not(.list) { flex: none; }
+  .pick .list { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 4px 6px 8px; overscroll-behavior: contain; }
+  .pick .gh { padding: 12px 10px 6px; font-size: 12.5px; font-weight: 500; color: var(--app-fg-3); }
+  .row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; text-align: left; }
+  .row:hover, .row.kb { background: var(--app-muted); }
+  .row .tx { flex: 1; min-width: 0; }
+  .row .n { display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--app-fg); }
+  .row .n b { font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .d { font-size: 12.5px; color: var(--app-fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .pr { font: 12.5px var(--f-mono); color: var(--app-fg-3); letter-spacing: .02em; }
+  .row .pr i { font-style: normal; color: #4a4a4a; }
+  .row .ck { width: 16px; color: var(--app-fg); visibility: hidden; }
+  .row.sel .ck { visibility: visible; }
+  .tier { position: relative; flex: none; height: 19px; padding: 0 6px; border-radius: 5px; font: 600 10.5px/19px var(--f-body); letter-spacing: .04em; background: rgba(255,255,255,.08); color: var(--app-fg-2); cursor: help; }
+  .tier.Z { background: rgba(140,170,255,.12); color: #b4c6ff; }
+  .tier.E { background: rgba(95,211,154,.14); color: var(--good); }
+  .pick .foot { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--app-border); font-size: 12.5px; color: var(--app-fg-3); }
+  .pick .foot svg.i { width: 14px; height: 14px; color: var(--good); }
+  .pick .empty { padding: 28px 12px; text-align: center; font-size: 14px; color: var(--app-fg-3); }
+  .ttip { position: fixed; z-index: 90; max-width: 260px; padding: 9px 11px; border-radius: 8px; background: #f2f2f2; color: #151515; font-size: 12.5px; line-height: 1.45; pointer-events: none; opacity: 0; transition: opacity .12s; box-shadow: 0 10px 30px -10px rgba(0,0,0,.6); }
+  .ttip.on { opacity: 1; }
+  .ttip b { font-weight: 600; }
+
+  /* hand-off after send */
+  .handoff { margin-top: 14px; display: none; align-items: center; justify-content: center; gap: 10px; font-size: 13.5px; color: var(--fg-2); }
+  .cmp.sent .handoff { display: flex; }
+  .cmp.sent ~ .proof { display: none; }
+  .handoff .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.2); border-top-color: var(--fg); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .handoff { flex-wrap: wrap; text-align: center; }
+  .handoff code { font: 12.5px var(--f-mono); color: var(--fg-3); }
+  @media (max-width: 860px) { .handoff code { flex-basis: 100%; } }
+
+  /* ======================================================= mobile app block */
+  .app { margin-top: 160px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); padding: 0 64px; overflow: hidden; min-height: 460px; }
+  .app h2 { font-size: clamp(28px, 2.6vw, 36px); }
+  .app .lead { font-size: 17px; max-width: 26em; }
+  .app .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+  .app .vis { align-self: stretch; display: flex; justify-content: center; align-items: flex-start; padding-top: 56px; height: 460px; }
+  .phone { position: relative; width: 250px; padding: 7px; border-radius: 36px; background: #1e1d1b; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 40px 70px -30px rgba(0,0,0,.95); flex: none; }
+  .phone img { width: 100%; aspect-ratio: 1200 / 2460; object-fit: cover; border-radius: 29px; }
+  .end { height: 160px; }
+
+  @media (max-width: 860px) {
+    .b-head { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .b-head .lead { margin-top: 16px; }
+    .demo { margin-top: 40px; }
+    .modes { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
+    .modes button { font-size: 14px; padding: 0 12px; }
+    .box .bot { gap: 0; padding: 4px 6px 8px; }
+    /* the app's own phone layout: no provider logo, no reasoning control */
+    .trig .nm { max-width: 160px; }
+    .trig .lgw, .rsn { display: none !important; }
+    .pick { max-height: 64vh; }
+    .proof { text-align: left; }
+    .app { grid-template-columns: minmax(0, 1fr); padding: 36px 24px 0; gap: 28px; margin-top: 112px; }
+    .app .vis { height: 300px; padding-top: 0; }
+    .phone { width: 220px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bub" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
+  <symbol id="i-vid" viewBox="0 0 24 24"><path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
+  <symbol id="i-aud" viewBox="0 0 24 24"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6M19.4 18.4a9 9 0 0 0 0-12.8"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10.5 11V9.5a1.5 1.5 0 0 1 3 0V11"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-6 .1 4 4 0 0 0-2.5 5.8 4 4 0 0 0 .6 6.6A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 6 .1 4 4 0 0 1 2.5 5.8 4 4 0 0 1-.6 6.6A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7M12 19V5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="m-apple" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></symbol>
+  <symbol id="m-play" viewBox="0 0 24 24"><path d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594zM1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924zm12.207 10.065l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973zm0 2.067l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21z"/></symbol>
+</svg>
+
+<header class="wrap study-top">
+  <h1>Chat section, round 2: the composer on the page</h1>
+  <p>Your notes on round 1: too big, the chat needs no explaining, put the real composer on the page, lead with privacy and convenience, and sell privacy through the problem. So the whole section is now a heading, one sentence, the composer and one proof line, followed by a short block for the phone app. Two copy angles below share the same composer. Type in it, open the model picker and hover the privacy badges: the 388 chat models and their tiers are the real list from Nov 14, 2026.</p>
+  <ul>
+    <li>The composer copies the app's ChatInput (modes, privacy shield, model picker, reasoning effort, mic, send) and its dark theme. Sending can't reach the enclave from here, so it shows the hand-off the live page would do: open <code>/chat</code> with the draft and the chosen model. The app doesn't take a draft from a link today; that needs a small change in PPQdotAI.</li>
+    <li>Two changes to the picker are proposals and aren't in the app: the tier filter (All · E2EE · ZDR · Anon) and the price marks ($ to $$$, from median cost per message).</li>
+    <li>Privacy copy follows PPQ's "Anon vs ZDR vs TEE" post: PayPerQ can't read chats on any model; ZDR providers keep nothing and don't train on it; on E2EE nobody else can read the chat; Anon providers get no account but may keep the prompt.</li>
+  </ul>
+</header>
+<nav class="jump" aria-label="Directions"><div class="wrap">
+  <a href="#a"><b>A</b>Most AI apps keep your chats (recommended)</a>
+  <a href="#b"><b>B</b>Nobody's business</a>
+  <a href="#app"><b>+</b>Phone app block</a>
+  <a href="../index.html"><b>·</b>Round 1</a>
+</div></nav>
+
+<!-- ======================================================= A -->
+<div class="wrap">
+  <div class="note" id="a"><b class="v">A</b><h3>The problem, then the composer</h3><p>A centered heading names what other AI apps do, the sentence says what PayPerQ does instead, and the composer sits right under it, the same way the app's new-chat screen is laid out. Three versions of the heading:</p>
+    <div class="sw" role="group" aria-label="Heading">
+      <button aria-pressed="true" data-copy="0">1 · keep your chats</button>
+      <button aria-pressed="false" data-copy="1">2 · profile of you</button>
+      <button aria-pressed="false" data-copy="2">3 · who's asking</button>
+    </div>
+  </div>
+</div>
+<section class="sec">
+  <div class="wrap">
+    <div class="a-head">
+      <p class="label">Chat</p>
+      <h2 class="display" id="a-h">Most AI apps keep your chats. We can't even read them.</h2>
+      <p class="lead" id="a-l">Every major model in one chat. No account needed, nothing monthly.</p>
+    </div>
+    <div class="demo" data-composer data-model="Claude Sonnet 5.5"></div>
+  </div>
+</section>
+
+<!-- ======================================================= B -->
+<div class="wrap">
+  <div class="note" id="b"><b class="v">B</b><h3>Nobody's business</h3><p>The problem made personal instead of pointing at other apps. The composer types the kind of questions people ask an AI and would never want on file, then deletes them; the first keystroke takes over. Heading and sentence sit side by side, the composer runs the full width.</p></div>
+</div>
+<section class="sec">
+  <div class="wrap">
+    <div class="b-head">
+      <div>
+        <p class="label">Chat</p>
+        <h2 class="display">Some questions are nobody's business.</h2>
+      </div>
+      <p class="lead">Health, money, work, family. Ask any model without an account, and PayPerQ can't read a word of it.</p>
+    </div>
+    <div class="demo b-demo" data-composer data-model="GPT-6.1 Sol" data-ghost></div>
+  </div>
+</section>
+
+<!-- ======================================================= phone app -->
+<div class="wrap">
+  <div class="note" id="app"><b class="v">+</b><h3>Phone app block (after A or B)</h3><p>One panel with four things: heading, sentence, the two store buttons, the phone. The phone shows the app's new-chat screen, so its composer echoes the one above. It's the mobile web app until we have a native screenshot.</p></div>
+</div>
+<section class="wrap">
+  <div class="app" style="margin-top:56px">
+    <div>
+      <p class="label">Mobile app</p>
+      <h2 class="display">PayPerQ on your phone.</h2>
+      <p class="lead">A native app for iPhone and Android, with every model and nothing monthly.</p>
+      <div class="actions">
+        <a class="btn btn-light" href="#"><svg class="mark"><use href="#m-apple"/></svg>App Store</a>
+        <a class="btn btn-secondary" href="#"><svg class="mark sm"><use href="#m-play"/></svg>Google Play</a>
+      </div>
+    </div>
+    <div class="vis"><div class="phone"><img src="../shots/m-newchat-dark.webp" alt="The PayPerQ app on a phone: a new chat with the composer and Claude Sonnet 5.5 selected." loading="lazy"></div></div>
+  </div>
+</section>
+<div class="end"></div>
+
+<template id="t-composer">
+  <div class="cmp">
+    <div class="modes" role="group" aria-label="Mode">
+      <button aria-pressed="true" data-mode="chat"><svg class="i"><use href="#i-bub"/></svg>Chat</button>
+      <button aria-pressed="false" data-mode="image"><svg class="i"><use href="#i-img"/></svg>Image</button>
+      <button aria-pressed="false" data-mode="video"><svg class="i"><use href="#i-vid"/></svg>Video</button>
+      <button aria-pressed="false" data-mode="audio"><svg class="i"><use href="#i-aud"/></svg>Audio</button>
+      <button aria-pressed="false" data-mode="tools"><svg class="i"><use href="#i-tool"/></svg>Tools</button>
+    </div>
+    <div class="box">
+      <div class="pick" role="dialog" aria-label="Choose a model">
+        <label class="srch"><svg class="i"><use href="#i-search"/></svg><input type="text" placeholder="Search models…" aria-label="Search models"></label>
+        <div class="tabs" role="tablist">
+          <button role="tab" aria-selected="true" data-tab="chat"><svg class="i"><use href="#i-bub"/></svg>Chat</button>
+          <button role="tab" aria-selected="false" data-tab="image"><svg class="i"><use href="#i-img"/></svg>Image</button>
+          <button role="tab" aria-selected="false" data-tab="video"><svg class="i"><use href="#i-vid"/></svg>Video</button>
+          <button role="tab" aria-selected="false" data-tab="audio"><svg class="i"><use href="#i-aud"/></svg>Audio</button>
+        </div>
+        <div class="tiers" role="group" aria-label="Privacy tier"></div>
+        <div class="list" role="listbox"></div>
+        <div class="foot"><svg class="i"><use href="#i-lock"/></svg><span>PayPerQ can't read your chats on any model. The badge shows what the model's provider can see.</span></div>
+      </div>
+      <div class="top">
+        <svg class="i shield" aria-hidden="true"><use href="#i-shield"/></svg>
+        <textarea rows="1" placeholder="Ask anything…" aria-label="Message"></textarea>
+        <div class="ghost" aria-hidden="true" hidden></div>
+      </div>
+      <div class="bot">
+        <button class="ib" type="button" aria-label="Attach files"><svg class="i"><use href="#i-plus"/></svg><span class="tip">Attach files</span></button>
+        <button class="trig" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="i bub"><use href="#i-bub"/></svg><span class="lgw"></span><span class="nm"></span><svg class="i chev"><use href="#i-chev"/></svg></button>
+        <button class="rsn" type="button" aria-label="Reasoning effort"><svg class="i"><use href="#i-brain"/></svg><span class="lbl">Medium</span><svg class="i chev"><use href="#i-chev"/></svg></button>
+        <button class="ib opt" type="button" aria-label="Options"><svg class="i"><use href="#i-sliders"/></svg><span class="tip">Options</span></button>
+        <span class="sp"></span>
+        <button class="ib" type="button" aria-label="Dictate"><svg class="i"><use href="#i-mic"/></svg><span class="tip">Dictate</span></button>
+        <button class="send" type="button" aria-label="Send"><svg class="i wave"><use href="#i-wave"/></svg><svg class="i up"><use href="#i-up"/></svg></button>
+      </div>
+    </div>
+    <p class="handoff" role="status"><span class="spin"></span><span>Opening the chat with your message…</span><code></code></p>
+  </div>
+  <p class="proof"><svg class="i"><use href="#i-lock"/></svg>Sealed on your device and opened only inside PayPerQ's secure enclave. <a href="https://ppq.ai/blog/introducing-the-enclave-router">How it works</a></p>
+</template>
+<div class="ttip" role="tooltip"></div>
+
+<script src="models.js"></script>
+<script>
+(() => {
+  const M = window.PPQ_MODELS;
+  const L = '../../assets/logos/models/';
+  /* logo by model family first (TEE models are named after the open model they run), then by provider */
+  const FAM = [[/claude/i, 'claude.svg'], [/^(gpt|o\d|codex)|gpt-oss/i, 'openai.svg', 1], [/gemini|gemma/i, 'gemini.svg'], [/grok/i, 'xai.svg', 1], [/deepseek/i, 'deepseek.svg'], [/kimi/i, 'moonshot.svg', 1], [/glm/i, 'zai.svg', 1], [/qwen|qwq/i, 'qwen.svg'], [/mistral|magistral|devstral|codestral|ministral|pixtral/i, 'mistral.svg'], [/llama|muse/i, 'meta.svg'], [/minimax/i, 'minimax.svg'], [/command|aya/i, 'cohere.svg']];
+  const PROV = { Anthropic: 'claude.svg', OpenAI: ['openai.svg', 1], Google: 'gemini.svg', SpaceXAI: ['xai.svg', 1], xAI: ['xai.svg', 1], DeepSeek: 'deepseek.svg', MoonshotAI: ['moonshot.svg', 1], 'Z.ai': ['zai.svg', 1], Qwen: 'qwen.svg', qwen: 'qwen.svg', Mistral: 'mistral.svg', mistralai: 'mistral.svg', Meta: 'meta.svg', MiniMax: 'minimax.svg', Cohere: 'cohere.svg', Tinfoil: 'tinfoil.png' };
+  const logo = (name, prov) => {
+    if (prov === 'PPQ.AI') return `<img class="lg" src="../shots/ppq-icon.png" alt="" style="background:#fff">`;
+    const f = FAM.find(([re]) => re.test(name));
+    let src, inv;
+    if (f) { src = f[1]; inv = f[2]; } else if (PROV[prov]) { const p = PROV[prov]; [src, inv] = Array.isArray(p) ? p : [p, 0]; }
+    if (src) return `<img class="lg${inv ? ' inv' : ''}" src="${L}${src}" alt="">`;
+    return `<span class="lg ini" aria-hidden="true">${prov.replace(/[^A-Za-z]/g, '').charAt(0).toUpperCase() || '·'}</span>`;
+  };
+  const TIER = {
+    E: ['E2EE', '<b>End-to-end encrypted.</b> The model runs inside a secure enclave, so not even its provider can read the chat.'],
+    Z: ['ZDR', '<b>Zero data retention.</b> The provider keeps nothing after the reply and doesn\'t train on it.'],
+    A: ['ANON', '<b>Anonymous.</b> Sent without your identity or an account. The provider may keep the prompt.'],
+  };
+  const chat = M.chat.map(([n, p, t, pr, pop, rsn, vis]) => ({ n: n.replace(/^🔥\s*/, ''), p, t, pr, pop, rsn, vis }));
+  const media = { image: M.image, video: M.video, audio: M.audio };
+  const counts = { all: chat.length, E: 0, Z: 0, A: 0 }; chat.forEach((m) => counts[m.t]++);
+  const ORDER = ['Auto Model', 'Claude Sonnet 5.5', 'GPT-6.1 Sol', 'Gemini 4 Argon', 'Claude Opus 5.5', 'GPT-6 Luna', 'Grok 4.7', 'Claude Haiku 5.5', 'Gemini 3.8 Flash', 'GLM 5.3', 'GPT-6.1 Terra', 'Claude Fable 5.2'];
+  const recommended = ORDER.map((n) => chat.find((m) => m.n === n)).filter(Boolean);
+  const tteeE2 = chat.filter((m) => m.t === 'E');
+
+  /* one shared tooltip for the privacy badges */
+  const tt = document.querySelector('.ttip');
+  document.addEventListener('pointerover', (e) => {
+    const b = e.target.closest('.tier'); if (!b) { tt.classList.remove('on'); return; }
+    tt.innerHTML = TIER[b.dataset.t][1];
+    const r = b.getBoundingClientRect();
+    tt.style.left = Math.min(innerWidth - 272, Math.max(12, r.left - 8)) + 'px';
+    tt.style.top = (r.top - 10) + 'px'; tt.style.transform = 'translateY(-100%)';
+    tt.classList.add('on');
+  });
+
+  const GHOSTS = [
+    'My blood test says ALT 92. Should I be worried?',
+    'How do I tell my manager I\'m interviewing elsewhere?',
+    'I owe $14,000 on two cards. Which do I pay first?',
+    'Can my landlord keep the deposit for normal wear?',
+    'Write a calm message to my ex about the kids\' weekend.',
+  ];
+
+  document.querySelectorAll('[data-composer]').forEach((host) => {
+    host.append(document.getElementById('t-composer').content.cloneNode(true));
+    const root = host.querySelector('.cmp');
+    const ta = root.querySelector('textarea'), trig = root.querySelector('.trig'), pick = root.querySelector('.pick');
+    const list = pick.querySelector('.list'), search = pick.querySelector('input'), tiersEl = pick.querySelector('.tiers');
+    const rsn = root.querySelector('.rsn'), send = root.querySelector('.send'), hand = root.querySelector('.handoff code');
+    let model = chat.find((m) => m.n === host.dataset.model) || chat[0];
+    let tab = 'chat', tier = 'all', effort = 1, kb = -1;
+
+    const setModel = (m) => {
+      model = m;
+      trig.querySelector('.lgw').innerHTML = logo(m.n, m.p);
+      trig.querySelector('.nm').textContent = m.n;
+      rsn.hidden = !m.rsn;
+    };
+    setModel(model);
+
+    tiersEl.innerHTML = [['all', 'All', counts.all], ['E', 'E2EE', counts.E], ['Z', 'ZDR', counts.Z], ['A', 'Anon', counts.A]]
+      .map(([k, l, c]) => `<button type="button" aria-pressed="${k === 'all'}" data-k="${k}">${l} <span>${c}</span></button>`).join('');
+
+    const rowChat = (m) => `<button type="button" role="option" class="row${m === model ? ' sel' : ''}" data-i="${chat.indexOf(m)}">${logo(m.n, m.p)}<span class="tx"><span class="n"><b>${m.n}</b><span class="tier ${m.t}" data-t="${m.t}">${TIER[m.t][0]}</span></span><span class="d">${m.p === 'PPQ.AI' ? 'Picks a model for each message' : m.p}${m.rsn ? ' · reasoning' : ''}${m.vis ? ' · reads images' : ''}</span></span>${m.pr ? `<span class="pr">${'$'.repeat(m.pr)}<i>${'$'.repeat(3 - m.pr)}</i></span>` : '<span class="pr"></span>'}<svg class="i ck"><use href="#i-check"/></svg></button>`;
+    const rowMedia = ([n, p]) => `<button type="button" role="option" class="row" data-media="1">${logo(n, p)}<span class="tx"><span class="n"><b>${n}</b></span><span class="d">${p}</span></span></button>`;
+
+    const render = () => {
+      const q = search.value.trim().toLowerCase();
+      tiersEl.hidden = tab !== 'chat';
+      let html = '';
+      if (tab === 'chat') {
+        const ok = (m) => (tier === 'all' || m.t === tier) && (!q || (m.n + ' ' + m.p).toLowerCase().includes(q));
+        if (!q && tier === 'all') {
+          html += `<p class="gh">Recommended</p>` + recommended.map(rowChat).join('');
+          html += `<p class="gh">End-to-end encrypted</p>` + tteeE2.map(rowChat).join('');
+          html += `<p class="gh">All ${chat.length} chat models</p>` + chat.filter((m) => !recommended.includes(m) && m.t !== 'E').sort((a, b) => a.p.localeCompare(b.p) || a.n.localeCompare(b.n)).map(rowChat).join('');
+        } else {
+          const r = chat.filter(ok).sort((a, b) => (b.pop - a.pop) || a.n.localeCompare(b.n));
+          html = r.length ? `<p class="gh">${r.length} model${r.length > 1 ? 's' : ''}</p>` + r.map(rowChat).join('') : `<p class="empty">No chat model matches “${search.value}”.</p>`;
+        }
+      } else {
+        const r = media[tab].filter(([n, p]) => !q || (n + ' ' + p).toLowerCase().includes(q)).sort((a, b) => b[2] - a[2]);
+        html = `<p class="gh">${r.length} ${tab} models · open in the app</p>` + r.map(rowMedia).join('');
+      }
+      list.innerHTML = html; kb = -1;
+    };
+
+    const open = (v) => {
+      if (v) { const top = root.querySelector('.box').getBoundingClientRect().top; root.classList.toggle('down', top < Math.min(520, innerHeight * .7) + 70); }
+      root.classList.toggle('open', v); trig.setAttribute('aria-expanded', v);
+      if (v) { search.value = ''; render(); setTimeout(() => search.focus({ preventScroll: true }), 30); }
+    };
+    trig.addEventListener('click', () => open(!root.classList.contains('open')));
+    document.addEventListener('pointerdown', (e) => { if (!root.contains(e.target)) open(false); });
+    search.addEventListener('input', render);
+    pick.querySelector('.tabs').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-tab]'); if (!b) return;
+      tab = b.dataset.tab; pick.querySelectorAll('[data-tab]').forEach((x) => x.setAttribute('aria-selected', x === b)); render();
+    });
+    tiersEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-k]'); if (!b) return;
+      tier = b.dataset.k; tiersEl.querySelectorAll('[data-k]').forEach((x) => x.setAttribute('aria-pressed', x === b)); render();
+    });
+    list.addEventListener('click', (e) => {
+      const r = e.target.closest('.row'); if (!r || r.dataset.media) return;
+      setModel(chat[+r.dataset.i]); open(false); ta.focus();
+    });
+    pick.addEventListener('keydown', (e) => {
+      const rows = [...list.querySelectorAll('.row')];
+      if (e.key === 'Escape') { open(false); trig.focus(); return; }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault(); kb = Math.max(0, Math.min(rows.length - 1, kb + (e.key === 'ArrowDown' ? 1 : -1)));
+        rows.forEach((r, i) => r.classList.toggle('kb', i === kb)); rows[kb]?.scrollIntoView({ block: 'nearest' });
+      }
+      if (e.key === 'Enter' && rows[kb]) { e.preventDefault(); rows[kb].click(); }
+    });
+
+    const EFF = ['Low', 'Medium', 'High'];
+    rsn.addEventListener('click', () => { effort = (effort + 1) % 3; rsn.querySelector('.lbl').textContent = EFF[effort]; });
+
+    root.querySelector('.modes').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mode]'); if (!b) return;
+      root.querySelectorAll('[data-mode]').forEach((x) => x.setAttribute('aria-pressed', x === b));
+      ta.placeholder = { chat: 'Ask anything…', image: 'Describe an image…', video: 'Describe a video…', audio: 'Describe a sound or a voice…', tools: 'Search the web, research a topic…' }[b.dataset.mode];
+    });
+
+    const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(200, ta.scrollHeight) + 'px'; root.classList.toggle('has-text', !!ta.value.trim()); };
+    ta.addEventListener('input', grow);
+    const go = () => {
+      if (!ta.value.trim()) { ta.focus(); return; }
+      root.classList.add('sent'); hand.textContent = `→ ppq.ai/chat · ${model.n}`;
+      setTimeout(() => { root.classList.remove('sent'); }, 3200);
+    };
+    send.addEventListener('click', go);
+    ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); } });
+
+    /* B: the composer types sensitive questions until the visitor starts typing */
+    if (host.hasAttribute('data-ghost') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const g = root.querySelector('.ghost'); let stop = false, gi = 0, timer;
+      const end = () => { stop = true; clearTimeout(timer); g.hidden = true; ta.placeholder = 'Ask anything…'; };
+      ta.addEventListener('focus', end); ta.addEventListener('input', end);
+      const typeOne = () => {
+        if (stop) return;
+        const s = GHOSTS[gi++ % GHOSTS.length]; let k = 0; g.hidden = false; ta.placeholder = '';
+        const tick = () => { if (stop) return; g.innerHTML = s.slice(0, k) + '<span class="car"></span>';
+          if (k++ < s.length) timer = setTimeout(tick, 28 + Math.random() * 40);
+          else timer = setTimeout(erase, 1900); };
+        const erase = () => { if (stop) return; k = Math.max(0, k - 3); g.innerHTML = s.slice(0, k) + '<span class="car"></span>';
+          if (k > 0) timer = setTimeout(erase, 16); else timer = setTimeout(typeOne, 450); };
+        tick();
+      };
+      new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { o.disconnect(); typeOne(); } }, { threshold: .6 }).observe(root);
+    }
+  });
+
+  /* A: heading versions */
+  const COPY = [
+    ['Most AI apps keep your chats. We can\'t even read them.', 'Every major model in one chat. No account needed, nothing monthly.'],
+    ['Your AI history is a profile of you.', 'Elsewhere, every question is saved to your account. Here there is no account, and PayPerQ can\'t read your chats, on any model.'],
+    ['AI that doesn\'t know who\'s asking.', 'Claude, GPT, Gemini, Grok and the best open models, with no account, no subscription, and chats PayPerQ can\'t read.'],
+  ];
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-copy]').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    const [h, l] = COPY[+b.dataset.copy];
+    document.getElementById('a-h').textContent = h; document.getElementById('a-l').textContent = l;
+  }));
+})();
+</script>
+</body>
+</html>

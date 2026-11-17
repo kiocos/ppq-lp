@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · Chat and build privately (privacy section, 3D study)</title>
+<meta name="description" content="Your favorite AI models, with privacy you can verify. Pay per message, no account, no subscription.">
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Instrument Sans'; src: url(../assets/fonts/InstrumentSans-normal.woff2) format('woff2'); font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; }
+  @font-face { font-family: 'Mona Sans'; src: url(../assets/fonts/MonaSans-normal.woff2) format('woff2'); font-weight: 200 900; font-stretch: 75% 125%; font-display: swap; }
+
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    /* PPQ's brand token from the app's theme (hsl 12 75% 43%) and its hover; one job: what you can act on */
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --good: #5fd39a;
+    --f-display: 'Geist', system-ui, sans-serif; --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --display-weight: 400; --display-stretch: 100%; --display-tracking: -0.025em; --display-scale: 1;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --radius: 6px; --radius-card: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img, video { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, p, ul, figure { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: var(--radius); }
+  ::selection { background: var(--brand); color: #fff; }
+  .skip { position: absolute; left: 12px; top: -60px; padding: 8px 12px; border-radius: var(--radius); background: var(--fg); color: var(--bg); z-index: 100; }
+  .skip:focus { top: 12px; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: var(--display-tracking); line-height: 1.12; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .mono { font-family: var(--f-mono); }
+  section { scroll-margin-top: 80px; }
+  /* one faint canvas-grain layer for the whole page */
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+
+  /* ---------- buttons: flat, square-ish, one fill ---------- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 20px; border-radius: var(--radius); border: 1px solid transparent; font: 500 15px/1 var(--f-body); letter-spacing: -0.01em; white-space: nowrap; transition: background-color .15s, border-color .15s, color .15s; }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-secondary { background: rgba(12,11,10,.35); border-color: rgba(255,255,255,.34); color: var(--fg); }
+  .btn-secondary:hover { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.05); }
+  .btn-light { background: #fff; color: #1a1714; }
+  .btn-light:hover { background: #efebe6; }
+  .btn-sm { height: 34px; padding: 0 14px; font-size: 14px; }
+
+  /* ---------- nav ---------- */
+  .nav { position: fixed; inset: 0 0 auto 0; z-index: 50; transition: background-color .3s var(--ease), border-color .3s; border-bottom: 1px solid transparent; }
+  .nav.scrolled { background: rgba(12,11,10,.82); backdrop-filter: blur(14px) saturate(1.2); border-bottom-color: var(--line); }
+  .nav .wrap { display: flex; align-items: center; gap: 32px; height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
+  .brand img { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 4px; font-size: 14px; font-weight: 500; color: var(--fg-2); }
+  .nav-links a { padding: 8px 10px; border-radius: var(--radius); transition: color .15s, background-color .15s; }
+  .nav-links a:hover { color: var(--fg); background: rgba(255,255,255,.05); }
+  .nav-side { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--fg-2); }
+  .nav-side > a:not(.btn) { padding: 8px 12px; border-radius: var(--radius); transition: color .15s; }
+  .nav-side > a:not(.btn):hover { color: var(--fg); }
+
+  /* ---------- hero: the painting stays in the background, dimmed ---------- */
+  .hero { position: relative; display: flex; align-items: center; min-height: clamp(560px, 80svh, 780px); overflow: clip; isolation: isolate; }
+  /* the wide canvases cover the whole hero; their bottom fades into the page */
+  .hero-art { position: absolute; z-index: -3; inset: 0; opacity: .32; animation: settle 1.6s var(--ease) both;
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 84%, transparent 100%); }
+  .hero-art picture { display: contents; }
+  .hero-art img { width: 100%; height: 100%; object-fit: cover; object-position: var(--art-pos, 50% 30%); filter: saturate(.8); }
+  @keyframes settle { from { opacity: 0; } to { opacity: .32; } }
+  .hero-shade { position: absolute; inset: 0; z-index: -2; pointer-events: none; background:
+    linear-gradient(180deg, rgba(12,11,10,.5) 0%, rgba(12,11,10,0) 10%),
+    linear-gradient(0deg, var(--bg) 0%, rgba(12,11,10,0) 16%),
+    radial-gradient(40% 44% at 22% 48%, rgba(12,11,10,.72) 0%, rgba(12,11,10,0) 100%); }
+  .hero-copy { width: 100%; padding-top: 64px; padding-bottom: 40px; }
+  .hero h1 { font-size: calc(clamp(38px, 4.2vw, 60px) * var(--display-scale)); line-height: 1.04; letter-spacing: -0.035em; max-width: 9em; }
+  .hero .sub { margin-top: 24px; font-size: 18px; line-height: 1.5; color: var(--fg-2); max-width: 28em; }
+  .hero .ctas { display: flex; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
+  .hero .micro { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 4px 0; font-size: 13px; color: var(--fg-3); }
+  .hero .micro span + span::before { content: '·'; margin: 0 10px; }
+  .rise { animation: rise .8s var(--ease) both; }
+  .rise-2 { animation-delay: .06s; } .rise-3 { animation-delay: .12s; } .rise-4 { animation-delay: .18s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- sections ---------- */
+  .sec { padding-top: 144px; }
+  .sec h2 { font-size: calc(clamp(28px, 2.6vw, 36px) * var(--display-scale)); }
+  .label { margin-bottom: 14px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  .lead { margin-top: 14px; font-size: 17px; line-height: 1.55; color: var(--fg-2); max-width: 32em; }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- privacy: one scene, scrubbed by scroll — a camera follows one message from your laptop to the AI provider ---------- */
+  .en-story { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 64px; }
+  .en-steps { margin: 0; padding: 0 0 6vh; list-style: none; }
+  .en-step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; }
+  /* the title sits at the top so it peeks above the fold, right under the hero */
+  .en-step:first-child { min-height: 78vh; justify-content: flex-start; padding-top: 8px; }
+  .en-step h2 { font-size: calc(clamp(24px, 2.3vw, 32px) * var(--display-scale)); max-width: 9em; } /* = section h2 */
+  .en-step .lead { margin-top: 16px; max-width: 20em; }
+  .en-ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; border: 1px solid var(--border); color: var(--fg-2); margin-bottom: 20px; transition: color .4s, border-color .4s, background-color .4s; }
+  .en-ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .en-step.on .en-ico { color: var(--fg); }
+  .en-step[data-s="2"].on .en-ico { color: var(--brand-ink); border-color: rgba(233,125,73,.45); background: rgba(191,60,27,.1); }
+  .en-step[data-s="4"].on .en-ico { color: var(--good); border-color: rgba(95,211,154,.4); background: rgba(95,211,154,.06); }
+  .en-step h3 { font-family: var(--f-display); font-weight: var(--display-weight); font-size: calc(20px * var(--display-scale)); letter-spacing: -0.015em; line-height: 1.25; max-width: 15em; text-wrap: balance; }
+  .en-step p { margin-top: 10px; font-size: 17px; color: var(--fg-2); max-width: 21em; text-wrap: pretty; }
+  .en-step p.label { margin-top: 0; font-size: 14px; color: var(--fg-3); } /* = the other section labels */
+
+  .en-pin-wrap { position: sticky; top: 64px; height: calc(100vh - 64px); display: grid; place-items: center; }
+  /* every moving part reads its value from a custom property the script sets on each frame */
+  .en-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; --cx: 50; --cy: 50; --z: 1; --fx: 50; --fy: 50; --sp: 0; --mo: 0; --lit: 0; --gl: 0; --fs: 0; --fi: 0; --vo: 0; --ck: 1; --nm: 1; --sc: 0; --so: 0; }
+  .en-stage { position: absolute; inset: 0; overflow: hidden; isolation: isolate; background: var(--bg);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 6%, #000 92%, transparent);
+    -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent), linear-gradient(180deg, transparent, #000 6%, #000 92%, transparent); mask-composite: intersect; }
+  /* camera: keeps the focus point (cx, cy) at the centre of the frame, zoomed by z */
+  .en-cam { position: absolute; inset: 0; background: var(--bg); transform-origin: 0 0; transform: translate(calc((50 - var(--cx) * var(--z)) * 1%), calc((50 - var(--cy) * var(--z)) * 1%)) scale(var(--z)); will-change: transform; }
+  /* the render's black lifts to the page colour, so it has no visible edge */
+  .en-cam img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: lighten; }
+  .en-spot { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(24% 34% at calc(var(--fx) * 1%) calc(var(--fy) * 1%), rgba(12,11,10,0) 0%, rgba(12,11,10,0) 40%, rgba(12,11,10, calc(var(--sp) * .82)) 100%); }
+  /* the enclave lights up while it holds the message, and breathes a little at rest */
+  .en-glow { position: absolute; left: calc(var(--gx) * 1%); top: calc(var(--gy) * 1%); width: 20%; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; mix-blend-mode: screen;
+    background: radial-gradient(closest-side, rgba(255,140,80,.55), rgba(233,125,73,.22) 50%, rgba(191,60,27,0) 100%); opacity: calc(.04 + var(--gl) * .42); }
+  .en-glow::after { content: ''; position: absolute; inset: 20%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,190,140,.5), rgba(255,190,140,0)); animation: en-breathe 3.6s ease-in-out infinite; }
+  @keyframes en-breathe { 0%, 100% { opacity: .25; transform: scale(.92); } 50% { opacity: .6; transform: scale(1.06); } }
+  /* attestation: a line of light reads the server from top to bottom */
+  .en-scan { position: absolute; left: calc(var(--bx1) * 1%); width: calc((var(--bx2) - var(--bx1)) * 1%); top: calc((var(--by1) + (var(--by2) - var(--by1)) * var(--sc)) * 1%); height: 2px; pointer-events: none; opacity: var(--so);
+    background: linear-gradient(90deg, rgba(95,211,154,0), rgba(170,255,210,.95) 20%, rgba(170,255,210,.95) 80%, rgba(95,211,154,0)); box-shadow: 0 0 14px 3px rgba(95,211,154,.55); }
+  .en-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .en-path path { fill: none; stroke: #fff4e8; stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 22 300; stroke-dashoffset: 22; opacity: 0; filter: drop-shadow(0 0 4px rgba(255,236,214,.95)); }
+
+  /* labels pinned to points of the picture: they follow the camera without being scaled by it */
+  .en-pin { position: absolute; z-index: 2; left: calc((50 + (var(--x) - var(--cx)) * var(--z)) * 1%); top: calc((50 + (var(--y) - var(--cy)) * var(--z)) * 1%); }
+  .en-name { transform: translate(-50%, 0); font-size: 12px; font-weight: 500; color: var(--fg-2); white-space: nowrap; opacity: var(--nm); text-shadow: 0 0 10px var(--bg), 0 0 4px var(--bg); }
+  .en-name.l { --x: var(--nlx, 16.5); --y: var(--ny, 83); } .en-name.e { --x: var(--nex, 49); --y: var(--ny, 83); } .en-name.p { --x: var(--npx, 82); --y: var(--ny, 83); }
+
+  .en-msg { --x: var(--mx, 19); --y: var(--my, 42); width: 264px; transform: translate(-50%, calc(-100% - 10px)); padding: 11px 13px 12px; border-radius: 10px; background: rgba(22,21,19,.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: var(--mo);
+    border: 1px solid rgba(calc(255 - 22 * var(--lit)), calc(255 - 130 * var(--lit)), calc(255 - 182 * var(--lit)), calc(.12 + .48 * var(--lit)));
+    box-shadow: 0 18px 36px -18px rgba(0,0,0,.95), 0 0 46px -6px rgba(191,60,27, calc(.5 * var(--lit))); }
+  .en-msg .k { display: block; font-size: 12px; font-weight: 500; color: color-mix(in srgb, var(--brand-ink) calc(var(--lit) * 100%), var(--fg-3)); }
+  .en-msg .t { margin-top: 4px; font-size: 14px; line-height: 1.42; color: var(--fg); height: 2.84em; overflow: hidden; word-break: break-word; }
+  .en-msg .t.c { font: 12px/1.6 var(--f-mono); height: 3.2em; color: var(--fg-3); word-break: break-all; }
+  .en-msg .t i { font-style: normal; color: var(--fg-3); }
+  /* the card's footer: what we also see on the way in, and that your IP stays behind on the way out */
+  .en-feet { display: grid; max-height: calc(max(var(--fs), var(--fi)) * 44px); overflow: hidden; }
+  .en-foot { grid-area: 1 / 1; margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 12px; color: var(--fg-3); }
+  .en-foot.seen { opacity: var(--fs); } .en-foot.ip { opacity: var(--fi); }
+  .en-chip { font: 12px var(--f-mono); padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.06); color: var(--fg-2); }
+  .en-foot.ip .en-chip { text-decoration: line-through; text-decoration-color: rgba(255,255,255,.55); }
+
+  .en-verify { --x: var(--vx, 50); --y: var(--vy, 8); transform: translate(-50%, calc((1 - var(--vo)) * 10px)); width: max-content; padding: 13px 18px 14px; border-radius: 12px; background: rgba(22,21,19,.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(95,211,154,.3); box-shadow: 0 20px 40px -20px rgba(0,0,0,.95); opacity: var(--vo); }
+  .en-verify b { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--good); }
+  .en-verify b svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .en-verify .tick { stroke-dasharray: 1; stroke-dashoffset: var(--ck); }
+  .en-verify ul { margin-top: 7px; padding-left: 25px; display: grid; gap: 3px; font-size: 13px; color: var(--fg-2); }
+
+  .en-tech { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 18px; max-width: 760px; }
+  .en-tech summary { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; font-size: 15px; font-weight: 500; color: var(--fg-2); transition: color .15s; }
+  .en-tech summary::-webkit-details-marker { display: none; }
+  .en-tech summary::before { content: ''; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .2s var(--ease); margin-right: 4px; }
+  .en-tech[open] summary::before { transform: rotate(45deg); }
+  .en-tech summary:hover { color: var(--fg); }
+  .en-tech summary small { font-size: 13px; font-weight: 400; color: var(--fg-3); }
+  .en-tech dl { margin: 22px 0 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px 24px; font-size: 15px; }
+  .en-tech dt { color: var(--fg); font-weight: 500; }
+  .en-tech dd { margin: 0; color: var(--fg-2); }
+  .en-tech .proof { margin-top: 18px; }
+  .en-tech .cmd code { white-space: normal; overflow-wrap: normal; }
+  /* 3D version: a WebGL canvas fills the pinned column; the cards and names are placed by the script */
+  .en-3d { aspect-ratio: auto; height: min(calc(100vh - 112px), 820px); background: var(--bg); isolation: isolate; }
+  /* the renderer's black lifts to the page colour, so the canvas has no visible edge */
+  .en-3d .en-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; mix-blend-mode: lighten;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent), linear-gradient(180deg, transparent, #000 6%, #000 94%, transparent);
+    -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent), linear-gradient(180deg, transparent, #000 6%, #000 94%, transparent); mask-composite: intersect; }
+  .en-3d .en-fallback { display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: lighten; }
+  .en-3d.no-3d .en-fallback { display: block; }
+  .en-3d.no-3d .en-canvas, .en-3d.no-3d .en-msg, .en-3d.no-3d .en-name { display: none; }
+  .en-3d.no-3d .en-verify { opacity: 1; left: 50%; top: 4%; transform: translate(-50%, 0); }
+  .en-3d .en-msg, .en-3d .en-verify, .en-3d .en-name { position: absolute; z-index: 2; left: 0; top: 0; }
+  .en-3d .en-msg { width: 264px; }
+  .en-3d .en-name { transform: translate(-50%, 0); opacity: 0; }
+  .cmd { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font: 13px/1.4 var(--f-mono); }
+  .cmd code { white-space: nowrap; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; }
+  .cmd .s { color: var(--fg-3); }
+  .copy { margin-left: auto; flex: none; height: 28px; padding: 0 10px; border-radius: 4px; border: 1px solid var(--line); font: 500 12px var(--f-body); color: var(--fg-2); transition: color .15s, border-color .15s; }
+  .copy:hover { color: var(--fg); border-color: var(--border); }
+  .proof { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--fg-3); }
+  .proof a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+  .proof a:hover { color: var(--fg); text-decoration-color: var(--fg-2); }
+
+  /* models: the real app in a plain frame */
+  .models-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 560px); gap: 72px; align-items: center; }
+  .count { margin-top: 32px; display: flex; align-items: baseline; gap: 14px; }
+  .count b { font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: -0.03em; font-size: calc(clamp(44px, 4.4vw, 60px) * var(--display-scale)); line-height: 1; font-variant-numeric: tabular-nums; }
+  .count span { font-size: 14px; color: var(--fg-2); max-width: 10em; line-height: 1.4; }
+  .frame { position: relative; aspect-ratio: 56 / 46; border-radius: var(--radius-card); overflow: hidden; background: var(--panel); border: 1px solid var(--line); }
+  .frame .light { position: absolute; inset: 0; background: radial-gradient(70% 70% at 0% 100%, rgba(191,60,27,.22), rgba(191,60,27,0) 70%); }
+  .frame .window { position: absolute; left: 7%; top: 9%; width: 93%; aspect-ratio: 4 / 3; border-radius: 8px 0 0 8px; overflow: hidden; background: #151515; box-shadow: 0 24px 50px -24px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.07); }
+  .frame .bar { height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: #1d1d1d; }
+  .frame .bar i { width: 8px; height: 8px; border-radius: 50%; background: #3a3a3a; }
+  .frame video { width: 100%; height: calc(100% - 28px); object-fit: cover; }
+  .frame .chip { position: absolute; left: 4%; bottom: 5%; z-index: 2; display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px 7px 9px; border-radius: 8px; background: rgba(16,15,14,.92); border: 1px solid var(--line); font-size: 13px; color: var(--fg); }
+  .frame .chip b { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--good); color: #052b18; font-size: 10px; }
+  .frame .chip small { color: var(--fg-3); font: 12px var(--f-mono); }
+  .strip { margin-top: 64px; display: grid; gap: 10px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .row { display: flex; gap: 10px; width: max-content; animation: slide 70s linear infinite; }
+  .row.r2 { animation-duration: 84s; animation-direction: reverse; }
+  .strip:hover .row { animation-play-state: paused; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .pill { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px 0 14px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 15px; white-space: nowrap; transition: border-color .15s; }
+  .pill:hover { border-color: var(--border); }
+  .pill img { width: 22px; height: 22px; object-fit: contain; }
+  .pill .inv { filter: invert(1); }
+  .models-link { margin-top: 24px; text-align: center; font-size: 14px; }
+  .models-link a { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; transition: color .15s; }
+  .models-link a:hover { color: var(--fg); }
+
+  /* api */
+  .api { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 72px; align-items: center; }
+  .code { position: relative; border-radius: var(--radius-card); background: var(--panel); border: 1px solid var(--line); padding: 18px 0 22px; font: 14px/1.8 var(--f-mono); overflow: hidden; }
+  .code .top { display: flex; align-items: center; gap: 6px; padding: 0 20px 14px; margin-bottom: 12px; border-bottom: 1px solid var(--line); font: 12.5px var(--f-body); color: var(--fg-3); }
+  .code .top i { width: 8px; height: 8px; border-radius: 50%; background: #2c2a27; }
+  .code .top span { margin-left: 8px; }
+  .code .ln { display: block; padding: 0 24px; white-space: pre; overflow-x: auto; transition: background-color .4s; }
+  .code .k { color: #c9b08a; }
+  .code .s { color: var(--fg); }
+  .code .ln.changed { background: rgba(191,60,27,.16); box-shadow: inset 2px 0 0 var(--brand); }
+  .code .ln.changed .s { color: var(--brand-ink); }
+  .code .tag { position: absolute; right: 16px; top: 13px; font: 500 12px var(--f-body); padding: 4px 8px; border-radius: 4px; background: var(--brand); color: #fff; opacity: 0; transition: opacity .4s; }
+  .code.done .tag { opacity: 1; }
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 28px; }
+  .tools a { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 10px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); font-size: 14px; color: var(--fg-2); transition: color .15s, border-color .15s; }
+  .tools a:hover { color: var(--fg); border-color: var(--border); }
+  .tools img { width: 18px; height: 18px; object-fit: contain; border-radius: 4px; }
+
+  /* pricing */
+  .price-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px; align-items: stretch; margin-top: 44px; }
+  .block { position: relative; border-radius: var(--radius-card); overflow: hidden; background: var(--brand); color: #fff; padding: 40px 40px 36px; }
+  .block::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .18; }
+  .block > * { position: relative; z-index: 1; }
+  .block .big { font-family: var(--f-display); font-weight: var(--display-weight); font-stretch: var(--display-stretch); letter-spacing: -0.03em; font-size: calc(clamp(48px, 5vw, 64px) * var(--display-scale)); line-height: 1; }
+  .block .big-sub { margin-top: 10px; font-size: 18px; font-weight: 500; }
+  .block .buys { margin-top: 22px; display: inline-block; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,.16); font-size: 15px; color: rgba(255,255,255,.94); }
+  .block .buys b { margin: 0 3px; font: 500 20px var(--f-mono); color: #fff; font-variant-numeric: tabular-nums; }
+  .block .pay { margin-top: 26px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .block .pay i { width: 34px; height: 34px; border-radius: 50%; background: #1c0c06; display: grid; place-items: center; }
+  .block .pay img { width: 20px; height: 20px; }
+  .block .pay span { margin-left: 4px; font-size: 14px; color: rgba(255,255,255,.94); }
+  .block .btn { margin-top: 30px; }
+  .prices { align-self: center; }
+  .prices li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; align-items: baseline; padding: 16px 0; }
+  .prices .m { font-size: 16px; }
+  .prices b { font: 400 16px var(--f-mono); }
+  .prices .bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .prices .bar i { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--brand); transition: width 1.2s var(--ease); }
+  .prices.in .bar i { width: var(--w); }
+  .prices-cap { margin-top: 12px; font-size: 13px; color: var(--fg-3); }
+
+  /* close: the valley painting, as before */
+  .close { position: relative; margin-top: 144px; min-height: clamp(600px, 56vw, 820px); padding: 104px 0 0; text-align: center; overflow: clip; isolation: isolate; }
+  .close-art { position: absolute; inset: 0; z-index: -2; }
+  .close-art picture { display: contents; }
+  .close-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }
+  .close::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--bg) 0%, rgba(12,11,10,.5) 15%, rgba(12,11,10,.12) 40%, rgba(12,11,10,0) 60%), linear-gradient(0deg, var(--bg) 0%, rgba(12,11,10,0) 16%); }
+  .close h2 { font-size: calc(clamp(32px, 3.4vw, 46px) * var(--display-scale)); text-shadow: 0 2px 30px rgba(12,11,10,.6); }
+  .close .wrap p { margin-top: 14px; font-size: 17px; color: var(--fg); opacity: .84; text-shadow: 0 1px 20px rgba(12,11,10,.9); }
+  .close .ctas { display: flex; gap: 12px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+  .plaque { position: absolute; left: var(--gutter); bottom: 40px; display: grid; gap: 2px; padding: 10px 14px 11px; border-radius: 8px; background: rgba(14,12,10,.8); backdrop-filter: blur(10px); border: 1px solid var(--line); font-size: 13px; line-height: 1.4; text-align: left; }
+  .plaque b { font-weight: 500; }
+  .plaque span { color: var(--fg-2); }
+
+  /* footer */
+  .foot { padding: 72px 0 48px; font-size: 14px; color: var(--fg-2); }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 32px; }
+  .foot h3 { font-size: 13px; font-weight: 500; color: var(--fg-3); margin-bottom: 12px; }
+  .foot li + li { margin-top: 8px; }
+  .foot a:hover { color: var(--fg); }
+  .foot-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; margin-top: 64px; font-size: 13px; color: var(--fg-3); }
+
+  .m-only { display: none; }
+  @media (max-width: 960px) {
+    .nav-links, .nav-side > a:not(.btn) { display: none; }
+    .models-head, .api, .price-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .models-head > *, .api > *, .price-grid > * { min-width: 0; }
+    .frame { max-width: 620px; }
+    .sec { padding-top: 112px; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 860px) { .d-only { display: none; } .m-only { display: block; } .frame { aspect-ratio: 9 / 10; } .frame .window { aspect-ratio: 8 / 9; top: 7%; left: 6%; width: 94%; } }
+  /* phones: the portrait canvas; words in its sky, the figure below */
+  @media (max-width: 760px) {
+    .hero { align-items: flex-start; min-height: clamp(640px, 94svh, 780px); }
+    .hero-art img { object-position: 76% 40%; }
+    .hero-art { inset: auto; top: 200px; left: -4vw; width: 120vw; aspect-ratio: .6667; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 80%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 80%, transparent 100%); }
+    .hero-copy { padding-top: 112px; }
+    .hero-shade { background: linear-gradient(180deg, rgba(12,11,10,.5) 0%, rgba(12,11,10,0) 40%), linear-gradient(0deg, var(--bg) 0%, rgba(12,11,10,0) 22%); }
+    .hero h1 { font-size: 40px; }
+    .hero .sub { font-size: 17px; margin-top: 18px; }
+    .hero .ctas { margin-top: 32px; }
+    .close { padding-top: 76px; min-height: 860px; }
+    .close::before { background: linear-gradient(180deg, var(--bg) 0%, rgba(12,11,10,.55) 12%, rgba(12,11,10,.2) 34%, rgba(12,11,10,0) 48%), linear-gradient(0deg, var(--bg) 0%, rgba(12,11,10,0) 12%); }
+    .close .plaque { display: none; }
+  }
+  @media (max-width: 520px) {
+    .block { padding: 30px 24px; }
+    .code { font-size: 12.5px; }
+    .code .ln { padding: 0 16px; }
+    .cmd code { white-space: normal; overflow-wrap: anywhere; }
+  }
+
+  /* phones and narrow tablets: title, then the picture pinned under the nav with its caption, the steps scrolling beneath */
+  @media (max-width: 900px) {
+    .en-story { display: flex; flex-direction: column; gap: 0; }
+    .en-steps { display: contents; }
+    .en-step { min-height: 62vh; justify-content: flex-start; padding-top: 8vh; }
+    .en-step:first-child { order: -2; min-height: 0; padding: 0 0 24px; }
+    .js .en-step:first-child { opacity: 1; }
+    .en-step:last-child { min-height: 72vh; }
+    .en-pin-wrap { order: -1; z-index: 3; top: 64px; height: auto; display: block; margin: 0 calc(-1 * var(--gutter)); padding: 0 0 128px; background: var(--bg); }
+    .en-pin-wrap::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 28px; background: linear-gradient(var(--bg), rgba(12,11,10,0)); pointer-events: none; }
+    /* the caption cards sit under the picture instead of on it */
+    .en-msg, .en-verify { left: var(--gutter); right: var(--gutter); top: calc(100% + 10px); width: auto; transform: none; }
+    .en-msg .t { height: auto; max-height: 2.84em; }
+    .en-msg .t.c { max-height: 3.2em; }
+    .en-verify { padding: 11px 14px 12px; }
+    .en-verify ul { padding-left: 25px; font-size: 13px; }
+    .en-step h3 { font-size: calc(18px * var(--display-scale)); }
+    .en-step p { font-size: 16px; }
+    .en-ico { margin-bottom: 14px; }
+    .en-name { font-size: 12px; }
+    .en-3d { height: 54vh; }
+    .en-3d .en-msg, .en-3d .en-verify { left: var(--gutter) !important; right: var(--gutter); top: calc(100% + 10px) !important; width: auto; transform: none !important; }
+    .en-tech dl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    .en-tech dd + dt { margin-top: 12px; }
+  }
+
+  /* type switcher (study tool, not part of the design) */
+  .pair { position: fixed; z-index: 90; right: 16px; bottom: 16px; font: 500 12px/1.3 'Geist', system-ui, sans-serif; color: #eaeaea; }
+  .art-btn { margin-right: 8px; }
+  .pair-btn { height: 32px; padding: 0 12px; border-radius: 6px; background: rgba(24,24,24,.92); backdrop-filter: blur(10px); box-shadow: 0 0 0 1px rgba(255,255,255,.12); display: inline-flex; gap: 8px; align-items: center; }
+  .pair-list { position: absolute; right: 0; bottom: 40px; width: 290px; padding: 6px; border-radius: 10px; background: rgba(24,24,24,.97); box-shadow: 0 0 0 1px rgba(255,255,255,.12); display: none; }
+  .pair.open .pair-list { display: block; }
+  .pair-list button { width: 100%; text-align: left; padding: 8px 10px; border-radius: 6px; display: grid; gap: 3px; }
+  .pair-list button:hover, .pair-list button[aria-pressed="true"] { background: rgba(255,255,255,.08); }
+  .pair-list small { color: #9a9a9a; font-weight: 400; }
+  .pair-list .hint { padding: 8px 10px 4px; color: #8a8a8a; font-weight: 400; }
+  @media (max-width: 860px) { .pair-btn .pair-label { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    .hero-art { opacity: .32; }
+    .reveal { opacity: 1; transform: none; }
+    .row { flex-wrap: wrap; width: auto; }
+    .row [aria-hidden="true"] { display: none; }
+    .strip { -webkit-mask-image: none; mask-image: none; }
+  }
+</style>
+</head>
+<body data-pairings='[
+  {"name":"Geist Regular","note":"One family, regular weight. Closest to the reference.","vars":{"--f-display":"\"Geist\", sans-serif","--display-weight":"400","--display-stretch":"100%","--display-tracking":"-0.025em","--display-scale":"1"}},
+  {"name":"Instrument Sans + Geist","note":"Slightly warmer and rounder headlines.","vars":{"--f-display":"\"Instrument Sans\", sans-serif","--display-weight":"400","--display-stretch":"100%","--display-tracking":"-0.02em","--display-scale":"1.02"}},
+  {"name":"Mona Sans + Geist","note":"A touch wider and more open.","vars":{"--f-display":"\"Mona Sans\", sans-serif","--display-weight":"400","--display-stretch":"104%","--display-tracking":"-0.025em","--display-scale":".98"}}
+]'>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="2" fill="currentColor"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+</svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="PayPerQ home"><img src="../assets/flame2.png" alt="">PayPerQ</a>
+    <nav class="nav-links" aria-label="Primary"><a href="#privacy">Privacy</a><a href="#models">Models</a><a href="#api">API</a><a href="#pricing">Pricing</a></nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="hero-art" aria-hidden="true">
+      <picture>
+        <source id="art-src" srcset="../assets/art/photo-craftsman-forge-1600.webp 1600w, ../assets/art/photo-craftsman-forge-2400.webp 2400w" sizes="100vw">
+        <img id="art-img" src="../assets/art/photo-craftsman-forge-2400.webp" alt="" fetchpriority="high">
+      </picture>
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="wrap hero-copy">
+      <h1 class="display rise">Chat and build privately</h1>
+      <p class="sub rise rise-2">Your favorite AI models, with privacy you can verify.</p>
+      <div class="ctas rise rise-3">
+        <a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a>
+        <a class="btn btn-secondary" href="https://ppq.ai/api-docs">Get an API key</a>
+      </div>
+      <p class="micro rise rise-4"><span>No account</span><span>No subscription</span></p>
+    </div>
+  </section>
+
+  <section class="sec en" id="privacy">
+    <div class="wrap">
+      <div class="en-story" id="en-story">
+        <ol class="en-steps">
+          <li class="en-step" data-s="0">
+            <p class="label">Privacy</p>
+            <h2 class="display">Even we can’t read your chats.</h2>
+            <p class="lead">Every chat runs inside an AWS Nitro Enclave. Here’s what that means.</p>
+          </li>
+          <li class="en-step" data-s="1">
+            <span class="en-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="14" y="14" width="4" height="6" rx="2"/><rect x="6" y="4" width="4" height="6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg></span>
+            <h3>We only see scrambled text.</h3>
+            <p>Your message is encrypted on your device, before it reaches us.</p>
+          </li>
+          <li class="en-step" data-s="2">
+            <span class="en-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20v2"/><path d="M12 2v2"/><path d="M17 20v2"/><path d="M17 2v2"/><path d="M2 12h2"/><path d="M2 17h2"/><path d="M2 7h2"/><path d="M20 12h2"/><path d="M20 17h2"/><path d="M20 7h2"/><path d="M7 20v2"/><path d="M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg></span>
+            <h3>It’s unscrambled only inside the enclave.</h3>
+            <p>An isolated computer on AWS that no one can log into. Not even us.</p>
+          </li>
+          <li class="en-step" data-s="3">
+            <span class="en-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></span>
+            <h3>The AI provider gets your words, never your IP.</h3>
+            <p>What it keeps depends on the model you choose.</p>
+          </li>
+          <li class="en-step" data-s="4">
+            <span class="en-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/></svg></span>
+            <h3>Don’t trust us. Your browser checks.</h3>
+            <p>AWS signs which code the enclave runs. Your browser matches it to our open&#8209;source code.</p>
+          </li>
+        </ol>
+
+        <div class="en-pin-wrap">
+          <div class="en-frame en-3d" role="img" aria-label="Animation: your laptop opens and you type a message; it travels down a fibre as scrambled text to PayPerQ's server, is readable only inside the glowing AWS Nitro Enclave behind the server's glass, then continues to the AI provider's racks without your IP address. At the end your browser checks the enclave and shows Verified.">
+            <canvas class="en-canvas"></canvas>
+            <img class="en-fallback" src="../assets/art/enclave-h1a.jpg" width="1672" height="941" alt="" decoding="async">
+            <span class="en-name">Your device</span>
+            <span class="en-name">PayPerQ</span>
+            <span class="en-name">AI provider</span>
+            <div class="en-msg" aria-hidden="true">
+              <span class="k en-k">You</span><p class="t en-t">Summarize these board notes into five decisions.</p>
+              <div class="en-feet"><div class="en-foot seen">Also visible to us: IP, model, tokens</div><div class="en-foot ip"><span class="en-chip">your IP</span> not included</div></div>
+            </div>
+            <div class="en-verify" aria-hidden="true">
+              <b><svg viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path class="tick" pathLength="1" d="m16 9-5.5 5.5L8 12"/></svg>Verified by your browser</b>
+              <ul><li>Enclave code matches GitHub · v0.75.0</li><li>Signed by AWS Nitro hardware</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <details class="en-tech">
+        <summary>Technical details <small>for the curious</small></summary>
+        <dl>
+          <dt>Encryption</dt><dd>TLS ends inside the enclave, so our servers only relay ciphertext. They do see your IP address, the model and token counts.</dd>
+          <dt>Attestation</dt><dd>AWS signs the enclave’s measurement (PCR0). It must match the reproducible build of our open-source code, v0.75.0 (Nov 13, 2026).</dd>
+          <dt>Providers</dt><dd>What a provider keeps depends on each model’s privacy label.</dd>
+          <dt>Check it yourself</dt><dd><div class="cmd"><code><span class="s">PPQ_API_KEY=sk&#8209;…</span> npx ppq&#8209;private&#8209;mode</code><button class="copy" type="button" data-copy="PPQ_API_KEY=sk-… npx ppq-private-mode">Copy</button></div></dd>
+        </dl>
+        <p class="proof"><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave source</a><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verifier</a><a href="https://ppq.ai/private-ai">How it works</a></p>
+      </details>
+    </div>
+  </section>
+
+  <section class="sec" id="models">
+    <div class="wrap models-head">
+      <div>
+        <p class="label">Models</p>
+        <h2 class="display">Choose the model for the task.</h2>
+        <p class="lead">Claude, GPT, Gemini, Grok and the best open models. One balance, switch any time.</p>
+        <p class="count"><b data-count="388">388</b><span>chat models from 66 providers</span></p>
+      </div>
+      <figure class="frame reveal">
+        <div class="light" aria-hidden="true"></div>
+        <div class="window">
+          <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <video class="d-only" data-inview muted loop playsinline preload="none" poster="../assets/motion/demo-poster.jpg" aria-label="The PayPerQ chat: searching the model picker for Sonnet, switching to Claude Sonnet 5.5, then typing a message served inside the enclave and verified."><source src="../assets/motion/demo.mp4" type="video/mp4"></video>
+          <video class="m-only" data-inview muted loop playsinline preload="none" poster="../assets/motion/demo-tall-poster.jpg" aria-hidden="true"><source src="../assets/motion/demo-tall.mp4" type="video/mp4"></video>
+        </div>
+        <figcaption class="chip"><b>✓</b>Enclave verified in your browser <small>v0.75.0</small></figcaption>
+      </figure>
+    </div>
+    <div class="strip" aria-label="Some of the available models">
+      <div class="row">
+        <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Opus 5.5</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6.1 Sol</span>
+        <span class="pill"><img src="../assets/logos/models/gemini.svg" alt="">Gemini 4 Argon</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/xai.svg" alt="">Grok 4.7</span>
+        <span class="pill"><img src="../assets/logos/models/deepseek.svg" alt="">DeepSeek V4.1 Flash</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/moonshot.svg" alt="">Kimi K3.1 Pro</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/zai.svg" alt="">GLM 5.3</span>
+        <span class="pill"><img src="../assets/logos/models/qwen.svg" alt="">Qwen3.8 Flash</span>
+        <span class="pill"><img src="../assets/logos/models/mistral.svg" alt="">Mistral Large 4</span>
+        <span aria-hidden="true" style="display:contents">
+          <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Opus 5.5</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6.1 Sol</span>
+          <span class="pill"><img src="../assets/logos/models/gemini.svg" alt="">Gemini 4 Argon</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/xai.svg" alt="">Grok 4.7</span>
+          <span class="pill"><img src="../assets/logos/models/deepseek.svg" alt="">DeepSeek V4.1 Flash</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/moonshot.svg" alt="">Kimi K3.1 Pro</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/zai.svg" alt="">GLM 5.3</span>
+          <span class="pill"><img src="../assets/logos/models/qwen.svg" alt="">Qwen3.8 Flash</span>
+          <span class="pill"><img src="../assets/logos/models/mistral.svg" alt="">Mistral Large 4</span>
+        </span>
+      </div>
+      <div class="row r2">
+        <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Sonnet 5.5</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6 Luna</span>
+        <span class="pill"><img src="../assets/logos/models/minimax.svg" alt="">MiniMax M3</span>
+        <span class="pill"><img src="../assets/logos/models/gemini.svg" alt="">Gemini 3.7 Flash</span>
+        <span class="pill"><img src="../assets/logos/models/meta.svg" alt="">Muse Spark 1.3</span>
+        <span class="pill"><img src="../assets/logos/models/cohere.svg" alt="">Command A</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/moonshot.svg" alt="">Kimi K3</span>
+        <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Haiku 5.5</span>
+        <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6 Astra</span>
+        <span aria-hidden="true" style="display:contents">
+          <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Sonnet 5.5</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6 Luna</span>
+          <span class="pill"><img src="../assets/logos/models/minimax.svg" alt="">MiniMax M3</span>
+          <span class="pill"><img src="../assets/logos/models/gemini.svg" alt="">Gemini 3.7 Flash</span>
+          <span class="pill"><img src="../assets/logos/models/meta.svg" alt="">Muse Spark 1.3</span>
+          <span class="pill"><img src="../assets/logos/models/cohere.svg" alt="">Command A</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/moonshot.svg" alt="">Kimi K3</span>
+          <span class="pill"><img src="../assets/logos/models/claude.svg" alt="">Claude Haiku 5.5</span>
+          <span class="pill"><img class="inv" src="../assets/logos/models/openai.svg" alt="">GPT-6 Astra</span>
+        </span>
+      </div>
+    </div>
+    <p class="models-link"><a href="https://ppq.ai/models">See all 388 models, plus image, video and audio</a></p>
+  </section>
+
+  <section class="sec" id="api">
+    <div class="wrap api">
+      <div class="code reveal" id="code" role="img" aria-label="Python: the OpenAI SDK pointed at PayPerQ by changing the base URL and the API key.">
+        <div class="top" aria-hidden="true"><i></i><i></i><i></i><span>app.py</span></div>
+        <span class="tag">2 lines changed</span>
+        <code aria-hidden="true"><span class="ln"><span class="k">from</span> openai <span class="k">import</span> OpenAI</span><span class="ln"> </span><span class="ln">client = OpenAI(</span><span class="ln" id="l-url">    base_url=<span class="s" id="t-url">"https://api.openai.com/v1"</span>,</span><span class="ln" id="l-key">    api_key=<span class="s" id="t-key">os.environ["OPENAI_API_KEY"]</span>,</span><span class="ln">)</span></code>
+      </div>
+      <div>
+        <p class="label">API</p>
+        <h2 class="display">Your models can work beyond this chat.</h2>
+        <p class="lead">One OpenAI-compatible API. Same models, same privacy, same balance.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="../assets/logos/tools/claude-code.png" alt="">Claude Code</a>
+          <a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/cursor.svg" alt="">Cursor</a>
+          <a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="../assets/logos/tools/opencode.png" alt="">OpenCode</a>
+          <a href="https://ppq.ai/integrate"><img src="../assets/logos/tools/aider.png" alt="">Aider</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <p class="label">Pricing</p>
+      <h2 class="display">Pay per message. Nothing monthly.</h2>
+      <div class="price-grid">
+        <div class="block reveal">
+          <p class="big">$0.10</p>
+          <p class="big-sub">is all you need to start.</p>
+          <p class="buys">That’s about <b data-count="43">43</b> messages on Claude Haiku 5.5.</p>
+          <div class="pay">
+            <i><img src="../assets/logos/pay/bitcoin.svg" alt="Bitcoin"></i>
+            <i><img src="../assets/logos/pay/lightning-network.svg" alt="Lightning"></i>
+            <i><img src="../assets/logos/pay/monero.svg" alt="Monero"></i>
+            <i><img src="../assets/logos/pay/tether.svg" alt="Tether"></i>
+            <span>or card. No email.</span>
+          </div>
+          <a class="btn btn-light" href="https://ppq.ai/chat">Start chatting</a>
+        </div>
+        <div class="prices-wrap">
+          <ul class="prices" id="prices">
+            <li><span class="m">Claude Haiku 5.5</span><b>$0.002</b><span class="bar"><i style="--w:6%"></i></span></li>
+            <li><span class="m">GPT-6 Luna</span><b>$0.018</b><span class="bar"><i style="--w:15%"></i></span></li>
+            <li><span class="m">Claude Sonnet 5.5</span><b>$0.051</b><span class="bar"><i style="--w:38%"></i></span></li>
+            <li><span class="m">Claude Opus 5.5</span><b>$0.134</b><span class="bar"><i style="--w:100%"></i></span></li>
+          </ul>
+          <p class="prices-cap">Typical cost per message (median, Nov 14, 2026). Long chats cost more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="close-art"><picture>
+      <source media="(max-width: 760px)" srcset="../assets/art/hearths-portrait-1200.webp">
+      <source srcset="../assets/art/hearths-1200.webp 1200w, ../assets/art/hearths-2400.webp 2400w" sizes="100vw">
+      <img src="../assets/art/hearths-2400.webp" alt="The same valley later that night, painted in the same manner: lit doorways and small hearth fires dot the dark slopes along a river, and a few people sit around the nearest fire, one of them holding a lit torch over it." loading="lazy">
+    </picture></div>
+    <div class="wrap">
+      <h2 class="display">The fire is yours.</h2>
+      <p>Chat and build privately. No account needed.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://ppq.ai/chat">Start chatting</a>
+        <a class="btn btn-secondary" href="https://ppq.ai/api-docs">Read the API docs</a>
+      </div>
+    </div>
+    <p class="plaque"><b>The valley, afterwards</b><span>One fire lights the next.</span></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="brand" href="#top"><img src="../assets/flame2.png" alt="">PayPerQ</a></div>
+      <div><h3>Product</h3><ul><li><a href="https://ppq.ai/chat">Chat</a></li><li><a href="https://ppq.ai/api-docs">API</a></li><li><a href="https://ppq.ai/models">Models</a></li><li><a href="https://ppq.ai/pricing">Pricing</a></li></ul></div>
+      <div><h3>Privacy</h3><ul><li><a href="https://ppq.ai/private-ai">How it works</a></li><li><a href="https://github.com/PayPerQ/ppq-privacy-verifier">Verifier</a></li><li><a href="https://github.com/PayPerQ/ppq-enclave-proxy">Enclave source</a></li><li><a href="https://ppq.ai/privacy">Privacy policy</a></li></ul></div>
+      <div><h3>Company</h3><ul><li><a href="https://ppq.ai/blog">Blog</a></li><li><a href="https://ppq.ai/careers">Careers</a></li><li><a href="https://ppq.ai/terms">Terms</a></li></ul></div>
+      <div><h3>For agents</h3><ul><li><a class="mono" href="https://ppq.ai/llms.txt">llms.txt</a></li><li><a class="mono" href="https://api.ppq.ai/v1/models">v1/models</a></li></ul></div>
+    </div>
+    <div class="foot-base"><span>© 2026 PayPerQ</span><span>Paintings are AI-generated studies in a 17th-century manner.</span><span>This page loads no third-party scripts.</span></div>
+  </div>
+</footer>
+
+<script src="../assets/enclave3d.js"></script>
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const onView = (el, fn, { once = false, threshold = 0.35 } = {}) => {
+    if (!el) return;
+    if (!('IntersectionObserver' in window)) return fn(true);
+    const io = new IntersectionObserver((es) => es.forEach((e) => { fn(e.isIntersecting); if (once && e.isIntersecting) io.disconnect(); }), { threshold });
+    io.observe(el);
+  };
+
+  // nav gets a background once the page scrolls
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', scrollY > 24);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  // videos play only while visible
+  document.querySelectorAll('video[data-inview]').forEach((v) => {
+    if (reduce) { v.controls = true; return; }
+    onView(v, (on) => on ? v.play().catch(() => {}) : v.pause(), { threshold: 0.3 });
+  });
+
+  document.querySelectorAll('.reveal').forEach((el) => onView(el, (on) => on && el.classList.add('in'), { once: true, threshold: 0.2 }));
+
+  // count-ups
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const to = +el.dataset.count;
+    onView(el, (on) => {
+      if (!on || reduce) return;
+      const t0 = performance.now(), dur = 1200;
+      const step = (t) => { const k = Math.min(1, (t - t0) / dur); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US'); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }, { once: true, threshold: 0.6 });
+  });
+
+  const prices = document.getElementById('prices');
+  onView(prices, (on) => on && prices.classList.add('in'), { once: true, threshold: 0.4 });
+
+  // privacy: the 3D story (../assets/enclave3d.js) mounts itself on the section; without WebGL the static render shows instead
+  if (window.Enclave3D) Enclave3D.mount(document.getElementById('en-story')); else document.querySelector('.en-3d')?.classList.add('no-3d');
+
+  // api: the two lines that change are rewritten in place
+  const code = document.getElementById('code');
+  const tUrl = document.getElementById('t-url'), tKey = document.getElementById('t-key');
+  const lUrl = document.getElementById('l-url'), lKey = document.getElementById('l-key');
+  const retype = async (el, to) => {
+    const from = el.textContent;
+    for (let n = from.length; n >= 0; n--) { el.textContent = from.slice(0, n); await new Promise((r) => setTimeout(r, 14)); }
+    for (let n = 1; n <= to.length; n++) { el.textContent = to.slice(0, n); await new Promise((r) => setTimeout(r, 30)); }
+  };
+  const finalCode = () => { tUrl.textContent = '"https://api.ppq.ai/v1"'; tKey.textContent = 'os.environ["PPQ_API_KEY"]'; lUrl.classList.add('changed'); lKey.classList.add('changed'); code.classList.add('done'); };
+  if (reduce) finalCode();
+  else onView(code, async (on) => {
+    if (!on) return;
+    await new Promise((r) => setTimeout(r, 600));
+    lUrl.classList.add('changed'); await retype(tUrl, '"https://api.ppq.ai/v1"');
+    await new Promise((r) => setTimeout(r, 250));
+    lKey.classList.add('changed'); await retype(tKey, 'os.environ["PPQ_API_KEY"]');
+    code.classList.add('done');
+  }, { once: true, threshold: 0.5 });
+
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select to copy'; }
+    setTimeout(() => (b.textContent = 'Copy'), 1400);
+  }));
+
+  // type switcher (study tool): key T cycles pairings
+  const root = document.documentElement, body = document.body;
+  const pairings = JSON.parse(body.dataset.pairings || '[]');
+  const params = new URLSearchParams(location.search);
+  const wrap = document.createElement('div'); wrap.className = 'pair';
+  wrap.innerHTML = `<div class="pair-list" role="group" aria-label="Type pairings"><div class="hint">Type pairings · press T to cycle</div>${pairings.map((p, n) => `<button type="button" data-i="${n}"><span>${n + 1}. ${p.name}</span><small>${p.note}</small></button>`).join('')}</div><button type="button" class="pair-btn" aria-expanded="false"><b>Aa</b><span class="pair-label"></span></button>`;
+  body.appendChild(wrap);
+  const label = wrap.querySelector('.pair-label'), toggle = wrap.querySelector('.pair-btn');
+  const apply = (n) => {
+    Object.entries(pairings[n].vars).forEach(([k, v]) => root.style.setProperty(k, v));
+    root.dataset.pairing = n; label.textContent = pairings[n].name;
+    wrap.querySelectorAll('[data-i]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.i === n)));
+    params.set('type', n + 1); history.replaceState(null, '', '?' + params + location.hash);
+  };
+  toggle.addEventListener('click', () => toggle.setAttribute('aria-expanded', String(wrap.classList.toggle('open'))));
+  wrap.querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => apply(+b.dataset.i)));
+  document.addEventListener('keydown', (e) => { if (e.metaKey || e.ctrlKey || e.altKey) return; if (e.key === 't' || e.key === 'T') apply((+root.dataset.pairing + 1) % pairings.length); if (e.key === 'Escape') wrap.classList.remove('open'); });
+  apply(Math.min(pairings.length, Math.max(1, +params.get('type') || 1)) - 1);
+
+  // art switcher (study tool): key A cycles the hero options (round 9: the forge in many styles)
+  const arts = [
+    ['photo-craftsman-forge', 'Photo · the craftsman (round 8)', '50% 35%'],
+    ['forge2-midcentury', 'Mid-century screenprint', '50% 40%'],
+    ['forge2-art-deco', 'Art Deco poster', '50% 40%'],
+    ['forge2-woodcut-expressionist', 'Expressionist woodcut', '50% 40%'],
+    ['forge-ukiyoe', 'Ukiyo-e woodblock', '50% 40%'],
+    ['forge2-engraving', 'Encyclopédie engraving', '50% 40%'],
+    ['forge2-impressionist', 'Impressionist oil sketch', '50% 40%'],
+    ['forge-linocut', 'Linocut, two colours', '50% 40%'],
+    ['forge-charcoal', 'Charcoal and pastel', '50% 40%'],
+    ['forge-baroque-oil', 'Baroque oil', '50% 40%'],
+    ['forge-risograph', 'Risograph', '50% 40%'],
+    ['forge-watercolor', 'Ink and watercolour', '50% 40%'],
+    ['forge2-graphic-novel', 'Ligne claire comic', '50% 40%'],
+    ['forge-graphic-novel', 'Graphic novel, noir', '50% 40%'],
+    ['forge-wpa-mural', '1930s mural', '50% 40%'],
+  ];
+  const artSrc = document.getElementById('art-src'), artImg = document.getElementById('art-img');
+  const artBtn = document.createElement('button'); artBtn.type = 'button'; artBtn.className = 'pair-btn art-btn';
+  wrap.prepend(artBtn);
+  const setArt = (n) => {
+    const [f, name, pos] = arts[n];
+    artSrc.srcset = `../assets/art/${f}-1600.webp 1600w, ../assets/art/${f}-2400.webp 2400w`; artImg.src = `../assets/art/${f}-2400.webp`;
+    root.style.setProperty('--art-pos', pos); root.dataset.art = n; artBtn.innerHTML = `<b>A</b><span class="pair-label">${n + 1}. ${name}</span>`;
+    params.set('art', n + 1); history.replaceState(null, '', '?' + params + location.hash);
+  };
+  artBtn.addEventListener('click', () => setArt((+root.dataset.art + 1) % arts.length));
+  document.addEventListener('keydown', (e) => { if (e.metaKey || e.ctrlKey || e.altKey) return; if (e.key === 'a' || e.key === 'A') setArt((+root.dataset.art + 1) % arts.length); });
+  setArt(Math.min(arts.length, Math.max(1, +params.get('art') || 1)) - 1);
+})();
+</script>
+</body>
+</html>

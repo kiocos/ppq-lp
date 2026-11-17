@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PPQ · Dobra soberana</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent;color:var(--foreground,#eee);font-family:var(--font-sans,Arial,sans-serif)}
+#ppq-preview .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#ppq-preview button{font:inherit;font-size:12px;padding:9px 12px;color:var(--foreground,#eee);background:transparent;border:1px solid var(--border,#333);border-radius:6px;cursor:pointer}
+#ppq-preview button[aria-pressed=true]{background:var(--primary,#eee);color:var(--primary-foreground,#111)}
+#ppq-preview button:focus-visible{outline:2px solid var(--ring,#ccc);outline-offset:3px}
+#ppq-preview #pause{margin-left:auto}
+#ppq-preview .stage{position:relative;aspect-ratio:2000/940;overflow:hidden;background:linear-gradient(140deg,#0c0b0a,#19100c);border-radius:var(--radius,8px)}
+#ppq-preview canvas{position:absolute;inset:0;width:100%;height:100%}
+#ppq-preview .composer-cover{position:absolute;left:22.36%;top:60.5%;width:55.4%;height:24.4%;border-radius:3%/17%;background:#1b1b1b;pointer-events:none}
+#ppq-preview .reference{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:lighten;pointer-events:none}
+#ppq-preview .stage.art-only .reference,#ppq-preview .stage.art-only .composer-cover{display:none}
+#ppq-preview .caption{font-size:12px;color:var(--muted-foreground,#aaa);line-height:1.5;margin:10px 0 0}
+#ppq-preview #error{margin-top:12px;color:var(--destructive,#f66)}
+</style>
+</head>
+<body>
+<main id="ppq-preview">
+<div class="toolbar" aria-label="Visualização da animação">
+<button type="button" id="composition" aria-pressed="true">Com sua hero</button>
+<button type="button" id="art" aria-pressed="false">Só a arte</button>
+<button type="button" id="pause" aria-pressed="false">Pausar</button>
+</div>
+<div class="stage" id="stage">
+<canvas id="scene" role="img" aria-label="Dobra escultórica em vermelho-brasa e laranja de lava, com movimento lento ao redor de um centro escuro"></canvas>
+<div class="composer-cover"></div>
+<img class="reference" src="/Users/kio/.t3/userdata/attachments/64d5aa09-886a-433f-aafe-b2025f8fcb1e-8db1b673-166a-444d-b180-8f54310d3903.png" alt="Sua referência de hero sobreposta à animação">
+</div>
+<p class="caption">Prévia de composição com a imagem enviada e o shader da cena salva no Unicorn Studio</p>
+<p id="error" role="alert" hidden></p>
+</main>
+<script id="scene-data" type="application/json">{"vertex": "#version 300 es\nprecision highp float;\nprecision highp int;\nin vec3 aVertexPosition;\nin vec2 aTextureCoord;\nuniform vec2 uResolution;\nuniform vec2 uPos;\nuniform float uTime;\nuniform float uScale;\nuniform vec3 uRotation;\nuniform float uWidth;\nuniform float uThickness;\nuniform float uOpening;\nuniform float uBreath;\nuniform float uBreathSpeed;\nout vec2 vTextureCoord;\nout vec3 vNormal;\nout vec3 vWorld;\nout vec2 vSurface;\nconst float TAU = 6.28318530718;\nmat3 turn(vec3 a) {\n  vec3 c = cos(a);\n  vec3 s = sin(a);\n  return mat3(c.z,-s.z,0.0,s.z,c.z,0.0,0.0,0.0,1.0) * mat3(c.y,0.0,s.y,0.0,1.0,0.0,-s.y,0.0,c.y) * mat3(1.0,0.0,0.0,0.0,c.x,-s.x,0.0,s.x,c.x);\n}\nvec3 surface(float angle, float crossAngle, float phase) {\n  float ca = cos(angle);\n  float sa = sin(angle);\n  float doubleWave = sin(2.0 * angle + 0.4);\n  float openRadius = 0.75 + uOpening * 0.65;\n  vec3 center = vec3(1.85 * ca * openRadius, 1.06 * sa, 0.38 * doubleWave);\n  vec3 tangent = normalize(vec3(-1.85 * sa * openRadius, 1.06 * ca, 0.76 * cos(2.0 * angle + 0.4)));\n  vec3 radial = normalize(vec3(ca / 1.85, sa / 1.06, 0.0));\n  vec3 binormal = normalize(cross(radial, tangent));\n  radial = normalize(cross(tangent, binormal));\n  float twist = angle + 0.58 * doubleWave + 0.2 + uBreath * 0.65 * sin(phase + angle);\n  float wide = (0.14 + uWidth * 0.52) * (0.82 + 0.18 * cos(angle - 0.5));\n  float thick = 0.012 + 0.075 * uThickness;\n  vec2 section = vec2(cos(crossAngle), sin(crossAngle));\n  section = sign(section) * pow(abs(section), vec2(0.38));\n  float sx = section.x * wide;\n  float sy = section.y * thick;\n  return center + radial * (sx * cos(twist) - sy * sin(twist)) + binormal * (sx * sin(twist) + sy * cos(twist));\n}\nvoid main() {\n  float time = uTime * 0.025;\n  float phase = time * (0.28 + 0.72 * uBreathSpeed);\n  float angle = aTextureCoord.x * TAU;\n  float crossAngle = aTextureCoord.y * TAU;\n  vec3 point = surface(angle, crossAngle, phase);\n  vec3 du = surface(angle + 0.001, crossAngle, phase) - surface(angle - 0.001, crossAngle, phase);\n  vec3 dv = surface(angle, crossAngle + 0.001, phase) - surface(angle, crossAngle - 0.001, phase);\n  vec3 normal = normalize(cross(du, dv));\n  mat3 rotation = turn(uRotation * TAU);\n  point = rotation * point;\n  normal = rotation * normal;\n  float size = 0.65 + 0.95 * uScale;\n  point *= size;\n  float horizontalFit = min(uResolution.x / (uResolution.y * 1.6), 1.0);\n  point.x *= horizontalFit;\n  normal.x /= horizontalFit;\n  float viewDistance = 4.8 - point.z;\n  float focal = 3.7;\n  float aspect = uResolution.x / uResolution.y;\n  vec2 projected = vec2(point.x * focal / aspect, point.y * focal);\n  vec2 anchor = (uPos - 0.5) * 2.0;\n  float nearPlane = 0.1;\n  float farPlane = 20.0;\n  float depth = ((farPlane + nearPlane) / (farPlane - nearPlane)) * viewDistance - (2.0 * farPlane * nearPlane) / (farPlane - nearPlane);\n  gl_Position = vec4(projected + anchor * viewDistance, depth, viewDistance);\n  gl_Position.xy += aVertexPosition.xy * 0.00000001;\n  vWorld = point;\n  vNormal = normal;\n  vTextureCoord = aTextureCoord;\n  vSurface = vec2(angle, crossAngle);\n}", "fragment": "#version 300 es\nprecision highp float;\nprecision highp int;\nin vec2 vTextureCoord;\nin vec3 vNormal;\nin vec3 vWorld;\nin vec2 vSurface;\nuniform vec3 uCopperColor;\nuniform vec3 uEdgeColor;\nuniform float uBrightness;\nuniform float uRoughness;\nuniform float uTime;\nuniform float uLightSpeed;\nuniform float uFilament;\nuniform vec2 uResolution;\nuniform float uAmount;\nuniform float uQuietCenter;\nout vec4 fragColor;\nfloat studio(vec3 ray, vec3 axis, float sharpness) {\n  return pow(max(dot(ray, normalize(axis)), 0.0), sharpness);\n}\nfloat softbox(vec3 ray, vec3 direction, vec2 dimensions, float softness) {\n  vec3 axis = normalize(direction);\n  vec3 horizontal = normalize(cross(axis, vec3(0.0, 1.0, 0.0)));\n  vec3 vertical = cross(horizontal, axis);\n  float front = dot(ray, axis);\n  vec2 uv = vec2(dot(ray, horizontal), dot(ray, vertical)) / max(front, 0.001);\n  vec2 distanceToBox = abs(uv) - dimensions;\n  float outside = length(max(distanceToBox, 0.0));\n  float inside = min(max(distanceToBox.x, distanceToBox.y), 0.0);\n  float distanceToEdge = outside + inside;\n  return (1.0 - smoothstep(0.0, softness, distanceToEdge)) * step(0.0, front);\n}\nvoid main() {\n  float time = uTime * 0.025;\n  float phase = time * (0.18 + uLightSpeed * 0.82);\n  vec3 normal = normalize(vNormal);\n  vec3 view = normalize(vec3(0.0, 0.0, 4.8) - vWorld);\n  if (dot(normal, view) < 0.0) {\n    normal *= -1.0;\n  }\n  vec3 reflected = reflect(view * -1.0, normal);\n  float roughness = 0.1 + uRoughness * 0.65;\n  float exponent = mix(110.0, 15.0, roughness);\n  float softness = 0.025 + roughness * 0.18;\n  float key = softbox(reflected, vec3(-0.65, 0.55, 1.45), vec2(0.065, 1.3), softness);\n  float wide = studio(reflected, vec3(0.8, 0.25, 1.0), 5.0);\n  float strip = softbox(reflected, vec3(1.0, -0.2, 0.65), vec2(0.045, 1.4), softness);\n  float moving = softbox(reflected, vec3(0.45 * sin(phase), -0.55, 1.0), vec2(1.25, 0.025), softness * 1.4);\n  float diffuse = max(dot(normal, normalize(vec3(-0.45, 0.8, 1.2))), 0.0);\n  float grazing = pow(1.0 - max(dot(normal, view), 0.0), 3.0);\n  vec3 copper = pow(uCopperColor, vec3(2.2));\n  vec3 edge = pow(uEdgeColor, vec3(2.2));\n  vec3 radiance = copper * (0.015 + 0.10 * diffuse + 0.24 * wide);\n  radiance += mix(copper, edge, 0.45) * key * 1.4;\n  radiance += mix(copper, edge, 0.3) * strip * 2.0;\n  radiance += copper * (moving * 1.2 + grazing * 0.25);\n  float innerEdge = pow(max(-cos(vSurface.y), 0.0), 10.0);\n  float flow = 0.52 + 0.48 * cos(vSurface.x * 2.0 - phase);\n  float seam = innerEdge * (0.4 + 0.6 * flow);\n  float ribbonCoordinate = cos(vSurface.y);\n  float channels = pow(0.5 + 0.5 * sin(ribbonCoordinate * 28.0 + 1.25 * sin(vSurface.x * 2.0 - phase)), 12.0);\n  float moltenFace = pow(max(sin(vSurface.y), 0.0), 0.7);\n  float heat = moltenFace * (0.22 + 0.24 * flow + channels * 0.35);\n  radiance += copper * heat * uFilament * 1.8;\n  radiance += edge * seam * uFilament * 1.6;\n  radiance *= 0.45 + uBrightness * 1.8;\n  vec3 color = pow(radiance / (1.0 + radiance), vec3(0.454545));\n  \n  vec2 uv = gl_FragCoord.xy / uResolution;\n  vec2 copyPoint = (uv - vec2(0.5, 0.62)) / vec2(0.46, 0.42);\n  float quiet = mix(1.0, smoothstep(0.45, 1.7, dot(copyPoint, copyPoint)), uQuietCenter);\n  float fade = smoothstep(0.0, 0.07, uv.y) * (1.0 - smoothstep(0.91, 1.0, uv.y));\n  float alpha = uAmount * quiet * fade;\n  fragColor = vec4(color, alpha);\n\n}", "properties": {"pos": {"label": "Position", "value": {"type": "Vec2", "_x": 0.5, "_y": 0.44}, "tooltip": "Moves the sculpture around the hero"}, "scale": {"label": "Scale", "value": 0.63, "tooltip": "Higher values enlarge the sculpture", "canvasControl": "size"}, "rotation": {"label": "Rotation", "value": {"type": "Vec3", "_x": 0.018, "_y": 0.04, "_z": 0.97}, "tooltip": "Turns the sculpture around its three axes"}, "width": {"label": "Ribbon width", "value": 0.45, "tooltip": "Higher values make the folded ribbon broader", "header": "Sculpture"}, "thickness": {"label": "Edge thickness", "value": 0.23, "tooltip": "Higher values thicken the machined ribbon edge", "header": "Sculpture"}, "opening": {"label": "Opening", "value": 0.6, "tooltip": "Higher values widen the protected central space", "header": "Sculpture"}, "copperColor": {"label": "Lava", "value": {"type": "Vec3", "_x": 0.88, "_y": 0.2, "_z": 0.045}, "tooltip": "Sets the red orange molten surface color", "header": "Material"}, "edgeColor": {"label": "Ember", "value": {"type": "Vec3", "_x": 1, "_y": 0.38, "_z": 0.065}, "tooltip": "Sets the hottest inner edge color", "header": "Material"}, "brightness": {"label": "Brightness", "value": 0.68, "tooltip": "Higher values make the metal reflections brighter", "header": "Material"}, "roughness": {"label": "Roughness", "value": 0.4, "tooltip": "Higher values soften the studio reflections", "header": "Material"}, "filament": {"label": "Molten light", "value": 0.8, "tooltip": "Higher values brighten the flowing lava channels", "header": "Material"}, "amount": {"label": "Opacity", "value": 0.9, "tooltip": "Higher values make the sculpture more visible", "header": "Composition"}, "quietCenter": {"label": "Quiet center", "value": 0.74, "tooltip": "Higher values darken the area behind the headline", "header": "Composition"}, "speed": {"label": "Speed", "value": 0.32, "tooltip": "Higher values accelerate the entire animation"}, "breath": {"label": "Flex", "value": 0.62, "tooltip": "Higher values increase the gentle ribbon flex", "header": "Animation"}, "breathSpeed": {"label": "Flex speed", "value": 0.45, "tooltip": "Higher values speed up the ribbon flex", "header": "Animation"}, "lightSpeed": {"label": "Light speed", "value": 0.65, "tooltip": "Higher values move reflections faster", "header": "Animation"}, "blendMode": {"label": "Blend Mode", "value": "NORMAL", "uniformName": "uBlendMode", "options": {"NORMAL": "Normal", "ADD": "Add", "SCREEN": "Screen", "MULTIPLY": "Multiply"}, "tooltip": "Changes how the sculpture combines with the background"}}}</script>
+<script>
+(() => {
+const root=document.getElementById('ppq-preview');
+const canvas=root.querySelector('#scene');
+const stage=root.querySelector('#stage');
+const pause=root.querySelector('#pause');
+const data=JSON.parse(document.getElementById('scene-data').textContent);
+const gl=canvas.getContext('webgl2',{alpha:true,antialias:true,premultipliedAlpha:true,powerPreference:'low-power'});
+if(!gl){const error=root.querySelector('#error');error.hidden=false;error.textContent='A prévia requer WebGL 2';return}
+function compile(type,source){
+ const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);
+ if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(shader));
+ return shader;
+}
+const program=gl.createProgram();
+try{gl.attachShader(program,compile(gl.VERTEX_SHADER,data.vertex));gl.attachShader(program,compile(gl.FRAGMENT_SHADER,data.fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));}
+catch(e){const error=root.querySelector('#error');error.hidden=false;error.textContent=e.message;return}
+gl.useProgram(program);
+const verts=[],indices=[],nx=128,ny=64;
+for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const u=i/nx,v=j/ny;verts.push(u*2-1,v*2-1,0,u,v)}
+for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;indices.push(a,b,c,b,d,c)}
+const vao=gl.createVertexArray();gl.bindVertexArray(vao);
+const vbo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vbo);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
+for(const [name,count,offset] of [['aVertexPosition',3,0],['aTextureCoord',2,12]]){const loc=gl.getAttribLocation(program,name);if(loc>=0){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,count,gl.FLOAT,false,20,offset)}}
+const ibo=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(indices),gl.STATIC_DRAW);
+const uniforms=new Map();
+function loc(name){if(!uniforms.has(name))uniforms.set(name,gl.getUniformLocation(program,name));return uniforms.get(name)}
+for(const [key,prop] of Object.entries(data.properties)){
+ const name='u'+key[0].toUpperCase()+key.slice(1),value=prop.value,location=loc(name);
+ if(location===null)continue;
+ if(typeof value==='number')gl.uniform1f(location,value);
+ else if(value&&value.type==='Vec2')gl.uniform2f(location,value._x,key==='pos'?1-value._y:value._y);
+ else if(value&&value.type==='Vec3')gl.uniform3f(location,value._x,value._y,value._z);
+}
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let playing=!reduced.matches,visible=true,time=0,last=0,raf=0,disposed=false;
+function resize(){
+ const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,1.5);
+ const w=Math.max(1,Math.round(rect.width*dpr)),h=Math.max(1,Math.round(rect.height*dpr));
+ if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}
+ gl.viewport(0,0,w,h);gl.uniform2f(loc('uResolution'),w,h);
+}
+function draw(){
+ if(disposed)return;
+ resize();gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ gl.uniform1f(loc('uTime'),time*60*data.properties.speed.value);
+ gl.drawElements(gl.TRIANGLES,indices.length,gl.UNSIGNED_SHORT,0);
+}
+function frame(now){
+ raf=0;
+ if(playing&&visible&&!document.hidden){if(last)time+=Math.min((now-last)/1000,.05);last=now;draw();raf=requestAnimationFrame(frame)}else last=0;
+}
+function sync(){
+ pause.textContent=playing?'Pausar':'Reproduzir';
+ pause.setAttribute('aria-pressed',String(!playing));
+ if(raf)cancelAnimationFrame(raf);raf=0;last=0;draw();
+ if(playing&&visible&&!document.hidden)raf=requestAnimationFrame(frame);
+}
+pause.addEventListener('click',()=>{playing=!playing;sync()});
+function view(artOnly){stage.classList.toggle('art-only',artOnly);root.querySelector('#composition').setAttribute('aria-pressed',String(!artOnly));root.querySelector('#art').setAttribute('aria-pressed',String(artOnly))}
+root.querySelector('#composition').addEventListener('click',()=>view(false));
+root.querySelector('#art').addEventListener('click',()=>view(true));
+reduced.addEventListener('change',()=>{playing=!reduced.matches;sync()});
+document.addEventListener('visibilitychange',sync);
+const resizeObserver=new ResizeObserver(()=>{draw()});resizeObserver.observe(stage);
+const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync()});observer.observe(stage);
+addEventListener('pagehide',()=>{disposed=true;cancelAnimationFrame(raf);observer.disconnect();resizeObserver.disconnect();gl.deleteBuffer(vbo);gl.deleteBuffer(ibo);gl.deleteVertexArray(vao);gl.deleteProgram(program)},{once:true});
+sync();
+})();
+</script>
+</body>
+</html>

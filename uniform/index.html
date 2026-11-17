@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ landing studies · Uniform</title>
+<link rel="icon" href="assets/flame2.png">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-r2.css">
+<style>
+  :root { --bg: #0b0b0b; --fg: #ededed; --fg-2: #a3a3a3; --fg-3: #7a7a7a; --panel: #141414; --panel-2: #1c1c1c; --line: rgba(255,255,255,.08); --accent: #f0743f; --accent-ink: #ff9a66; }
+  main { padding: 88px 0 120px; }
+  h1 { font-size: clamp(38px, 4.4vw, 60px); }
+  .intro { margin-top: 20px; max-width: 46em; font-size: 18px; color: var(--fg-2); }
+  .how { margin-top: 18px; font-size: 14px; color: var(--fg-3); }
+  .how kbd { font: 500 12px/1 var(--f-mono); padding: 3px 6px; border-radius: 5px; background: var(--panel-2); color: var(--fg); }
+  .cards { display: grid; gap: 20px; margin-top: 64px; }
+  .card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; padding: 20px; border-radius: 22px; background: var(--panel); }
+  .thumb { border-radius: 14px; overflow: hidden; aspect-ratio: 900 / 600; background: #000; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .card h2 { font-size: 28px; letter-spacing: -0.03em; font-weight: 500; }
+  .card h2 small { font: 400 13px/1 var(--f-mono); color: var(--fg-3); margin-left: 8px; letter-spacing: 0; }
+  .card p { margin-top: 10px; color: var(--fg-2); font-size: 15px; }
+  .card dl { display: grid; grid-template-columns: 110px 1fr; gap: 8px 16px; margin-top: 18px; font-size: 14px; }
+  .card dt { color: var(--fg-3); }
+  .rounds { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+  .rounds a { height: 36px; padding: 0 14px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 14px; background: var(--panel-2); }
+  .rounds a.latest { background: var(--fg); color: var(--bg); font-weight: 500; }
+  .rounds a:hover { filter: brightness(1.15); }
+  h3.sec { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; margin-top: 112px; }
+  .sec-p { margin-top: 8px; color: var(--fg-2); font-size: 15px; max-width: 50em; }
+  .motion { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+  .motion a { display: block; border-radius: 14px; overflow: hidden; background: var(--panel); }
+  .motion img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .motion span { display: block; padding: 12px 14px; font-size: 14px; }
+  .motion small { display: block; color: var(--fg-3); font-size: 13px; margin-top: 2px; }
+  .caps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 28px; }
+  .caps a { display: block; border-radius: 12px; overflow: hidden; background: var(--panel); font-size: 13px; color: var(--fg-2); }
+  .caps img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+  .caps span { display: block; padding: 10px 12px; }
+  .docs { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .docs a { height: 40px; padding: 0 16px; border-radius: 999px; display: inline-flex; align-items: center; background: var(--panel); font-size: 14px; }
+  @media (max-width: 900px) { .card { grid-template-columns: 1fr; } .motion { grid-template-columns: 1fr 1fr; } .caps { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1 class="display">PayPerQ landing studies: Uniform</h1>
+  <p class="intro">Nine directions for “Chat and build privately”. Each one keeps a familiar structure (hero, privacy, models, API, pricing, close) and changes what surprises inside it. Directions 01–07 went through three rounds (round 3 is current); 08 Direct has two versions (v1 plain, v2 with motion). 09 Prometheus has eleven rounds (round 11, with the composer in the hero, is current) and a re-take on paper (The Theft). 06 Darkroom also has a daylight re-take, and 07 Garage a light-only re-take (Threshold). The chat footage is the real app on localhost; the conversations are written examples.</p>
+  <p class="how">On any page, press <kbd>T</kbd> or use the <kbd>Aa</kbd> button to switch between its three type pairings. The choice is kept in the URL (<code>?type=2</code>).</p>
+
+  <section class="cards" aria-label="Directions">
+    <article class="card">
+      <a class="thumb" href="r3/01-uniform.html"><img src="review/r3-01-uniform-1440-s0.png" alt="Page 01 Uniform, first screen"></a>
+      <div>
+        <h2>01 Uniform <small>black · Geist</small></h2>
+        <p>The Jensen jacket: black, white and one orange. The real app is the star, in a zoomed tour. A hero index of four jump links carries the four pillars, and hovering a provider logo shows its model count.</p>
+        <dl><dt>Star</dt><dd>AppTour of the real chat, plus the Sealed explainer</dd><dt>Type</dt><dd>Geist + Geist Mono · Geist + Martian Mono · Geist + IBM Plex Mono</dd><dt>Wordmark</dt><dd>Geist SemiBold</dd></dl>
+        <div class="rounds"><a class="latest" href="r3/01-uniform.html">Round 3</a><a href="r2/01-uniform.html">Round 2</a><a href="r1/01-uniform.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card">
+      <a class="thumb" href="r3/02-wide.html"><img src="review/r3-02-wide-1440-s0.png" alt="Page 02 Wide, first screen"></a>
+      <div>
+        <h2>02 Wide <small>graphite · Archivo Expanded</small></h2>
+        <p>Expanded headlines borrow the logo’s wide stance. A wheel of real models, each with its median cost per message, ticks down one balance. Models come first; the app follows.</p>
+        <dl><dt>Star</dt><dd>Model wheel (Remotion, catalogue data)</dd><dt>Type</dt><dd>Archivo Expanded + Geist · Hubot Sans Expanded + Geist · Michroma + Geist</dd><dt>Wordmark</dt><dd>Archivo Expanded Bold</dd></dl>
+        <div class="rounds"><a class="latest" href="r3/02-wide.html">Round 3</a><a href="r2/02-wide.html">Round 2</a><a href="r1/02-wide.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card">
+      <a class="thumb" href="r3/03-ledger.html"><img src="review/r3-03-ledger-1440-s0.png" alt="Page 03 Ledger, first screen"></a>
+      <div>
+        <h2>03 Ledger <small>paper · Source Serif 4</small></h2>
+        <p>The light-mode counterpoint, like a financial paper. A usage receipt prints one line per message. Privacy is three plain questions answered “No.”, models appear as an index with dotted leaders, and prices toggle between USD and sats.</p>
+        <dl><dt>Star</dt><dd>Printing receipt (Remotion)</dd><dt>Type</dt><dd>Source Serif 4 + Geist · Newsreader + Geist · Geist + Source Serif 4 text</dd><dt>Wordmark</dt><dd>Round 1 shows Orbitron in context; rounds 2 and 3 use Geist</dd></dl>
+        <div class="rounds"><a class="latest" href="r3/03-ledger.html">Round 3</a><a href="r2/03-ledger.html">Round 2</a><a href="r1/03-ledger.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card">
+      <a class="thumb" href="r3/04-terminal.html"><img src="review/r3-04-terminal-1440-s0.png" alt="Page 04 Terminal, first screen"></a>
+      <div>
+        <h2>04 Terminal <small>amber · Martian Mono</small></h2>
+        <p>Build-first, with Command Code’s personality in PPQ’s warm range. Grainy ember bars chart real models per provider, an API snippet changes only its model string, and verification comes as commands you can run.</p>
+        <dl><dt>Star</dt><dd>Ember bars chart, plus the OneLine API piece</dd><dt>Type</dt><dd>Martian Mono + Geist · JetBrains Mono + Geist · Departure Mono + Geist</dd><dt>Nods</dt><dd>“Don’t trust. Verify.”, path labels, amber terminal tones</dd></dl>
+        <div class="rounds"><a class="latest" href="r3/04-terminal.html">Round 3</a><a href="r2/04-terminal.html">Round 2</a><a href="r1/04-terminal.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card">
+      <a class="thumb" href="r3/05-night.html"><img src="review/r3-05-night-1440-s0.png" alt="Page 05 Night, first screen"></a>
+      <div>
+        <h2>05 Night <small>midnight blue · Funnel Display</small></h2>
+        <p>Cursor’s painting idea, translated. The real app floats over a night landscape whose fire stays hidden, visible only as warm light on the smoke. Panels further down carry the same stars.</p>
+        <dl><dt>Star</dt><dd>Night backdrop (Remotion) with the app window</dd><dt>Type</dt><dd>Funnel Display + Geist · Mona Sans Wide + Geist Mono · Schibsted Grotesk + Geist</dd><dt>Wordmark</dt><dd>Funnel Display Bold</dd></dl>
+        <div class="rounds"><a class="latest" href="r3/05-night.html">Round 3</a><a href="r2/05-night.html">Round 2</a><a href="r1/05-night.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card" id="darkroom">
+      <a class="thumb" href="../darkroom/r3/index.html"><img src="../darkroom/review/r3-1440-s0.png" alt="Page 06 Darkroom, first screen"></a>
+      <div>
+        <h2>06 Darkroom <small>warm black · safelight amber · Geist</small></h2>
+        <p>PayPerQ’s orange as the safelight, the one light you can work under. Noise is the medium: the real chat develops out of grain, the typed prompt is sealed back into noise, PayPerQ relays only noise (model, tokens and time stay legible), and the answer develops on screen. Timed steps under the video explain each beat. The daylight re-take puts the page on paper and keeps the darkroom inside the hero.</p>
+        <dl><dt>Star</dt><dd>Develop (Remotion over real footage; phone cut from the app’s mobile layout)</dd><dt>Type</dt><dd>Geist + Geist Mono · Archivo Expanded + Geist · Source Serif 4 + Geist</dd><dt>Wordmark</dt><dd>Geist SemiBold (Archivo Expanded Bold in pairing 2)</dd></dl>
+        <div class="rounds"><a class="latest" href="../darkroom/r3/index.html">Round 3</a><a href="../darkroom/r3/print.html">Round 3 · daylight</a><a href="../darkroom/r2/index.html">Round 2</a><a href="../darkroom/r2/print.html">Round 2 · daylight</a><a href="../darkroom/r1/index.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card" id="garage">
+      <a class="thumb" href="../garage/r3/garage.html"><img src="../garage/review/r3-garage-1440-s0.png" alt="Page 07 Garage, first screen"></a>
+      <div>
+        <h2>07 Garage <small>warm graphite · amber light · Barlow Condensed</small></h2>
+        <p>You’re building something nobody has seen yet: the door is down and a strip of amber light shows under it. The light flickers and someone crosses the beam. “Start chatting” rolls the door up on the real chat. The light edge recurs under cards, the code window, the active nav item and the section headings, and the models sit on a pegboard as tool shadows. The Threshold re-take drops the drawn door and keeps only the light; it showed the door is what carries the story.</p>
+        <dl><dt>Star</dt><dd>The door (Remotion: hero loop, roll-up over real footage, half-open closing still)</dd><dt>Type</dt><dd>Barlow Condensed + Geist · Archivo Expanded + Geist · Geist + Geist Mono</dd><dt>Wordmark</dt><dd>Geist SemiBold (Archivo Expanded in pairing 2)</dd></dl>
+        <div class="rounds"><a class="latest" href="../garage/r3/garage.html">Round 3</a><a href="../garage/r2/garage.html">Round 2</a><a href="../garage/r2/threshold.html">Round 2 · Threshold</a><a href="../garage/r1/garage.html">Round 1</a></div>
+      </div>
+    </article>
+    <article class="card" id="direct">
+      <a class="thumb" href="../direct/v2.html"><img src="../direct/review/direct-v2-1440-v00.png" alt="Page 08 Direct, first screen"></a>
+      <div>
+        <h2>08 Direct <small>black · PPQ orange · Archivo Semi-Expanded</small></h2>
+        <p>No metaphor and short copy, with more life than v1. The real chat sits on a warm, grainy orange panel. The buttons are lit and tactile, with a sheen on hover. Each idea has one motion that explains it: your message turns into noise on the “PayPerQ sees” card, a strip of real model names moves, the code swaps its base URL and key, and “$0.10 ≈ 43 messages” counts up.</p>
+        <dl><dt>Star</dt><dd>None on purpose. Emotion comes from colour, type and motion that explains</dd><dt>Type</dt><dd>Archivo Semi-Expanded + Geist · Geist + Geist Mono · Barlow Condensed + Geist</dd><dt>Wordmark</dt><dd>Geist SemiBold</dd></dl>
+        <div class="rounds"><a class="latest" href="../direct/v2.html">Version 2</a><a href="../direct/v1.html">Version 1 · plain</a></div>
+      </div>
+    </article>
+    <article class="card" id="prometheus">
+      <a class="thumb" href="../latest/index.html"><img src="../prometheus/review/r11-hero-1440.png" alt="Page 09 Prometheus, first screen"></a>
+      <div>
+        <h2>09 Prometheus <small>warm black · PPQ brand orange · Geist Regular</small></h2>
+        <p>A 17th-century-style oil painting of Prometheus carrying the fire down the mountain sits behind the hero at 42% opacity: a background reference, not the subject. The copy is the approved PPQ lines (“Chat and build privately.”). Round 3 follows your notes: calm type at the reference’s sizes (52 px regular headline, 18 px body), flat 6 px buttons, PPQ’s brand orange from the app’s theme (#bf3c1b) instead of the lighter orange, and the app’s own privacy panel in place of the painted detail. Only the hero and the closing valley use paintings. Rounds 1–2 had “Take the fire.” and an ember flicker; The Theft re-take used “Steal the fire.” and paper sections.</p>
+        <dl><dt>Star</dt><dd>The painting, dimmed (generated by Codex’s image tool; 1672 px sources, upscaled)</dd><dt>Type</dt><dd>Geist Regular · Instrument Sans + Geist · Mona Sans + Geist</dd><dt>Wordmark</dt><dd>Geist SemiBold</dd></dl>
+        <div class="rounds"><a class="latest" href="../latest/index.html">Latest</a><a href="../prometheus/r10/prometheus.html">Round 10 · baroque forge, brighter, shifted left</a><a href="../prometheus/r9/prometheus.html">Round 9 · the forge in 15 styles (key A)</a><a href="../prometheus/r8/prometheus.html">Round 8 · professional fire, 8 hero options</a><a href="../prometheus/r7/prometheus.html">Round 7 · looking at the copy</a><a href="../prometheus/closing-cta/r2.html">Closing CTA r2 · cards, no painting (A–F)</a><a href="../prometheus/closing-cta/index.html">Closing CTA r1 · over the valley painting (A–F)</a><a href="../prometheus/privacy-lead/index.html">Privacy intro · paragraph split into icons and small pictures (A/B/C)</a><a href="../prometheus/privacy/prometheus.html#privacy">Privacy section · scroll-animated enclave, 3 scenes on key S (in r10 too)</a><a href="../prometheus/api/v8.html">API section · H · four scenes (latest)</a><a href="../prometheus/api/v7.html">API · G2 · calmer</a><a href="../prometheus/api/v6.html">API · G · animated</a><a href="../prometheus/api/v5.html">API · F · scroll story</a><a href="../prometheus/api/v4.html">API · E · simple</a><a href="../prometheus/api/v3.html">API · D · scenes</a><a href="../prometheus/api/index.html#a">API · A · Put the models to work</a><a href="../prometheus/api/index.html#b">API · B · Same task, two ways</a><a href="../prometheus/api/index.html#c">API · C · Works with your tools</a><a href="../prometheus/r7/prometheus.html?art=2">R7 · Edge of Olympus</a><a href="../prometheus/r7/prometheus.html?art=3">R7 · Forge</a><a href="../prometheus/r6/prometheus.html?art=6">Round 6 · Edge of Olympus</a><a href="../prometheus/r6/prometheus.html?art=5">R6 · Forge</a><a href="../prometheus/r6/prometheus.html?art=7">R6 · Clay</a><a href="../prometheus/r6/prometheus.html">R6 · Panorama</a><a href="../prometheus/r5/prometheus.html">Round 5 · dithered</a><a href="../prometheus/r4/prometheus.html">Round 4 · wide paintings</a><a href="../prometheus/r4/prometheus.html?art=2">R4 · Procession</a><a href="../prometheus/r4/prometheus.html?art=3">R4 · Threshold</a><a href="../prometheus/r4/prometheus.html?art=4">R4 · Ultra-wide</a><a href="../prometheus/r3/prometheus.html">Round 3</a><a href="../prometheus/r2/prometheus.html">Round 2</a><a href="../prometheus/r2/theft.html">Round 2 · The Theft</a><a href="../prometheus/r1/prometheus.html">Round 1</a></div>
+      </div>
+    </article>
+  </section>
+
+  <h3 class="sec">Logo font</h3>
+  <p class="sec-p">The current wordmark set in Orbitron and eight alternatives, at header and display size, in context. Recommendation: retire Orbitron, and use Archivo Expanded Bold for continuity or Geist SemiBold for restraint.</p>
+  <div class="docs"><a href="logo-study.html">Open the wordmark study →</a></div>
+
+  <h3 class="sec">Motion pieces (Remotion)</h3>
+  <p class="sec-p">Source in <code>motion/src</code>. Data comes from the public catalogue and the published enclave measurement. Each piece renders in every page palette, with a portrait cut for phones.</p>
+  <div class="motion">
+    <a href="assets/motion/tour-search.mp4"><img src="assets/motion/tour3-search-poster.jpg" alt=""><span>AppTour · search<small>Real recording with camera moves</small></span></a>
+    <a href="assets/motion/tour3-browse.mp4"><img src="assets/motion/tour3-browse-poster.jpg" alt=""><span>AppTour · browse<small>Chat, image, video, audio, search</small></span></a>
+    <a href="assets/motion/tour-verify.mp4"><img src="assets/motion/tour3-verify-poster.jpg" alt=""><span>AppTour · verify<small>The privacy panel, re-verified</small></span></a>
+    <a href="assets/motion/sealed2-ink.mp4"><img src="assets/motion/sealed2-ink-poster.jpg" alt=""><span>Sealed<small>Browser → PayPerQ → enclave → provider</small></span></a>
+    <a href="assets/motion/wheel3-graphite.mp4"><img src="assets/motion/wheel3-graphite-poster.jpg" alt=""><span>Wheel<small>Median cost per message, one balance</small></span></a>
+    <a href="assets/motion/oneline-amber.mp4"><img src="assets/motion/oneline-amber-poster.jpg" alt=""><span>OneLine<small>Change one string to change the model</small></span></a>
+    <a href="assets/motion/ledger2-paper.mp4"><img src="assets/motion/ledger2-paper-poster.jpg" alt="" style="object-position:50% 20%"><span>Ledger<small>One receipt line per message</small></span></a>
+    <a href="assets/motion/night2-fire.mp4"><img src="assets/motion/night2-fire-poster.jpg" alt=""><span>Night<small>Hidden fire, light on smoke</small></span></a>
+    <a href="assets/motion/sealed3-tall-ink.mp4"><img src="assets/motion/sealed3-tall-ink-poster.jpg" alt="" style="object-position:50% 30%"><span>Sealed · portrait<small>Phone cut</small></span></a>
+    <a href="../darkroom/assets/motion/develop-r2.mp4"><img src="../darkroom/assets/motion/develop-r2-poster.jpg" alt=""><span>Develop · darkroom<small>The chat develops out of grain; the prompt is sealed into noise</small></span></a>
+    <a href="../darkroom/assets/motion/picker-r3.mp4"><img src="../darkroom/assets/motion/picker-r3-poster.jpg" alt=""><span>Picker · darkroom<small>The real picker develops, then finds an E2EE model</small></span></a>
+    <a href="../darkroom/assets/motion/develop-r3-phone.mp4"><img src="../darkroom/assets/motion/develop-r3-phone-poster.jpg" alt="" style="object-position:50% 15%"><span>Develop · portrait<small>Phone cut from the app’s mobile layout</small></span></a>
+    <a href="../garage/assets/motion/door-stage-r3.mp4"><img src="../garage/assets/motion/door-stage-r3-poster.jpg" alt=""><span>Door · garage<small>Hero loop: the light flickers, someone crosses the beam</small></span></a>
+    <a href="../garage/assets/motion/rollup-r3.mp4"><img src="../garage/assets/motion/rollup-r3-poster.jpg" alt=""><span>Roll-up · garage<small>The door rises on the real chat</small></span></a>
+    <a href="../garage/assets/motion/verify-r2.mp4"><img src="../garage/assets/motion/verify-r2-poster.jpg" alt=""><span>Verify · garage<small>Privacy panel re-checks build v0.75.0</small></span></a>
+    <a href="../direct/assets/motion/demo.mp4"><img src="../direct/assets/motion/demo-poster.jpg" alt=""><span>Demo · direct<small>Small crop: pick Sonnet 5.5, type, “Verified”</small></span></a>
+    <a href="../garage/assets/motion/threshold-r2.mp4"><img src="../garage/assets/motion/threshold-r2-poster.jpg" alt=""><span>Threshold · garage re-take<small>Only the strip of light, no door</small></span></a>
+  </div>
+
+  <h3 class="sec">Paintings (09 Prometheus)</h3>
+  <p class="sec-p">AI-generated oil studies in a 17th-century manner, as delivered (1672 × 941 landscape, 1024 × 1536 portrait). The pages use upscaled WebP copies; re-render at 4K before shipping.</p>
+  <div class="caps">
+    <a href="../prometheus/paintings/hero-descent-a-2.png"><img src="../prometheus/paintings/hero-descent-a-2.png" alt=""><span>The descent · hero of rounds 1 and 2</span></a>
+    <a href="../prometheus/paintings/hero-theft.png"><img src="../prometheus/paintings/hero-theft.png" alt=""><span>The theft · hero of the re-take</span></a>
+    <a href="../prometheus/paintings/valley-hearths.png"><img src="../prometheus/paintings/valley-hearths.png" alt=""><span>The valley, afterwards · closing</span></a>
+    <a href="../prometheus/paintings/detail-stalk.png"><img src="../prometheus/paintings/detail-stalk.png" alt=""><span>Detail: the ember in the stalk</span></a>
+    <a href="../prometheus/paintings/hero-descent-a.png"><img src="../prometheus/paintings/hero-descent-a.png" alt=""><span>The descent · alternate, unused</span></a>
+    <a href="../prometheus/paintings/hero-descent-b.png"><img src="../prometheus/paintings/hero-descent-b.png" alt=""><span>The descent · wider view, unused</span></a>
+    <a href="../prometheus/paintings/hero-descent-portrait.png"><img src="../prometheus/paintings/hero-descent-portrait.png" alt="" style="object-position:50% 45%"><span>The descent · phone canvas</span></a>
+    <a href="../prometheus/paintings/valley-fires.png"><img src="../prometheus/paintings/valley-fires.png" alt=""><span>Valley, first take · replaced (read as a valley on fire)</span></a>
+  </div>
+
+  <h3 class="sec">Chat app captures</h3>
+  <p class="sec-p">Recorded from the app on localhost:3000 at 2880 × 1800, dark and light. Prompts and replies are seeded into browser storage, and the balance shown is staged. The privacy panel, the enclave line and its verification are live. The darkroom captures (last row, enclave v0.75.0) also pin the new-chat greeting to one of the app’s own, and the phone still hides two scroll buttons.</p>
+  <div class="caps">
+    <a href="app-captures/chat-code-dark.png"><img src="app-captures/chat-code-dark.png" alt=""><span>Coding chat · dark</span></a>
+    <a href="app-captures/chat-writing-light.png"><img src="app-captures/chat-writing-light.png" alt=""><span>Writing chat · light</span></a>
+    <a href="app-captures/picker-claude-dark.png"><img src="app-captures/picker-claude-dark.png" alt=""><span>Model picker, filtered</span></a>
+    <a href="app-captures/chat-privacy-dark.png"><img src="app-captures/chat-privacy-dark.png" alt=""><span>Privacy panel</span></a>
+    <a href="app-captures/chat-lightning-light.png"><img src="app-captures/chat-lightning-light.png" alt=""><span>Lightning explainer · light</span></a>
+    <a href="app-captures/picker-open-light.png"><img src="app-captures/picker-open-light.png" alt=""><span>Model picker · light</span></a>
+    <a href="app-captures/video-picker-search.mp4"><img src="app-captures/video-picker-search-poster.jpg" alt=""><span>Video · search and switch</span></a>
+    <a href="app-captures/video-verify.mp4"><img src="app-captures/video-verify-poster.jpg" alt=""><span>Video · verify the enclave</span></a>
+    <a href="../darkroom/app-captures/typed-dark.png"><img src="../darkroom/app-captures/typed-dark.png" alt=""><span>Prompt typed, never sent · darkroom</span></a>
+    <a href="../darkroom/app-captures/answer-dark.png"><img src="../darkroom/app-captures/answer-dark.png" alt=""><span>Answered thread · darkroom</span></a>
+    <a href="../darkroom/app-captures/privacy-tech-dark.png"><img src="../darkroom/app-captures/privacy-tech-dark.png" alt=""><span>Privacy panel, PCR0 · darkroom</span></a>
+    <a href="../darkroom/app-captures/m-answer-dark.png"><img src="../darkroom/app-captures/m-answer-dark.png" alt=""><span>Phone layout · darkroom</span></a>
+    <a href="../garage/app-captures/chat-privacy-dark.png"><img src="../garage/app-captures/chat-privacy-dark.png" alt=""><span>Privacy panel, v0.75.0 · garage</span></a>
+    <a href="../garage/app-captures/video-verify.mp4"><img src="../garage/assets/motion/verify-r2-poster.jpg" alt=""><span>Video · verify, v0.75.0 · garage</span></a>
+  </div>
+
+  <h3 class="sec">Notes</h3>
+  <div class="docs"><a href="REFERENCES.md">Reference teardown</a><a href="REVIEW.md">Critical review log</a><a href="README.md">README</a><a href="../darkroom/REFERENCES.md">Darkroom references</a><a href="../darkroom/REVIEW.md">Darkroom review log</a><a href="../darkroom/README.md">Darkroom README</a><a href="../garage/REFERENCES.md">Garage references</a><a href="../garage/REVIEW.md">Garage review log</a><a href="../garage/README.md">Garage README</a><a href="../prometheus/REVIEW.md">Prometheus review log</a><a href="../prometheus/README.md">Prometheus README</a></div>
+</main>
+</body>
+</html>

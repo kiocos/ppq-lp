@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PPQ — v6 verification studies</title>
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#0f0e0d">
+  <link rel="icon" href="assets/flame2.png">
+  <link rel="stylesheet" href="v5-firehole.css">
+  <link rel="stylesheet" href="v6-verify.css">
+  <script src="v6-verify.js" defer></script>
+</head>
+<body>
+  <h1 class="sr-only" lang="pt-BR">PPQ — estudos de verificação (v6)</h1>
+  <svg class="fh-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="fh-flame" viewBox="0 0 100 130" overflow="visible">
+        <path fill="#f0562b" d="M50,130 C22,130 0,112 0,88 C0,70 6,56 11.6,44 C13,52 16,54 20.4,50.5 C24,46 25,30 32,20 C38,10 48,4 56.2,0 C48,8 42,16 44,26 C44,33 47,38.5 50,38.3 C53,38 54,28 56.8,15.5 C64,22 68,34 68,46 C68,56 71,66 74.7,71 C78,62 84,54 88.4,48.6 C96,60 100,74 100,88 C100,112 78,130 50,130 Z"/>
+        <path fill="#f7a23a" d="M21.7,70.5 C26,80 28,86 32.6,87 C38,88 42,84 44.8,81.4 C47,88 48,96 51.6,97.3 C62,100 74,94 81,88.5 C84,96 83,104 82,111 C78,124 64,129 50,129 C34,129 16,122 14.7,108 C13,94 17,80 21.7,70.5 Z"/>
+        <path fill="#fde2b2" d="M31.6,105.4 C34,110 38,112 41,110 C43,108 44,106 45.7,104 C48,108 50,112 54,111 C58,110 62,108 65.3,106.7 C67,112 67,118 64,122 C60,127 55,128.5 50,128.5 C42,128.5 33,126 30,120 C28,115 29,109 31.6,105.4 Z"/>
+      </symbol>
+      <radialGradient id="fh-ember"><stop offset="0" stop-color="#f0562b" stop-opacity=".62"/><stop offset=".45" stop-color="#f0562b" stop-opacity=".2"/><stop offset="1" stop-color="#f0562b" stop-opacity="0"/></radialGradient>
+      <radialGradient id="fh-ember-light"><stop offset="0" stop-color="#f0562b" stop-opacity=".3"/><stop offset=".5" stop-color="#f0562b" stop-opacity=".1"/><stop offset="1" stop-color="#f0562b" stop-opacity="0"/></radialGradient>
+      <radialGradient id="fh-rimglow"><stop offset="0" stop-color="#ff8a52" stop-opacity=".55"/><stop offset="1" stop-color="#ff8a52" stop-opacity="0"/></radialGradient>
+      <radialGradient id="fh-halo"><stop offset="0" stop-color="#ffd2a8" stop-opacity=".5"/><stop offset="1" stop-color="#ffd2a8" stop-opacity="0"/></radialGradient>
+      <linearGradient id="fh-horizon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3eee6" stop-opacity="0"/><stop offset="1" stop-color="#f3eee6" stop-opacity=".04"/></linearGradient>
+      <linearGradient id="fh-trail-r" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#f0562b" stop-opacity="0"/><stop offset="1" stop-color="#f0562b" stop-opacity=".95"/></linearGradient>
+      <linearGradient id="fh-trail-l" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f0562b" stop-opacity="0"/><stop offset="1" stop-color="#f0562b" stop-opacity=".95"/></linearGradient>
+      <filter id="fh-glow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <pattern id="fh-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#171512" stroke-opacity=".16" stroke-width="1"/></pattern>
+    </defs>
+  </svg>
+
+  <nav class="rail" aria-label="Estudos" lang="pt-BR">
+    <a href="#a" title="A · Fique aqui">A</a>
+    <a href="#b" title="B · Talha dividida">B</a>
+    <a href="#c" title="C · Câmera térmica">C</a>
+    <span class="rail-hint" aria-hidden="true">J / K</span>
+  </nav>
+
+  <section class="study" id="a" data-study aria-labelledby="a-title">
+    <div class="study-bar" lang="pt-BR"><span class="sb-k">A</span><b>Fique aqui</b><span class="sb-why">O mesmo corte do v5-B, com a verificação desenhada: duas linhas de visada laterais morrem na terra, e a vista de cima mostra o limite honesto. Quem lê pode ir até o marcador e olhar.</span></div>
+    <div class="hero t-light hero-b">
+      <header class="h-head wrap">
+        <a class="brand" href="index.html" aria-label="PayPerQ"><img class="brand-flame" src="assets/flame2.png" alt="" width="24" height="24"><span class="brand-word">PayPerQ</span></a>
+        <nav class="h-nav" aria-label="Main"><a href="index.html#enclave">Privacy</a><a href="index.html#models">Models</a><a href="index.html#pricing">Pricing</a><a href="index.html#api">API</a></nav>
+        <a class="btn btn-small btn-accent" href="https://ppq.ai/chat">Start chatting</a>
+      </header>
+      <div class="hero-body">
+        <div class="wrap b-grid">
+          <div class="b-text">
+            <h2 id="a-title" class="h1 b-title"><span class="rise">Your favorite AI models,</span> <span class="rise" style="--d:.12s"><em>with privacy you can verify.</em></span></h2>
+            <p class="lede rise" style="--d:.3s">Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.</p>
+            <div class="cta rise" style="--d:.42s"><a class="btn btn-accent btn-lg" href="https://ppq.ai/chat">Start chatting <span class="btn-arrow" aria-hidden="true">→</span></a></div>
+          </div>
+          <figure class="plate b-plate">
+            <div class="plate-head"><span>fig. 1 — stand here</span><span>section A–A</span></div>
+            <svg viewBox="0 0 640 500" focusable="false" role="img" aria-label="Cross-section of a fire hole. Sight lines from the left and right are blocked by the earth. A line from directly above reaches the flame.">
+              <defs>
+                <clipPath id="p1-cav"><path d="M268,262 C264,310 252,344 252,380 C252,426 274,446 300,446 C326,446 348,426 348,380 C348,344 336,310 332,262 Z"/><path d="M436,262 L466,262 L362,428 L344,404 Z"/></clipPath>
+                <clipPath id="p1-earth"><rect x="0" y="262.8" width="640" height="240"/></clipPath>
+              </defs>
+              <path class="b-traj b-fade" style="--d:1.2s" d="M300,256 Q271.5,52 110,92"/>
+              <path class="b-traj b-fade" style="--d:1.35s" d="M300,256 Q302.7,20 318,60"/>
+              <path class="b-traj b-fade" style="--d:1.5s" d="M300,256 Q333,56 520,96"/>
+              <g class="targets">
+                <g class="m"><circle class="m-dot" cx="110" cy="92" r="4.5"/><text class="b-label" x="98" y="96" text-anchor="end">claude</text></g>
+                <g class="m"><circle class="m-dot" cx="318" cy="60" r="4.5"/><text class="b-label" x="330" y="64">gpt</text></g>
+                <g class="m"><circle class="m-dot" cx="520" cy="96" r="4.5"/><text class="b-label" x="532" y="100">qwen</text></g>
+              </g>
+              <circle class="spark-dot" cx="305.9" cy="89" r="3.4"/>
+
+              <rect x="16" y="262" width="608" height="222" fill="url(#fh-hatch)"/>
+              <g clip-path="url(#p1-earth)">
+                <path class="b-rim b-draw" pathLength="1" style="--d:.2s" d="M436,262 L466,262 L362,428 L344,404 Z"/>
+                <path class="b-rim b-draw" pathLength="1" style="--d:.1s" d="M268,262 C264,310 252,344 252,380 C252,426 274,446 300,446 C326,446 348,426 348,380 C348,344 336,310 332,262 Z"/>
+              </g>
+              <path class="b-cav" d="M436,262 L466,262 L362,428 L344,404 Z"/>
+              <path class="b-cav" d="M268,262 C264,310 252,344 252,380 C252,426 274,446 300,446 C326,446 348,426 348,380 C348,344 336,310 332,262 Z"/>
+              <g clip-path="url(#p1-cav)"><circle class="glow" cx="300" cy="412" r="120" fill="url(#fh-ember-light)"/></g>
+              <g class="flame"><use href="#fh-flame" x="255.4" y="328" width="89.2" height="116"/></g>
+              <g class="logs"><rect class="log" x="276" y="436" width="48" height="7" rx="3.5" transform="rotate(-11 300 439.5)"/><rect class="log" x="276" y="436" width="48" height="7" rx="3.5" transform="rotate(11 300 439.5)"/></g>
+              <path class="b-draft" d="M451,268 L357,414"/>
+              <path class="b-arrow" d="M365,409.9 L357,414 L357.4,405"/>
+              <path class="b-ground" d="M16,262 H268 M332,262 H436 M466,262 H624"/>
+              <path class="b-grass" d="M60,262 q-1.2,-6 -4,-10 M60,262 q.4,-7 .8,-12 M60,262 q1.6,-5 5,-8 M150,262 q-1.2,-5 -4,-8 M150,262 q.4,-7 .8,-11 M520,262 q-1.2,-6 -4,-10 M520,262 q.4,-7 .8,-12 M590,262 q-1.2,-5 -4,-8 M590,262 q.4,-7 .8,-11 M390,262 q-1.2,-5 -4,-8"/>
+
+              <g class="b-fade" style="--d:.9s">
+                <path class="b-mark" d="M28,238 L38,244 L28,250 Z"/>
+                <path class="b-sight" d="M40,244 L333,266.5"/>
+                <path class="b-tick" d="M333.3,261.5 L332.7,271.5"/>
+                <text class="b-label" x="28" y="226">from the left · blocked</text>
+                <path class="b-mark" d="M612,232 L602,238 L612,244 Z"/>
+                <path class="b-sight" d="M600,238 L463.5,264.6"/>
+                <path class="b-tick" d="M462.6,259.8 L464.6,269.6"/>
+                <text class="b-label" x="612" y="220" text-anchor="end">from the right · blocked</text>
+              </g>
+
+              <g class="b-fade" style="--d:1.25s">
+                <circle class="v-drone" cx="246" cy="146" r="3.4"/>
+                <path class="v-drone-arm" d="M239.5,139.5 L252.5,152.5 M252.5,139.5 L239.5,152.5"/>
+                <circle class="v-drone-rot" cx="239.5" cy="139.5" r="2.6"/><circle class="v-drone-rot" cx="252.5" cy="139.5" r="2.6"/><circle class="v-drone-rot" cx="239.5" cy="152.5" r="2.6"/><circle class="v-drone-rot" cx="252.5" cy="152.5" r="2.6"/>
+                <path class="b-sight b-sight-hit" d="M247,158 L298,330"/>
+                <text class="b-label v-hit" x="228" y="143" text-anchor="end">from directly above</text>
+                <text class="b-label v-hit" x="228" y="159" text-anchor="end">visible</text>
+              </g>
+
+              <g class="b-fade" style="--d:1s">
+                <path class="b-dim" d="M226,262 V446 M221,262 H231 M221,446 H231"/>
+                <text class="b-label" transform="translate(214 354) rotate(-90)" text-anchor="middle">≈ 30 cm</text>
+                <path class="b-lead" d="M430,326 H474"/>
+                <text class="b-label" x="480" y="330">air intake</text>
+                <path class="b-lead" d="M300,451 V468"/>
+                <text class="b-label" x="300" y="484" text-anchor="middle">fire chamber</text>
+                <text class="b-label" x="624" y="282" text-anchor="end">ground level</text>
+              </g>
+            </svg>
+            <p class="plate-note">Hidden from the side, not from everything. Go stand on either marker and look.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="study" id="b" data-study aria-labelledby="b-title">
+    <div class="study-bar" lang="pt-BR"><span class="sb-k">B</span><b>Talha dividida</b><span class="sb-why">Uma vara de lenha rachada no sentido do comprimento: você guarda uma metade, a PPQ a outra. Os entalhes e as fibras só batem se as duas forem do mesmo graveto. Um entalhe por consulta; o saldo é o que sobra.</span></div>
+    <div class="hero t-light hero-b">
+      <header class="h-head wrap">
+        <a class="brand" href="index.html" aria-label="PayPerQ"><img class="brand-flame" src="assets/flame2.png" alt="" width="24" height="24"><span class="brand-word">PayPerQ</span></a>
+        <nav class="h-nav" aria-label="Main"><a href="index.html#enclave">Privacy</a><a href="index.html#models">Models</a><a href="index.html#pricing">Pricing</a><a href="index.html#api">API</a></nav>
+        <a class="btn btn-small btn-accent" href="https://ppq.ai/chat">Start chatting</a>
+      </header>
+      <div class="hero-body">
+        <div class="wrap b-grid">
+          <div class="b-text">
+            <h2 id="b-title" class="h1 b-title"><span class="rise">Your favorite AI models,</span> <span class="rise" style="--d:.12s"><em>with privacy you can verify.</em></span></h2>
+            <p class="lede rise" style="--d:.3s">Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.</p>
+            <div class="cta rise" style="--d:.42s"><a class="btn btn-accent btn-lg" href="https://ppq.ai/chat">Start chatting <span class="btn-arrow" aria-hidden="true">→</span></a></div>
+          </div>
+          <figure class="plate b-plate">
+            <div class="plate-head"><span>fig. 2 — split tally</span><span>one notch per query</span></div>
+            <svg viewBox="0 0 640 500" focusable="false" role="img" aria-label="A wooden tally stick split lengthwise into two halves. Notches line up across both halves, and the halves fit together along the split.">
+              <defs>
+                <g id="v-stick"><rect class="v-wood" x="50" y="0" width="540" height="84" rx="12"/><path class="v-grain" d="M56,7.0 C170,3.4 280,7.2 380,6.9 S500,9.0 584,6.6"/><path class="v-grain" d="M56,15.3 C170,12.1 280,12.7 380,14.4 S500,10.5 584,14.6"/><path class="v-grain" d="M56,20.6 C170,18.8 280,18.5 380,18.2 S500,22.4 584,20.7"/><path class="v-grain" d="M56,26.0 C170,26.7 280,27.5 380,30.4 S500,25.7 584,26.9"/><path class="v-grain" d="M56,35.3 C170,35.9 280,37.9 380,37.5 S500,37.8 584,35.4"/><path class="v-grain" d="M56,41.7 C170,42.5 280,42.2 380,45.3 S500,45.7 584,42.2"/><path class="v-grain" d="M56,48.3 C170,48.5 280,48.8 380,48.8 S500,50.3 584,49.1"/><path class="v-grain" d="M56,58.3 C170,56.4 280,54.8 380,57.3 S500,57.0 584,58.1"/><path class="v-grain" d="M56,65.6 C170,67.9 280,66.3 380,65.3 S500,65.9 584,65.4"/><path class="v-grain" d="M56,73.7 C170,69.9 280,75.0 380,74.3 S500,74.8 584,73.2"/><path class="v-grain" d="M56,81.8 C170,79.4 280,79.4 380,77.6 S500,80.8 584,81.1"/><rect class="v-groove" x="95.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="135.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="175.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="215.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="255.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="295.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="335.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove" x="375.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-groove v-groove-hot" x="415.5" y="4" width="5" height="76" rx="1.4"/><rect class="v-wood-edge" x="50" y="0" width="540" height="84" rx="12"/></g>
+                <clipPath id="v-top"><path d="M46,-4 H594 V41.8 L590.0,41.8 L588.3,44.2 L571.7,42.5 L553.8,43.2 L538.6,44.4 L520.9,43.7 L502.2,39.1 L485.3,39.8 L465.8,41.5 L452.6,45.1 L437.7,43.5 L416.9,42.2 L399.2,40.4 L380.2,43.9 L365.2,41.7 L347.4,40.8 L331.1,43.2 L317.0,39.2 L304.4,42.3 L288.7,42.9 L270.9,40.0 L250.7,40.8 L237.5,39.7 L222.6,44.3 L210.2,45.0 L194.2,42.5 L172.7,42.8 L158.5,39.6 L138.2,41.5 L125.3,39.2 L109.0,39.0 L91.9,39.2 L76.2,42.2 L63.5,43.0 L50.0,40.9 Z"/></clipPath>
+                <clipPath id="v-bot"><path d="M46,88 H594 V41.8 L590.0,41.8 L588.3,44.2 L571.7,42.5 L553.8,43.2 L538.6,44.4 L520.9,43.7 L502.2,39.1 L485.3,39.8 L465.8,41.5 L452.6,45.1 L437.7,43.5 L416.9,42.2 L399.2,40.4 L380.2,43.9 L365.2,41.7 L347.4,40.8 L331.1,43.2 L317.0,39.2 L304.4,42.3 L288.7,42.9 L270.9,40.0 L250.7,40.8 L237.5,39.7 L222.6,44.3 L210.2,45.0 L194.2,42.5 L172.7,42.8 L158.5,39.6 L138.2,41.5 L125.3,39.2 L109.0,39.0 L91.9,39.2 L76.2,42.2 L63.5,43.0 L50.0,40.9 Z"/></clipPath>
+              </defs>
+              <g class="b-fade" style="--d:.1s">
+                <text class="b-label" x="50" y="86">your half</text>
+                <text class="b-label v-hit" x="418" y="86" text-anchor="middle">latest query</text>
+              </g>
+              <g transform="translate(0 100)" class="b-fade" style="--d:.2s"><g clip-path="url(#v-top)"><use href="#v-stick"/></g><path class="v-cut" d="M50,40.9 L50.0,40.9 L63.5,43.0 L76.2,42.2 L91.9,39.2 L109.0,39.0 L125.3,39.2 L138.2,41.5 L158.5,39.6 L172.7,42.8 L194.2,42.5 L210.2,45.0 L222.6,44.3 L237.5,39.7 L250.7,40.8 L270.9,40.0 L288.7,42.9 L304.4,42.3 L317.0,39.2 L331.1,43.2 L347.4,40.8 L365.2,41.7 L380.2,43.9 L399.2,40.4 L416.9,42.2 L437.7,43.5 L452.6,45.1 L465.8,41.5 L485.3,39.8 L502.2,39.1 L520.9,43.7 L538.6,44.4 L553.8,43.2 L571.7,42.5 L588.3,44.2 L590.0,41.8"/></g>
+              <g class="b-fade" style="--d:.6s"><path class="v-conn" d="M98,144 V184"/><path class="v-conn" d="M138,144 V184"/><path class="v-conn" d="M178,144 V184"/><path class="v-conn" d="M218,144 V184"/><path class="v-conn" d="M258,144 V184"/><path class="v-conn" d="M298,144 V184"/><path class="v-conn" d="M338,144 V184"/><path class="v-conn" d="M378,144 V184"/><path class="v-conn v-conn-hot" d="M418,144 V184"/></g>
+              <g transform="translate(0 144)" class="b-fade" style="--d:.35s"><g clip-path="url(#v-bot)"><use href="#v-stick"/></g><path class="v-cut" d="M50,40.9 L50.0,40.9 L63.5,43.0 L76.2,42.2 L91.9,39.2 L109.0,39.0 L125.3,39.2 L138.2,41.5 L158.5,39.6 L172.7,42.8 L194.2,42.5 L210.2,45.0 L222.6,44.3 L237.5,39.7 L250.7,40.8 L270.9,40.0 L288.7,42.9 L304.4,42.3 L317.0,39.2 L331.1,43.2 L347.4,40.8 L365.2,41.7 L380.2,43.9 L399.2,40.4 L416.9,42.2 L437.7,43.5 L452.6,45.1 L465.8,41.5 L485.3,39.8 L502.2,39.1 L520.9,43.7 L538.6,44.4 L553.8,43.2 L571.7,42.5 L588.3,44.2 L590.0,41.8"/></g>
+              <g class="b-fade" style="--d:.5s"><text class="b-label" x="50" y="246">PPQ’s half</text></g>
+
+              <g class="b-fade" style="--d:1s">
+                <path class="b-arrow" d="M320,266 V300 M314,293 L320,301 L326,293"/>
+                <text class="b-label" x="334" y="288">put them together</text>
+              </g>
+              <g transform="translate(0 330)" class="b-fade" style="--d:1.2s"><use href="#v-stick"/></g>
+              <g class="b-fade" style="--d:1.5s">
+                <path class="b-dim" d="M92,430 V436 H424 V430"/>
+                <text class="b-label" x="258" y="454" text-anchor="middle">spent</text>
+                <path class="b-dim" d="M436,430 V436 H590 V430"/>
+                <text class="b-label" x="513" y="454" text-anchor="middle">balance left</text>
+              </g>
+            </svg>
+            <p class="plate-note">Grain and notches line up, so the two records agree. No names on either half.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="study" id="c" data-study aria-labelledby="c-title">
+    <div class="study-bar" lang="pt-BR"><span class="sb-k">C</span><b>Câmera térmica</b><span class="sb-why">O limite honesto, sozinho: a câmera infravermelha vê calor (o chão, a pessoa), não a chama nem a luz. Mostra o que NÃO está escondido, o que dá credibilidade à imagem A.</span></div>
+    <div class="hero t-dark hero-b">
+      <header class="h-head wrap">
+        <a class="brand" href="index.html" aria-label="PayPerQ"><img class="brand-flame" src="assets/flame2.png" alt="" width="24" height="24"><span class="brand-word">PayPerQ</span></a>
+        <nav class="h-nav" aria-label="Main"><a href="index.html#enclave">Privacy</a><a href="index.html#models">Models</a><a href="index.html#pricing">Pricing</a><a href="index.html#api">API</a></nav>
+        <a class="btn btn-small btn-accent" href="https://ppq.ai/chat">Start chatting</a>
+      </header>
+      <div class="hero-body">
+        <div class="wrap b-grid">
+          <div class="b-text">
+            <h2 id="c-title" class="h1 b-title"><span class="rise">Your favorite AI models,</span> <span class="rise" style="--d:.12s"><em>with privacy you can verify.</em></span></h2>
+            <p class="lede rise" style="--d:.3s">Find the right model for writing, coding, and everyday tasks. Use it in chat or through our API, all from one prepaid balance.</p>
+            <div class="cta rise" style="--d:.42s"><a class="btn btn-accent btn-lg" href="https://ppq.ai/chat">Start chatting <span class="btn-arrow" aria-hidden="true">→</span></a></div>
+          </div>
+          <figure class="plate plate-dark b-plate">
+            <div class="plate-head"><span>fig. 3 — what a thermal camera sees</span><span>IR · live</span></div>
+            <svg viewBox="0 0 640 500" focusable="false" role="img" aria-label="Infrared view of the camp. The ground and the seated person show warmth. No flame shape and no light are visible.">
+              <defs>
+                <linearGradient id="v-scale" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a52"/><stop offset=".5" stop-color="#f0562b" stop-opacity=".5"/><stop offset="1" stop-color="#f3eee6" stop-opacity=".08"/></linearGradient>
+              </defs>
+              <path class="v-frame" d="M20,52 V20 H52 M588,20 H620 V52 M620,448 V480 H588 M52,480 H20 V448"/>
+              <g transform="translate(0 -70)">
+              <g class="b-fade" style="--d:.1s">
+                <path class="v-ridge" d="M20,290 C96,266 170,252 240,270 S350,292 400,266 S540,232 620,268"/>
+                <path class="v-ridge-soft" d="M20,326 C110,304 190,300 270,314 S420,322 620,300"/>
+                <path class="v-ridge-soft" d="M62,300 l-7.0,22.0 h14.0 Z"/><path class="v-ridge-soft" d="M86,292 l-8.8,27.5 h17.5 Z"/><path class="v-ridge-soft" d="M112,298 l-6.3,19.8 h12.6 Z"/><path class="v-ridge-soft" d="M470,262 l-7.7,24.2 h15.4 Z"/><path class="v-ridge-soft" d="M494,254 l-9.5,29.7 h18.9 Z"/><path class="v-ridge-soft" d="M520,260 l-7.0,22.0 h14.0 Z"/><path class="v-ridge-soft" d="M548,266 l-6.0,18.7 h11.9 Z"/><path class="v-ridge-soft" d="M582,274 l-7.7,24.2 h15.4 Z"/>
+              </g>
+              <g class="b-fade" style="--d:.5s">
+                <ellipse cx="320" cy="372" rx="230" ry="96" fill="url(#fh-ember)"/>
+                <ellipse class="v-iso" cx="320" cy="372" rx="36" ry="13.0" style="stroke-opacity:0.8"/><ellipse class="v-iso" cx="320" cy="372" rx="66" ry="23.8" style="stroke-opacity:0.55"/><ellipse class="v-iso" cx="320" cy="372" rx="102" ry="36.7" style="stroke-opacity:0.38"/><ellipse class="v-iso" cx="320" cy="372" rx="142" ry="51.1" style="stroke-opacity:0.24"/><ellipse class="v-iso" cx="320" cy="372" rx="188" ry="67.7" style="stroke-opacity:0.13"/>
+                <ellipse cx="320" cy="372" rx="15" ry="6.5" fill="#ffb27a" fill-opacity=".92"/>
+                <circle cx="320" cy="370" r="46" fill="url(#fh-halo)"/>
+              </g>
+              <g class="b-fade" style="--d:.9s">
+                <circle class="v-head" cx="424" cy="318" r="8.5"/>
+                <path class="v-body" d="M406,360 C405,340 411,327 424,327 C437,327 443,340 442,360 Z"/>
+              </g>
+              <g class="b-fade" style="--d:1.2s">
+                <circle class="v-reticle" cx="320" cy="372" r="26"/>
+                <path class="v-reticle" d="M320,336 V352 M320,392 V408 M284,372 H300 M340,372 H356"/>
+                <path class="v-lead-d" d="M236,396 L132,438"/><text class="v-label-d" x="132" y="456" text-anchor="middle">warm ground</text>
+                <path class="v-lead-d" d="M446,350 L500,362"/><text class="v-label-d" x="506" y="366">person: visible</text>
+                <path class="v-lead-d" d="M320,408 V440"/><text class="v-label-d v-label-hot" x="320" y="458" text-anchor="middle">no flame · no light</text>
+              </g>
+              </g>
+              <g class="b-fade" style="--d:1.4s">
+                <circle cx="52" cy="76" r="3.4" fill="#f0562b"/><text class="v-label-d" x="64" y="80">IR</text>
+                <rect x="596" y="76" width="8" height="70" rx="2" fill="url(#v-scale)"/>
+                <text class="v-label-d" x="590" y="86" text-anchor="end">warm</text>
+                <text class="v-label-d" x="590" y="144" text-anchor="end">cool</text>
+              </g>
+            </svg>
+            <p class="plate-note">Hidden from the eye, not from every instrument.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

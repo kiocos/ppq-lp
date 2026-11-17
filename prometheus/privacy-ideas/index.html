@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PPQ · Privacy section ideas</title>
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --panel: #141311; --panel-2: #1b1a18; --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-ink: #e97d49; --good: #5fd39a;
+    --sans: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #050505; color: var(--fg); font: 16px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, p, ul, ol { margin: 0; padding: 0; } ul, ol { list-style: none; }
+  .mono { font-family: var(--mono); }
+
+  /* each idea is drawn in a 1440 x 800 frame = a laptop screen minus browser chrome */
+  .idea { width: 1440px; margin: 0 auto 64px; }
+  .tag { display: flex; gap: 14px; align-items: baseline; padding: 0 8px 12px; color: var(--fg-2); font-size: 15px; }
+  .tag b { color: var(--fg); font-weight: 500; font-size: 18px; }
+  .tag .fav { color: var(--brand-ink); font-weight: 500; }
+  .frame { position: relative; height: 800px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; padding: 72px 120px 0; }
+  .frame::after { content: '800 px (laptop screen)'; position: absolute; right: 12px; bottom: 8px; font: 11px var(--mono); color: #555; }
+
+  .label { font-size: 14px; font-weight: 500; color: var(--fg-3); margin-bottom: 12px; }
+  h2 { font-size: 36px; font-weight: 400; letter-spacing: -0.025em; line-height: 1.12; }
+  .lead { margin-top: 14px; font-size: 17px; color: var(--fg-2); max-width: 34em; }
+  .small { font-size: 13px; color: var(--fg-3); }
+  .k { font-size: 13px; font-weight: 500; color: var(--fg-3); }
+  .cipher { font: 13px/1.5 var(--mono); color: var(--fg-3); word-break: break-all; }
+  .plain { font-size: 15px; color: var(--fg); }
+  .chip { display: inline-block; font: 12px var(--mono); padding: 3px 7px; border-radius: 4px; background: rgba(255,255,255,.06); color: var(--fg-2); }
+  .ok { color: var(--good); }
+  .link { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 3px; }
+
+  /* ---------- A: cutaway ---------- */
+  .a-head { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end; }
+  .a-diag { margin-top: 48px; display: grid; grid-template-columns: 180px 1fr 200px; align-items: center; gap: 0; }
+  .node { padding: 16px 18px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); }
+  .node h3 { font-size: 15px; font-weight: 500; }
+  .node p { margin-top: 4px; font-size: 13px; color: var(--fg-3); line-height: 1.45; }
+  .server { position: relative; margin: 0 28px; padding: 18px 20px 20px; border-radius: 12px; border: 1px dashed rgba(255,255,255,.22); display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; align-items: stretch; }
+  .server > .k { position: absolute; top: -10px; left: 16px; padding: 0 8px; background: var(--bg); }
+  .outside { padding: 14px 4px 0; }
+  .outside .who { margin-top: 10px; font-size: 13px; color: var(--fg-3); }
+  .enclave { padding: 16px 18px; border-radius: 10px; background: #191513; border: 1px solid rgba(233,125,73,.55); box-shadow: inset 0 0 40px rgba(191,60,27,.12); }
+  .enclave .k { color: var(--brand-ink); }
+  .enclave .plain { margin-top: 6px; }
+  .enclave .small { margin-top: 10px; }
+  .wire { position: relative; height: 1px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.3) 0 4px, transparent 4px 8px); }
+  .a-diag .wire-l, .a-diag .wire-r { position: absolute; top: 50%; width: 28px; height: 1px; background: rgba(255,255,255,.3); }
+  .a-diag .wire-l { left: -29px; } .a-diag .wire-r { right: -29px; }
+  .a-notes { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); font: 12px var(--mono); color: var(--fg-2); margin-bottom: 12px; }
+  .a-notes h3 { font-size: 16px; font-weight: 500; }
+  .a-notes p { margin-top: 6px; font-size: 15px; color: var(--fg-2); line-height: 1.55; }
+  .a-notes .small { margin-top: 10px; }
+
+  /* ---------- B: typical vs PayPerQ ---------- */
+  .b { display: grid; grid-template-columns: 360px 1fr; gap: 72px; }
+  .rails { display: grid; gap: 18px; padding-top: 6px; }
+  .rail { padding: 18px 22px 20px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+  .rail.ppq { background: #15110f; border-color: rgba(233,125,73,.4); }
+  .rail-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .rail-top h3 { font-size: 15px; font-weight: 500; }
+  .stops { margin-top: 16px; display: grid; grid-template-columns: 110px 1fr 140px; gap: 14px; align-items: center; }
+  .stop { font-size: 13px; color: var(--fg-2); }
+  .stop b { display: block; font-weight: 500; color: var(--fg); font-size: 14px; }
+  .mid { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 12px 14px; border-radius: 8px; border: 1px dashed rgba(255,255,255,.18); }
+  .mid.split { grid-template-columns: 1fr 1.1fr; gap: 12px; }
+  .bad { color: #e5a08a; }
+  .encl { padding: 10px 12px; border-radius: 6px; border: 1px solid rgba(233,125,73,.55); background: rgba(191,60,27,.08); }
+  .encl .k { color: var(--brand-ink); }
+  .b-check { margin-top: 32px; display: grid; gap: 12px; }
+  .b-check li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; font-size: 15px; color: var(--fg-2); }
+  .b-check li .num { margin: 0; }
+
+  /* ---------- C: three questions ---------- */
+  .c-head { max-width: 760px; }
+  .c-cards { margin-top: 44px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .ccard { padding: 24px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .ccard .q { font-size: 13px; font-weight: 500; color: var(--fg-3); }
+  .ccard h3 { margin-top: 6px; font-size: 19px; font-weight: 400; letter-spacing: -0.015em; }
+  .ccard > p { margin-top: 8px; font-size: 15px; color: var(--fg-2); }
+  .viz { margin-top: auto; padding-top: 22px; }
+  .mini { padding: 14px; border-radius: 8px; background: #0f0e0d; border: 1px solid var(--line); }
+  .box-in { display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--fg-3); }
+  .box-in .encl { flex: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 500; color: var(--fg-3); padding: 0 0 8px; }
+  td { padding: 7px 0; border-top: 1px solid var(--line); color: var(--fg-2); }
+  td.y { color: var(--fg); } td.n { color: var(--good); }
+  .verify li { display: flex; gap: 8px; font-size: 13px; color: var(--fg-2); padding: 4px 0; }
+
+  /* ---------- D: what happens when you press send ---------- */
+  .d { display: grid; grid-template-columns: 1fr 560px; gap: 88px; }
+  .d table { margin-top: 32px; font-size: 14px; max-width: 460px; }
+  .d td { padding: 9px 0; }
+  .steps { position: relative; display: grid; gap: 0; padding-top: 4px; }
+  .steps::before { content: ''; position: absolute; left: 11px; top: 18px; bottom: 40px; width: 1px; background: var(--border); }
+  .step { position: relative; display: grid; grid-template-columns: 22px 1fr; gap: 18px; padding-bottom: 26px; }
+  .step .num { margin: 0; background: var(--bg); }
+  .step.hot .num { border-color: var(--brand-ink); color: var(--brand-ink); }
+  .step h3 { font-size: 16px; font-weight: 500; }
+  .step p { margin-top: 4px; font-size: 14px; color: var(--fg-2); }
+  .step .chip { margin-top: 8px; }
+  .fail { margin-top: 8px; font-size: 13px; color: var(--fg-3); }
+</style>
+</head>
+<body>
+<div style="max-width:1440px;margin:40px auto 32px;padding:0 8px;color:var(--fg-2)">
+  <p style="color:var(--fg);font-size:22px">Privacy section · 4 ideas</p>
+  <p>Each frame is 1440 × 800, a laptop screen. Same approved headline in all four. Facts from llms.txt and published-pcr.json (build v0.75.0, Nov 13, 2026).</p>
+</div>
+
+<!-- ================= A ================= -->
+<section class="idea" id="a">
+  <p class="tag"><b>A · Cutaway</b> One diagram of where your chat is readable, then three short notes: what, why it's rare, how to check. <span class="fav">Favourite</span></p>
+  <div class="frame">
+    <div class="a-head">
+      <div>
+        <p class="label">Privacy · The Enclave Router</p>
+        <h2>Your chats stay unreadable to us.</h2>
+      </div>
+      <p class="lead" style="margin:0">Every chat is decrypted in one place only: a sealed enclave inside our server. Everything around it, including us, sees ciphertext.</p>
+    </div>
+
+    <div class="a-diag">
+      <div class="node"><h3>You</h3><p>The encrypted connection goes straight into the enclave.</p></div>
+      <div class="server">
+        <span class="wire-l"></span><span class="wire-r"></span>
+        <span class="k">PayPerQ’s server</span>
+        <div class="outside">
+          <p class="cipher">oJN0HMhgTqS4I1MvqAxwE/qLxaNbtOv1eQFURxw7Unut8u7096yYNWJgKK2PXxq0X…</p>
+          <p class="who">What our staff, logs and cloud host get, plus model, token count and time.</p>
+        </div>
+        <div class="enclave">
+          <p class="k">Enclave · AWS Nitro</p>
+          <p class="plain">“Summarize these board notes into five decisions.”</p>
+          <p class="small">Readable only here, by open-source code. Your IP stays behind.</p>
+        </div>
+      </div>
+      <div class="node"><h3>Model provider</h3><p>Gets your message, never your IP address.</p></div>
+    </div>
+
+    <div class="a-notes">
+      <div><span class="num">1</span><h3>A sealed room in the chip</h3><p>An enclave is memory the server’s own operator can’t open. Only the code loaded into it can read what comes in.</p></div>
+      <div><span class="num">2</span><h3>Rare for an AI app</h3><p>Most AI apps decrypt your chat on their own servers, where logs and staff can reach it. Here that step happens only inside the enclave.</p></div>
+      <div><span class="num">3</span><h3>You don’t take our word</h3><p>Before sending, your browser checks the enclave’s fingerprint against the open-source build.</p><p class="small mono">v0.75.0 · PCR0 bd2b83ae…5de85c10</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<section class="idea" id="b">
+  <p class="tag"><b>B · The usual way vs. ours</b> Two rails, one message. Shows the differentiator at a glance. Compares architectures, not providers.</p>
+  <div class="frame">
+    <div class="b">
+      <div>
+        <p class="label">Privacy · The Enclave Router</p>
+        <h2>Your chats stay unreadable to us.</h2>
+        <p class="lead">Most AI apps read your chat on their servers before passing it on. We moved that step into a secure enclave that we can’t open.</p>
+        <ol class="b-check">
+          <li><span class="num">1</span>The enclave’s code is open source.</li>
+          <li><span class="num">2</span>AWS hardware signs a fingerprint of the code running.</li>
+          <li><span class="num">3</span>Your browser compares the two before anything is sent.</li>
+        </ol>
+        <p class="small" style="margin-top:20px">Build v0.75.0 · <span class="link">verifier</span> · <span class="link">enclave source</span></p>
+      </div>
+      <div class="rails">
+        <div class="rail">
+          <div class="rail-top"><h3>A typical AI app</h3><span class="small">the connection ends on the company’s server</span></div>
+          <div class="stops">
+            <p class="stop"><b>You</b>type a message</p>
+            <div class="mid">
+              <p class="k">Company server</p>
+              <p class="plain">“Summarize these board notes into five decisions.”</p>
+              <p class="small bad">Readable in memory, logs and by staff.</p>
+            </div>
+            <p class="stop"><b>Model provider</b>gets the message and your IP</p>
+          </div>
+        </div>
+        <div class="rail ppq">
+          <div class="rail-top"><h3>PayPerQ</h3><span class="small">the connection ends inside the enclave</span></div>
+          <div class="stops">
+            <p class="stop"><b>You</b>type a message</p>
+            <div class="mid split">
+              <div><p class="k">Our server</p><p class="cipher" style="margin-top:4px">oJN0HMhgTqS4I1Mvq AxwE/qLxaNbtOv1…</p><p class="small" style="margin-top:4px">plus model, tokens, time</p></div>
+              <div class="encl"><p class="k">Enclave</p><p class="plain" style="font-size:14px;margin-top:4px">“Summarize these board notes…”</p></div>
+            </div>
+            <p class="stop"><b>Model provider</b>gets the message, never your IP</p>
+          </div>
+        </div>
+        <p class="small">What a provider keeps depends on the model’s privacy label. Private models hide the message from the provider too.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<section class="idea" id="c">
+  <p class="tag"><b>C · Three questions</b> Three cards answer what, why it matters, how to check. Each has a small real detail from the app instead of one big screenshot.</p>
+  <div class="frame">
+    <div class="c-head">
+      <p class="label">Privacy · The Enclave Router</p>
+      <h2>Your chats stay unreadable to us.</h2>
+      <p class="lead">Every chat runs inside a secure enclave, a technology few AI apps use. Here is what it is, and how you check it.</p>
+    </div>
+    <div class="c-cards">
+      <div class="ccard">
+        <p class="q">What is it?</p>
+        <h3>A sealed room inside our server</h3>
+        <p>Your chat is decrypted only in the enclave. The rest of the server, our staff and the cloud host see ciphertext.</p>
+        <div class="viz"><div class="mini box-in"><span class="cipher" style="width:120px">oJN0HMhgTqS4I1MvqAxwE…</span><div class="encl"><p class="k">Enclave</p><p class="plain" style="font-size:13px">“Summarize these board notes…”</p></div></div></div>
+      </div>
+      <div class="ccard">
+        <p class="q">Who sees what?</p>
+        <h3>Your words never reach us</h3>
+        <p>The provider gets your message. We get only what billing needs.</p>
+        <div class="viz"><div class="mini"><table>
+          <tr><th></th><th>PayPerQ</th><th>Provider</th></tr>
+          <tr><td>Message</td><td class="n">No</td><td class="y">Yes</td></tr>
+          <tr><td>IP address</td><td class="y">Yes</td><td class="n">No</td></tr>
+          <tr><td>Model, tokens, time</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+        </table></div></div>
+      </div>
+      <div class="ccard">
+        <p class="q">How do I know?</p>
+        <h3>Your browser checks first</h3>
+        <p>It compares the running enclave with the open-source build before sending a word.</p>
+        <div class="viz"><div class="mini"><ul class="verify">
+          <li><span class="ok">✓</span>Encrypted connection</li>
+          <li><span class="ok">✓</span>Build v0.75.0 matches GitHub</li>
+          <li><span class="ok">✓</span>AWS Nitro hardware</li>
+        </ul></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= D ================= -->
+<section class="idea" id="d">
+  <p class="tag"><b>D · When you press send</b> The verification told as four steps in order, with a compact who-sees-what table beside it. Most didactic about checking.</p>
+  <div class="frame">
+    <div class="d">
+      <div>
+        <p class="label">Privacy · The Enclave Router</p>
+        <h2>Your chats stay unreadable to us.</h2>
+        <p class="lead">Every chat runs inside a secure enclave: a sealed part of our server that even we can’t open. Few AI apps work this way.</p>
+        <table>
+          <tr><th></th><th>PayPerQ</th><th>Provider</th></tr>
+          <tr><td>Your message</td><td class="n">No</td><td class="y">Yes</td></tr>
+          <tr><td>Your IP address</td><td class="y">Yes</td><td class="n">No</td></tr>
+          <tr><td>Model, tokens, time</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr><td>Kept afterwards</td><td class="n">No</td><td class="y">Depends on model</td></tr>
+        </table>
+      </div>
+      <ol class="steps">
+        <li class="step"><span class="num">1</span><div><h3>Your browser asks for proof</h3><p>The enclave answers with a fingerprint of the code it runs, signed by AWS hardware.</p></div></li>
+        <li class="step"><span class="num">2</span><div><h3>It compares with the public build</h3><p>The code is open source. The fingerprint must match the published one.</p><span class="chip">v0.75.0 · PCR0 bd2b83ae…5c10</span></div></li>
+        <li class="step hot"><span class="num">3</span><div><h3>Only then is your message sent</h3><p>Encrypted all the way into the enclave. If anything differs, nothing leaves.</p></div></li>
+        <li class="step"><span class="num">4</span><div><h3>The enclave passes it on</h3><p>To the model provider, without your IP. We keep only the model, token count and time.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+</body>
+</html>

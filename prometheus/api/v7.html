@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayPerQ · API section G2</title>
+<link rel="icon" href="../assets/flame2.png">
+<style>
+  @font-face { font-family: 'Geist'; src: url(../assets/fonts/Geist.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: 'Geist Mono'; src: url(../assets/fonts/GeistMono.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root {
+    --bg: #0c0b0a; --fg: #ecebe8; --fg-2: #a3a09a; --fg-3: #8a867f;
+    --line: rgba(255,255,255,.08); --border: rgba(255,255,255,.16);
+    --brand: #bf3c1b; --brand-hover: #a8341a; --brand-ink: #e97d49; --hot: #ffb27a; --good: #5fd39a;
+    --f-body: 'Geist', system-ui, sans-serif; --f-mono: 'Geist Mono', ui-monospace, monospace;
+    --wrap: 1160px; --gutter: clamp(20px, 4vw, 40px);
+    --ease: cubic-bezier(.2,.7,.2,1); --ease-std: cubic-bezier(.2,0,0,1); --spring: cubic-bezier(.3,1.4,.5,1); --radius: 6px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--f-body); letter-spacing: -0.005em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  h2, h3, p, ul { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid rgba(255,255,255,.9); outline-offset: 2px; border-radius: var(--radius); }
+  ::selection { background: var(--brand); color: #fff; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: 80; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .1; }
+  .wrap { max-width: calc(var(--wrap) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .display { font-weight: 400; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .study { padding-top: 40px; font-size: 13px; color: var(--fg-3); display: flex; gap: 16px; flex-wrap: wrap; }
+  .study a { color: var(--fg-2); }
+  .textlink { color: var(--fg-2); text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); text-underline-offset: 4px; transition: color .15s; }
+  .textlink:hover { color: var(--fg); }
+
+  /* ================= 1 · one key, every tool ================= */
+  .intro { padding: 144px 0 40px; text-align: center; }
+  .label { margin-bottom: 16px; font-size: 14px; font-weight: 500; color: var(--fg-3); }
+  .intro h2 { font-size: clamp(34px, 4vw, 52px); max-width: 15em; margin: 0 auto; }
+  .intro .lead { margin: 18px auto 0; max-width: 33em; font-size: 18px; color: var(--fg-2); }
+
+  .sky { position: relative; height: 440px; max-width: 980px; margin: 28px auto 0; --glow: 0; }
+  .sky svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .sky .base { fill: none; stroke: rgba(255,255,255,.06); stroke-width: 1; }
+  .sky .lit-path { fill: none; stroke-width: 1; opacity: 0; transition: opacity .7s var(--ease), stroke-width .3s; }
+  .sky .lit-path.on { opacity: 1; }
+  .sky .lit-path.hot { stroke-width: 1.6; }
+  .sky .packet { fill: none; stroke: #f3b48c; stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity .4s; }
+  .sky .packet.on { opacity: 1; }
+
+  /* the hub: PayPerQ's own flame, animated like the app's loader (slower) */
+  .hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; width: 88px; height: 88px; border-radius: 24px; display: grid; place-items: center;
+    background: linear-gradient(180deg, #1c1a18 0%, #131210 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px rgba(233,125,73,calc(.18 + var(--glow) * .22)), 0 0 calc(var(--glow) * 36px) rgba(191,60,27,calc(var(--glow) * .28)), 0 18px 40px -20px rgba(0,0,0,.9);
+    transition: box-shadow .6s var(--ease); }
+  /* the logo is alive: the app loader's flicker and glow, a sway, rising embers, and a flare when a tool lights */
+  .flare { position: relative; width: 46px; height: 46px; transform-origin: 50% 90%; }
+  .hub.flaring .flare { animation: flare .55s var(--spring); }
+  .hub:hover .flare { animation: flare .55s var(--spring); }
+  .flame { position: absolute; inset: 0; transform-origin: 50% 92%; animation: sway 2.4s var(--ease-std) infinite; }
+  .flame img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+  .flame .base { transform-origin: 50% 92%; animation: flick .42s var(--ease-std) infinite alternate; }
+  .flame .inner { mix-blend-mode: screen; transform-origin: 50% 92%; animation: glowin .58s var(--ease-std) infinite alternate; }
+  .ember { position: absolute; left: 50%; top: 18%; width: 3px; height: 3px; border-radius: 50%; background: #ffb27a; opacity: 0; pointer-events: none; animation: rise 2.6s ease-out infinite; }
+  .ember:nth-of-type(2) { animation-delay: .9s; --dx: -9px; width: 2px; height: 2px; }
+  .ember:nth-of-type(3) { animation-delay: 1.7s; --dx: 7px; }
+  @keyframes sway { 0%, 100% { transform: rotate(-3deg) translateX(-.5px); } 50% { transform: rotate(3deg) translateX(.5px); } }
+  @keyframes flick { from { filter: brightness(1) saturate(1); transform: scale(1); } to { filter: brightness(1.14) saturate(1.18); transform: scaleY(1.06) scaleX(.96) translateY(-2px); } }
+  @keyframes glowin { from { opacity: .3; filter: brightness(1); transform: scaleY(1); } to { opacity: .9; filter: brightness(1.5); transform: scaleY(1.08) translateY(-2px); } }
+  @keyframes rise { 0% { opacity: 0; transform: translate(-50%, 0) scale(1); } 15% { opacity: .9; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 3px)), -34px) scale(.4); } }
+  @keyframes flare { 0% { transform: scale(1); filter: brightness(1); } 35% { transform: scale(1.16) translateY(-2px); filter: brightness(1.3); } 100% { transform: scale(1); filter: brightness(1); } }
+  .node { position: absolute; transform: translate(-50%, -50%); z-index: 3; }
+  .node .tile { position: relative; width: 54px; height: 54px; border-radius: 15px; display: grid; place-items: center; background: linear-gradient(180deg, #1e1c1a 0%, #121110 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px rgba(255,255,255,.07), 0 14px 30px -18px rgba(0,0,0,.9); transition: transform .35s var(--spring), box-shadow .6s var(--ease); }
+  .node img { width: 26px; height: 26px; object-fit: contain; border-radius: 6px; opacity: .28; filter: grayscale(1); transition: opacity .6s var(--ease), filter .6s var(--ease); }
+  .node img.inv { filter: grayscale(1) invert(1); }
+  .node > span:last-child { position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); font-size: 12.5px; color: var(--fg-3); opacity: .45; transition: opacity .6s, color .6s; white-space: nowrap; }
+  .node.lit .tile { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(233,125,73,.3), 0 14px 30px -18px rgba(0,0,0,.9); animation: pop .5s var(--spring); }
+  .node.lit img { opacity: 1; filter: none; }
+  .node.lit img.inv { filter: invert(1); }
+  .node.lit > span:last-child { opacity: 1; color: var(--fg-2); }
+  .node.top > span:last-child { top: auto; bottom: calc(100% + 8px); }
+  .node:hover .tile { transform: translateY(-4px) scale(1.06); }
+  .node:hover > span:last-child { color: var(--fg); }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  .sky-foot { margin-top: 24px; text-align: center; font-size: 14px; color: var(--fg-3); }
+
+  /* ================= 2 · what people build ================= */
+  .story { position: relative; margin-top: 136px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; }
+  .steps .label { margin-bottom: 0; }
+  .step { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; opacity: .25; transition: opacity .5s var(--ease); }
+  .step:first-of-type { min-height: 72vh; }
+  .step.on { opacity: 1; }
+  .step .n { font: 13px var(--f-mono); color: var(--fg-3); transition: color .5s; }
+  .step.on .n { color: var(--brand-ink); }
+  .step h3 { margin-top: 14px; font-size: clamp(26px, 2.6vw, 34px); }
+  .step p { margin-top: 14px; font-size: 17px; color: var(--fg-2); max-width: 25em; }
+  .tools { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: 14px; color: var(--fg-2); }
+  .tools > * { display: inline-flex; align-items: center; gap: 8px; transition: color .15s; }
+  .tools img { width: 18px; height: 18px; object-fit: contain; border-radius: 4px; }
+  .tools img.inv { filter: invert(1); }
+  .tools a:hover { color: var(--fg); }
+
+  .stage-col { position: relative; }
+  .stage { position: sticky; top: calc(50vh - 205px); height: 410px; perspective: 1400px; }
+  .stage .aura { position: absolute; inset: -18% -12%; pointer-events: none; filter: blur(60px); opacity: .22; transition: opacity .6s; }
+  .stage .aura i { position: absolute; border-radius: 50%; }
+  .stage .aura i:nth-child(1) { width: 60%; height: 60%; left: var(--ax, 55%); top: var(--ay, 5%); background: radial-gradient(circle, rgba(191,60,27,.55), rgba(191,60,27,0) 70%); animation: drift 14s ease-in-out infinite; transition: left 1s var(--ease), top 1s var(--ease); }
+  .stage .aura i:nth-child(2) { width: 50%; height: 50%; left: 0; bottom: 0; background: radial-gradient(circle, rgba(120,40,18,.5), rgba(120,40,18,0) 70%); animation: drift 18s ease-in-out infinite reverse; }
+  @keyframes drift { 50% { transform: translate(6%, 8%) scale(1.1); } }
+  .tilt { position: absolute; inset: 0; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transform-style: preserve-3d; transition: transform .5s var(--ease); }
+  .scene { position: absolute; inset: 0; opacity: 0; transform: translateY(18px) scale(.97); transition: opacity .55s var(--ease), transform .7s var(--spring); pointer-events: none; }
+  .scene.on { opacity: 1; transform: none; pointer-events: auto; }
+
+  /* screens: glass over a warm gradient */
+  .screen { position: relative; height: 100%; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+    background: linear-gradient(180deg, rgba(255,255,255,.025) 0%, rgba(255,255,255,0) 30%), #121110;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 0 0 1px rgba(255,255,255,.08), 0 60px 100px -50px rgba(0,0,0,1); }
+  .screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: radial-gradient(360px circle at var(--mx, 70%) var(--my, 0%), rgba(255,255,255,.03), transparent 50%); }
+  .bar { flex: none; display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.015); font-size: 13px; color: var(--fg-2); }
+  .bar .dots { display: flex; gap: 6px; margin-right: 4px; }
+  .bar .dots i { width: 9px; height: 9px; border-radius: 50%; background: linear-gradient(180deg, #34312d, #24221f); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+  .via { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font: 12px var(--f-mono); color: var(--fg-3); }
+  .via::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--brand-ink); box-shadow: 0 0 0 3px rgba(233,125,73,.15); animation: pulse 1.6s ease-in-out infinite; }
+  .scene.done .via::before { background: var(--good); box-shadow: 0 0 0 3px rgba(95,211,154,.15); animation: none; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .body { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+  .replay { position: absolute; right: 12px; bottom: 12px; z-index: 5; height: 30px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; color: var(--fg-2); background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); backdrop-filter: blur(8px); opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s, color .15s; pointer-events: none; }
+  .scene.done .replay { opacity: 1; transform: none; pointer-events: auto; }
+  .replay:hover { color: var(--fg); }
+  .spin { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.18); border-top-color: var(--hot); animation: rot .7s linear infinite; vertical-align: -1px; }
+  @keyframes rot { to { transform: rotate(360deg); } }
+  .enter { animation: enter .45s var(--spring) both; }
+  @keyframes enter { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+  .caret { display: inline-block; width: 7px; height: 1.05em; margin-left: 1px; vertical-align: -0.15em; background: var(--hot); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* 1 · terminal */
+  .term { padding: 18px 20px; font: 13.5px/1.9 var(--f-mono); color: var(--fg-2); }
+  .term .row { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: baseline; }
+  .term .row > :first-child { font-size: 9px; color: var(--fg-3); }
+  .term .you { color: var(--fg); }
+  .term .p { color: var(--hot); }
+  .term b { font-weight: 400; color: var(--fg); }
+  .term .a { color: var(--good); } .term .d { color: #e08a78; }
+  .term .bar-t { display: inline-block; width: 120px; height: 5px; margin: 0 10px 1px 10px; border-radius: 3px; background: rgba(255,255,255,.08); overflow: hidden; vertical-align: middle; }
+  .term .bar-t i { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--brand-ink); }
+  .term .pass { color: var(--good); }
+  .meter { position: absolute; left: 20px; bottom: 14px; font: 12px var(--f-mono); color: var(--fg-3); }
+  .meter b { font-weight: 400; color: var(--fg-2); }
+
+  /* 2 · assistant chat */
+  .chat .bar .av { width: 24px; height: 24px; border-radius: 50%; background: #2a2622 url(../assets/flame2.png) center / 14px no-repeat; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+  .chat .bar .who { display: grid; line-height: 1.2; }
+  .chat .bar .who small { font-size: 11px; color: var(--good); }
+  .thread { position: absolute; inset: 0; padding: 16px; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 36px); mask-image: linear-gradient(180deg, transparent 0, #000 36px); display: flex; flex-direction: column; justify-content: flex-end; gap: 9px; font-size: 14px; line-height: 1.45; }
+  .msg { max-width: 82%; padding: 10px 14px; border-radius: 18px; }
+  .msg.me { align-self: flex-end; color: #fff; background: linear-gradient(180deg, #c8451f 0%, #b9391a 100%); border-bottom-right-radius: 6px; }
+  .msg.ai { align-self: flex-start; color: #d9d6d1; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); border-bottom-left-radius: 6px; }
+  .msg.ai b { color: #fff; font-weight: 500; }
+  .tool { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; padding: 5px 11px; border-radius: 999px; font: 12px var(--f-mono); color: var(--fg-3); background: rgba(255,255,255,.035); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
+  .tool .ok { color: var(--good); }
+  .typing { align-self: flex-start; display: inline-flex; gap: 4px; padding: 13px 14px; border-radius: 18px; border-bottom-left-radius: 6px; background: rgba(255,255,255,.06); }
+  .typing i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.55); animation: dot 1.1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes dot { 30% { transform: translateY(-4px); opacity: .5; } }
+  .draft { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(0,0,0,.25); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); display: grid; gap: 2px; }
+  .draft small { font-size: 11.5px; color: var(--good); }
+  .draft span { font-size: 13px; color: var(--fg-2); }
+
+  /* 3 · support with redaction */
+  .ticket { padding: 18px 20px; display: grid; gap: 14px; font-size: 14px; line-height: 1.5; }
+  .ticket .k { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--fg-3); margin-bottom: 6px; }
+  .ticket .chip { font: 11px var(--f-mono); color: var(--hot); padding: 2px 8px; border-radius: 999px; background: rgba(191,60,27,.18); box-shadow: inset 0 0 0 1px rgba(233,125,73,.3); }
+  .ticket .in { color: var(--fg); min-height: 3em; }
+  .ticket .seen { position: relative; padding: 11px 14px; border-radius: 10px; font: 13px/1.6 var(--f-mono); color: var(--fg-2); background: rgba(191,60,27,.1); box-shadow: inset 2px 0 0 var(--brand-ink); overflow: hidden; min-height: 3.6em; }
+  .ticket .seen .scan { position: absolute; top: 0; bottom: 0; width: 70px; left: -80px; background: linear-gradient(90deg, transparent, rgba(255,178,122,.28), transparent); }
+  .ticket .ph { color: var(--brand-ink); }
+  .ticket .scr { color: var(--brand-ink); }
+  .ticket .out { padding: 11px 14px; border-radius: 10px; color: #d9d6d1; background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); min-height: 3.6em; }
+  .ticket .back { color: #fff; font-weight: 500; border-radius: 4px; animation: back 1.4s var(--ease); }
+  @keyframes back { 0% { background: rgba(95,211,154,.35); box-shadow: 0 0 0 3px rgba(95,211,154,.35); } 100% { background: transparent; box-shadow: none; } }
+
+  /* 4 · agent team */
+  .team { padding: 14px 20px; display: grid; gap: 2px; font-size: 14px; }
+  .agent { display: grid; grid-template-columns: 20px minmax(0, 1fr) 56px; gap: 4px 12px; align-items: center; padding: 10px 0 9px; }
+  .agent .st { width: 16px; height: 16px; display: grid; place-items: center; font-size: 11px; color: var(--good); }
+  .agent .st .ok { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; background: rgba(95,211,154,.14); box-shadow: inset 0 0 0 1px rgba(95,211,154,.45); animation: pop .45s var(--spring); }
+  .agent .nm { color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .agent .nm b { color: var(--fg); font-weight: 500; }
+  .agent .t { font: 12px var(--f-mono); color: var(--fg-3); text-align: right; font-variant-numeric: tabular-nums; }
+  .agent .pg { grid-column: 2 / 4; height: 3px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .agent .pg i { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--brand-ink); }
+  .agent.done .pg i { background: rgba(95,211,154,.7); }
+  .finding { margin-top: 10px; padding: 13px 15px; border-radius: 12px; display: grid; gap: 4px; background: rgba(191,60,27,.12); box-shadow: inset 0 0 0 1px rgba(233,125,73,.3); }
+  .finding .sev { display: inline-flex; align-items: center; gap: 8px; font: 500 12px var(--f-mono); color: var(--hot); }
+  .finding .sev::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--hot); animation: pulse 1.2s ease-in-out infinite; }
+  .finding p { color: #fff; font-size: 15px; }
+  .finding small { color: rgba(255,255,255,.75); font-size: 13px; }
+
+  /* ================= 3 · fund your key ================= */
+  .fund { position: relative; margin-top: 120px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px 40px; padding: 32px 36px; border-radius: 16px; overflow: hidden; color: #fff; background: var(--brand); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); }
+  .fund::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: url(../assets/grain.png); background-size: 160px; mix-blend-mode: overlay; opacity: .18; }
+  .fund > * { position: relative; z-index: 1; }
+  .fund h3 { font-size: clamp(24px, 2.3vw, 30px); font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+  .fund p { margin-top: 8px; font-size: 16px; color: rgba(255,255,255,.92); }
+  .fund .right { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+  .pay { display: flex; gap: 8px; }
+  .pay i { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #1c0c06; box-shadow: inset 0 1px 0 rgba(255,255,255,.08); transition: transform .3s var(--spring); }
+  .pay i:hover { transform: translateY(-3px); }
+  .pay img { width: 20px; height: 20px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 22px; border-radius: var(--radius); background: #fff; color: #1a1714; font: 500 15px/1 var(--f-body); white-space: nowrap; transition: background-color .15s, transform .2s; }
+  .btn:hover { background: #efebe6; }
+  .end { height: 140px; }
+
+  @media (max-width: 900px) {
+    .story { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .stage-col { display: none; }
+    .step { min-height: 0; opacity: 1; padding: 0 0 80px; }
+    .inline-scene { position: relative; margin-top: 28px; }
+    .inline-scene .scene { position: relative; inset: auto; opacity: 1; transform: none; pointer-events: auto; }
+    .inline-scene .screen { height: auto; min-height: 340px; }
+    .inline-scene .body { padding-bottom: 46px; }
+    .inline-scene .chat .screen { height: 440px; }
+    .inline-scene .chat .body { padding-bottom: 0; }
+    .inline-scene .chat .thread { padding-bottom: 54px; }
+    .sky { height: 400px; }
+    .node .tile { width: 48px; height: 48px; border-radius: 13px; }
+    .node img { width: 24px; height: 24px; }
+    .node > span:last-child { display: none; }
+    .hub { width: 72px; height: 72px; border-radius: 20px; }
+    .flare { width: 38px; height: 38px; }
+  }
+  @media (max-width: 600px) {
+    .intro { padding-top: 96px; }
+    .sky { height: 350px; }
+    .story { margin-top: 80px; }
+    .fund { padding: 26px 22px; margin-top: 40px; }
+    .term { font-size: 12px; padding: 16px; }
+    .term .bar-t { width: 70px; }
+    .ticket { font-size: 13.5px; padding: 16px; gap: 12px; }
+    .ticket .seen { font-size: 12px; }
+    .team { padding: 12px 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flame, .flame img, .ember, .hub .flare, .stage .aura i, .via::before, .typing i, .finding .sev::before { animation: none !important; }
+  }
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<div class="wrap study"><span>API section · G2 (round 7)</span><a href="v6.html">G</a><a href="v5.html">F</a><a href="v4.html">E</a><a href="v3.html">D</a><a href="index.html">A, B, C</a><a href="../r7/prometheus.html#api">Current (r7)</a></div>
+
+<section class="api" id="api" aria-labelledby="api-h">
+  <!-- 1 · one key, every tool -->
+  <div class="wrap intro">
+    <p class="label">API</p>
+    <h2 class="display" id="api-h">One key for every AI tool you use.</h2>
+    <p class="lead">Give your coding agent, your assistant or your own app a PayPerQ key, and it runs on any of 388 models.</p>
+    <div class="sky" id="sky" aria-label="One PayPerQ key powering Claude Code, Codex, Cursor, OpenCode, Cline, OpenClaw, Hermes Agent, Aider, Roo, Kilo Code, Goose and Open WebUI.">
+      <svg id="sky-svg" aria-hidden="true"><defs id="sky-defs"></defs></svg>
+      <div class="hub" id="hub" aria-hidden="true"><span class="flare"><span class="flame"><img class="base" src="../assets/flame-base.png" alt=""><img class="inner" src="../assets/flame-inner.png" alt=""></span><i class="ember"></i><i class="ember"></i><i class="ember"></i></span></div>
+    </div>
+    <p class="sky-foot">These and 12 more have step-by-step guides. <a class="textlink" href="https://ppq.ai/integrate">See all integrations</a></p>
+  </div>
+
+  <!-- 2 · what people build -->
+  <div class="wrap story" id="story">
+    <div class="steps">
+      <p class="label">What people build with it</p>
+      <article class="step" data-step="0">
+        <span class="n">01</span>
+        <h3 class="display">Let an agent write the code.</h3>
+        <p>It reads your repository, makes the change and runs the tests until they pass.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-claude-code-with-payperq"><img src="../assets/logos/tools/claude-code.png" alt="">Claude Code</a>
+          <a href="https://ppq.ai/blog/using-codex-with-payperq"><img class="inv" src="../assets/logos/models/openai.svg" alt="">Codex</a>
+          <a href="https://ppq.ai/blog/using-cursor-with-payperq"><img src="../assets/logos/tools/cursor.svg" alt="">Cursor</a>
+          <a href="https://ppq.ai/blog/using-opencode-with-payperq"><img src="../assets/logos/tools/opencode.png" alt="">OpenCode</a>
+          <a href="https://ppq.ai/blog/using-cline-with-payperq"><img src="../assets/logos/tools/cline.png" alt="">Cline</a>
+        </div>
+      </article>
+      <article class="step" data-step="1">
+        <span class="n">02</span>
+        <h3 class="display">An assistant that lives in your messages.</h3>
+        <p>It runs on your own server, answers in Telegram, WhatsApp or email, and gets things done for you.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-openclaw-with-payperq"><img src="../assets/logos/tools/openclaw.svg" alt="">OpenClaw</a>
+          <a href="https://ppq.ai/blog/using-hermes-with-payperq"><img src="../assets/logos/tools/hermes.png" alt="">Hermes Agent</a>
+        </div>
+      </article>
+      <article class="step" data-step="2">
+        <span class="n">03</span>
+        <h3 class="display">AI inside your own product.</h3>
+        <p>Support replies, search, summaries. Names and emails are replaced before any model sees them.</p>
+        <div class="tools"><span>OpenAI SDK</span><span>Anthropic SDK</span><a href="https://ppq.ai/blog/pii-redaction">PII redaction</a></div>
+      </article>
+      <article class="step" data-step="3">
+        <span class="n">04</span>
+        <h3 class="display">Put a team of agents on it.</h3>
+        <p>They audit your app for security holes, research a market or read your sources, and hand you the report.</p>
+        <div class="tools">
+          <a href="https://ppq.ai/blog/using-strix-with-payperq">Strix</a>
+          <a href="https://ppq.ai/blog/using-tradingagents-with-payperq">TradingAgents</a>
+          <a href="https://ppq.ai/blog/using-open-notebook-with-payperq">Open Notebook</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="stage-col" id="stage-col">
+      <div class="stage" id="stage">
+        <div class="aura" aria-hidden="true"><i></i><i></i></div>
+        <div class="tilt" id="tilt">
+          <div class="scene" data-scene="code" role="img" aria-label="A coding agent on PayPerQ finds a bug, edits the file, runs 128 tests that pass, and commits the fix.">
+            <div class="screen"><div class="bar"><span class="dots"><i></i><i></i><i></i></span>~/shop<span class="via">claude-sonnet-5.5</span></div><div class="body"><div class="term" aria-hidden="true"></div><div class="meter" aria-hidden="true"></div></div><button class="replay" type="button">↻ Replay</button></div>
+          </div>
+          <div class="scene chat" data-scene="chat" role="img" aria-label="A personal assistant checks email and calendar, reports the landlord accepted a 5% raise, and saves a thank-you draft.">
+            <div class="screen"><div class="bar"><span class="av"></span><span class="who">Assistant<small>online</small></span><span class="via">kimi-k3</span></div><div class="body"><div class="thread" aria-hidden="true"></div></div><button class="replay" type="button">↻ Replay</button></div>
+          </div>
+          <div class="scene" data-scene="pii" role="img" aria-label="A support ticket: the customer's name and email are scrambled into placeholders before the model sees them, and restored in the reply.">
+            <div class="screen"><div class="bar">Support · ticket 4471<span class="via">claude-haiku-5.5</span></div><div class="body"><div class="ticket" aria-hidden="true"></div></div><button class="replay" type="button">↻ Replay</button></div>
+          </div>
+          <div class="scene" data-scene="team" role="img" aria-label="Four security agents work in parallel on an app and report one critical SQL injection with a working proof.">
+            <div class="screen"><div class="bar">Security audit · shop-api<span class="via">deepseek-v4.1-flash</span></div><div class="body"><div class="team" aria-hidden="true"></div></div><button class="replay" type="button">↻ Replay</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 · fund your key -->
+  <div class="wrap">
+    <div class="fund">
+      <div>
+        <h3>One key, one balance, every tool.</h3>
+        <p>Top up from $0.10 and use it everywhere. No subscription, no email.</p>
+      </div>
+      <div class="right">
+        <div class="pay" aria-label="Pay with Lightning, Bitcoin, Monero, USDT or Litecoin">
+          <i title="Lightning"><img src="../assets/logos/pay/lightning-network.svg" alt=""></i>
+          <i title="Bitcoin"><img src="../assets/logos/pay/bitcoin.svg" alt=""></i>
+          <i title="Monero"><img src="../assets/logos/pay/monero.svg" alt=""></i>
+          <i title="USDT"><img src="../assets/logos/pay/tether.svg" alt=""></i>
+          <i title="Litecoin"><img src="../assets/logos/pay/litecoin.svg" alt=""></i>
+        </div>
+        <a class="btn" href="https://ppq.ai/api-docs">Add credit</a>
+      </div>
+    </div>
+  </div>
+  <div class="end"></div>
+</section>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mobile = matchMedia('(max-width: 900px)');
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  /* =============== 1 · constellation =============== */
+  const tools = [
+    ['tools/claude-code.png', 'Claude Code'], ['models/openai.svg', 'Codex', 1], ['tools/cursor.svg', 'Cursor'], ['tools/opencode.png', 'OpenCode'],
+    ['tools/cline.png', 'Cline'], ['tools/openclaw.svg', 'OpenClaw'], ['tools/hermes.png', 'Hermes Agent'], ['tools/aider.png', 'Aider'],
+    ['tools/roo.svg', 'Roo', 1], ['tools/kilo.svg', 'Kilo Code'], ['tools/goose.png', 'Goose'], ['tools/openwebui.png', 'Open WebUI', 1],
+  ];
+  const NS = 'http://www.w3.org/2000/svg';
+  const sky = document.getElementById('sky'), svg = document.getElementById('sky-svg'), defs = document.getElementById('sky-defs');
+  const nodes = [], base = [], lit = [], packets = [], grads = [], anims = [];
+  tools.forEach(([src, name, inv], i) => {
+    const n = document.createElement('div'); n.className = 'node';
+    n.innerHTML = `<span class="tile"><img ${inv ? 'class="inv"' : ''} src="../assets/logos/${src}" alt=""></span><span>${name}</span>`;
+    sky.appendChild(n); nodes.push(n);
+    const g = document.createElementNS(NS, 'linearGradient'); g.id = 'g' + i; g.setAttribute('gradientUnits', 'userSpaceOnUse');
+    g.innerHTML = '<stop offset="0" stop-color="#e97d49" stop-opacity=".6"/><stop offset="1" stop-color="#bf3c1b" stop-opacity=".14"/>';
+    defs.appendChild(g); grads.push(g);
+    const mk = (cls) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('class', cls); svg.appendChild(p); return p; };
+    base.push(mk('base')); const l = mk('lit-path'); l.setAttribute('stroke', `url(#g${i})`); lit.push(l); packets.push(mk('packet'));
+    n.addEventListener('mouseenter', () => { lit[i].classList.add('hot'); const a = anims[i]; if (a) a.playbackRate = 2.6; });
+    n.addEventListener('mouseleave', () => { lit[i].classList.remove('hot'); const a = anims[i]; if (a) a.playbackRate = 1; });
+  });
+  const layout = () => {
+    const W = sky.clientWidth, H = sky.clientHeight, cx = W / 2, cy = H / 2;
+    const narrow = W < 700;
+    const rx = W * (narrow ? .40 : .43), ry = H * (narrow ? .41 : .39);
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    tools.forEach((t, i) => {
+      const a = (-90 + 15 + i * (360 / tools.length)) * Math.PI / 180;
+      const x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a);
+      nodes[i].style.left = x + 'px'; nodes[i].style.top = y + 'px';
+      // a gentle curve, every line bending the same way, like a slow spiral
+      nodes[i].classList.toggle('top', y < cy - 10);
+      // stop at the tile's edge so lines never cross the labels
+      const L = Math.hypot(x - cx, y - cy), tile = narrow ? 26 : 30;
+      const ex = x - (x - cx) / L * tile, ey = y - (y - cy) / L * tile;
+      const mx = (cx + ex) / 2, my = (cy + ey) / 2, dx = ex - cx, dy = ey - cy, k = .22;
+      const qx = mx - dy * k, qy = my + dx * k;
+      const d = `M${cx},${cy} Q${qx},${qy} ${ex},${ey}`;
+      [base[i], lit[i], packets[i]].forEach((p) => p.setAttribute('d', d));
+      grads[i].setAttribute('x1', cx); grads[i].setAttribute('y1', cy); grads[i].setAttribute('x2', ex); grads[i].setAttribute('y2', ey);
+      const len = packets[i].getTotalLength();
+      packets[i].style.strokeDasharray = `14 ${len + 40}`;
+      if (anims[i]) anims[i].cancel();
+      if (!reduce) anims[i] = packets[i].animate([{ strokeDashoffset: 14 }, { strokeDashoffset: -len }], { duration: 1500 + len * 4, iterations: Infinity, delay: i * 260, easing: 'cubic-bezier(.45,0,.25,1)' });
+    });
+  };
+  layout(); addEventListener('resize', layout);
+  const hub = document.getElementById('hub'); let litCount = 0, flareT;
+  const light = (k) => {
+    if (k > litCount && !reduce) { hub.classList.remove('flaring'); void hub.offsetWidth; hub.classList.add('flaring'); clearTimeout(flareT); flareT = setTimeout(() => hub.classList.remove('flaring'), 600); }
+    litCount = k;
+    nodes.forEach((n, i) => { const on = i < k; n.classList.toggle('lit', on); lit[i].classList.toggle('on', on); packets[i].classList.toggle('on', on && !reduce); });
+    sky.style.setProperty('--glow', (k / tools.length).toFixed(2));
+  };
+  if (reduce) light(tools.length);
+  else {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(() => {
+        const r = sky.getBoundingClientRect(), vh = innerHeight;
+        const start = vh * .9, end = vh * .5 - r.height / 2;
+        light(Math.round(Math.min(1, Math.max(0, (start - r.top) / (start - end))) * tools.length));
+        ticking = false;
+      });
+    };
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  }
+
+  /* =============== 2 · scenes =============== */
+  const STOP = Symbol('stop');
+  const runs = new WeakMap();
+  // every scene script gets helpers that stop cleanly when the scene is replaced
+  function makeCtx(scene, instant) {
+    const id = (runs.get(scene) || 0) + 1; runs.set(scene, id);
+    const alive = () => runs.get(scene) === id;
+    const wait = async (ms) => { if (!instant) await sleep(ms); if (!alive()) throw STOP; };
+    const el = (tag, cls, html, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); if (!instant) e.classList.add('enter'); return e; };
+    const type = async (node, text, speed = 28) => {
+      if (instant) { node.textContent = text; return; }
+      const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      for (let c = 1; c <= text.length; c++) { node.innerHTML = esc(text.slice(0, c)) + '<span class="caret"></span>'; await wait(speed + Math.random() * speed * .6); }
+      node.textContent = text;
+    };
+    const stream = async (node, html, speed = 45) => {   // word by word, keeps <b> tags
+      if (instant) { node.innerHTML = html; return; }
+      const parts = html.split(/(<[^>]+>|\s+)/).filter(Boolean); let out = '';
+      for (const p of parts) { out += p; if (p[0] !== '<' && p.trim()) { node.innerHTML = out; await wait(speed + Math.random() * 30); } }
+      node.innerHTML = html;
+    };
+    const tween = async (ms, fn) => {
+      if (instant) { fn(1); return; }
+      const t0 = performance.now();
+      while (true) { const k = Math.min(1, (performance.now() - t0) / ms); fn(k); if (k >= 1) break; await wait(16); }
+    };
+    return { alive, wait, el, type, stream, tween, instant };
+  }
+
+  const scripts = {
+    async code(s, c) {
+      const t = s.querySelector('.term'), m = s.querySelector('.meter');
+      t.innerHTML = ''; m.innerHTML = 'requests <b>0</b> · spent <b>$0.000</b>';
+      let req = 0, spent = 0;
+      const bill = async (add) => { req++; const from = spent; spent += add; await c.tween(500, (k) => (m.innerHTML = `requests <b>${req}</b> · spent <b>$${(from + add * k).toFixed(3)}</b>`)); };
+      const r0 = c.el('div', 'row', '<span class="p">&gt;</span><span class="you"></span>', t);
+      await c.wait(300); await c.type(r0.querySelector('.you'), 'fix the failing checkout test', 34); await c.wait(350);
+      const step = async (html, ms, cost) => {
+        const r = c.el('div', 'row', `<span><i class="spin"></i></span><span>${html}</span>`, t);
+        await c.wait(ms); bill(cost).catch(() => {}); r.firstChild.innerHTML = '●';
+        return r;
+      };
+      await step('Reading <b>src/checkout/total.ts</b>', 800, .021);
+      await step('Found it: tax is applied twice on discounts', 900, .034);
+      const ed = await step('Editing <b>total.ts</b>', 700, .029);
+      ed.lastChild.innerHTML = 'Edited <b>total.ts</b> <span class="a">+4</span> <span class="d">−6</span>';
+      const tr = c.el('div', 'row', '<span><i class="spin"></i></span><span>Running tests<span class="bar-t"><i></i></span><b class="n">0</b>/128</span>', t);
+      const bar = tr.querySelector('.bar-t i'), n = tr.querySelector('.n');
+      await c.tween(1700, (k) => { bar.style.width = (k * 100) + '%'; n.textContent = Math.round(k * 128); });
+      tr.firstChild.innerHTML = '●';
+      c.el('div', 'row pass', '<span>✓</span><span>128 passed · 0 failed</span>', t); await c.wait(600);
+      const cm = await step('Committing', 600, .034);
+      cm.lastChild.innerHTML = 'Committed <b>fix: apply tax once</b>';
+    },
+    async chat(s, c) {
+      const th = s.querySelector('.thread'); th.innerHTML = '';
+      await c.wait(300);
+      c.el('div', 'msg me', 'Anything urgent before my 10am?', th); await c.wait(700);
+      for (const label of ['read 14 new emails', 'checked your calendar']) {
+        const tl = c.el('div', 'tool', `<i class="spin"></i>${label}`, th); await c.wait(750);
+        tl.innerHTML = `<span class="ok">✓</span>${label}`;
+      }
+      let ty = c.el('div', 'typing', '<i></i><i></i><i></i>', th); await c.wait(900); ty.remove();
+      const a1 = c.el('div', 'msg ai', '', th);
+      await c.stream(a1, '<b>Your landlord accepted the 5% raise.</b> And the 10am moved to 10:30, so I pushed your gym slot.');
+      await c.wait(800);
+      c.el('div', 'msg me', 'Nice. Draft him a thank-you.', th); await c.wait(600);
+      ty = c.el('div', 'typing', '<i></i><i></i><i></i>', th); await c.wait(1000); ty.remove();
+      const a2 = c.el('div', 'msg ai', '', th);
+      await c.stream(a2, 'Done. It’s in your drafts:');
+      c.el('div', 'draft', '<small>✓ Draft saved · Re: lease renewal</small><span>Thanks, Mark. 5% works for me, happy to sign this week.</span>', a2);
+    },
+    async pii(s, c) {
+      const tk = s.querySelector('.ticket'); tk.innerHTML = '';
+      const name = 'Ana Souza', mail = 'ana.souza@mail.com';
+      const b1 = c.el('div', '', '<p class="k">Customer</p><p class="in"></p>', tk);
+      await c.wait(250); await c.type(b1.querySelector('.in'), `Hi, I’m ${name}, ${mail}. My order 4471 hasn’t arrived.`, 14);
+      await c.wait(400);
+      const b2 = c.el('div', '', '<p class="k">What the model sees <span class="chip">pii_redaction</span></p><p class="seen"><span class="scan"></span><span class="txt"></span></p>', tk);
+      const txt = b2.querySelector('.txt'), scan = b2.querySelector('.scan');
+      const tpl = (a, b) => `Hi, I’m ${a}, ${b}. My order 4471 hasn’t arrived.`;
+      txt.innerHTML = tpl(name, mail); await c.wait(350);
+      // a scan passes over the text and scrambles the personal data into placeholders
+      if (!c.instant) scan.animate([{ left: '-80px' }, { left: '100%' }], { duration: 900, easing: 'ease-in-out' });
+      const G = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&@';
+      const scr = (len) => Array.from({ length: len }, () => G[(Math.random() * G.length) | 0]).join('');
+      await c.tween(900, (k) => {
+        if (k < 1) txt.innerHTML = tpl(`<span class="scr">${scr(name.length)}</span>`, `<span class="scr">${scr(mail.length)}</span>`);
+      });
+      txt.innerHTML = tpl('<span class="ph">⟦PERSON_1⟧</span>', '<span class="ph">⟦EMAIL_1⟧</span>');
+      await c.wait(700);
+      const b3 = c.el('div', '', '<p class="k">Reply sent to the customer</p><p class="out"></p>', tk);
+      await c.stream(b3.querySelector('.out'), `Hi <span class="back">Ana</span>, sorry for the wait. Order 4471 left the warehouse this morning. Tracking is on its way to <span class="back">${mail}</span>.`, 40);
+    },
+    async team(s, c) {
+      const tm = s.querySelector('.team'); tm.innerHTML = '';
+      const agents = [['Recon', 'mapping routes', 'mapped 42 routes', 1600, 72], ['Auth', 'checking sessions', 'sessions and tokens OK', 2400, 160], ['Injection', 'testing every input', 'found 1 injectable input', 3000, 185], ['Exploit', 'confirming', 'proof works', 1400, 48]];
+      const rows = agents.map(([nm, doing]) => c.el('div', 'agent', `<span class="st"><i class="spin"></i></span><span class="nm"><b>${nm}</b> ${doing}…</span><span class="t">0:00</span><span class="pg"><i></i></span>`, tm));
+      const fmt = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+      const work = async (i, startAfter = 0) => {
+        const [nm, , doneTxt, ms, fake] = agents[i]; const r = rows[i];
+        if (startAfter) { r.querySelector('.st').innerHTML = '<span style="color:var(--fg-3)">·</span>'; r.querySelector('.nm').innerHTML = `<b>${nm}</b> waiting…`; await startAfter; r.querySelector('.st').innerHTML = '<i class="spin"></i>'; r.querySelector('.nm').innerHTML = `<b>${nm}</b> ${agents[i][1]}…`; }
+        await c.tween(ms, (k) => { r.querySelector('.pg i').style.width = (k * 100) + '%'; r.querySelector('.t').textContent = fmt(k * fake); });
+        r.classList.add('done'); r.querySelector('.st').innerHTML = '<span class="ok">✓</span>'; r.querySelector('.nm').innerHTML = `<b>${nm}</b> ${doneTxt}`;
+      };
+      await c.wait(300);
+      const inj = work(2);
+      await Promise.all([work(0), work(1), inj, work(3, inj)]);
+      await c.wait(300);
+      c.el('div', 'finding', '<span class="sev">1 critical</span><p>SQL injection in <span style="font-family:var(--f-mono)">/search?q=</span></p><small>Working proof and a suggested fix are in report.md</small>', tm);
+    },
+  };
+
+  async function play(scene, instant = reduce) {
+    scene.classList.remove('done');
+    const c = makeCtx(scene, instant);
+    try { await scripts[scene.dataset.scene](scene, c); if (c.alive()) scene.classList.add('done'); }
+    catch (e) { if (e !== STOP) throw e; }
+  }
+  const stopScene = (scene) => runs.set(scene, (runs.get(scene) || 0) + 1);
+
+  const steps = [...document.querySelectorAll('.step')];
+  const scenes = [...document.querySelectorAll('.scene')];
+  const tilt = document.getElementById('tilt'), stage = document.getElementById('stage'), stageCol = document.getElementById('stage-col');
+  scenes.forEach((s) => s.querySelector('.replay').addEventListener('click', () => play(s, false)));
+
+  // desktop: one shared, sticky stage; phones: each scene under its step
+  const arrange = () => {
+    scenes.forEach((s, i) => {
+      if (mobile.matches) {
+        let slot = steps[i].querySelector('.inline-scene');
+        if (!slot) { slot = document.createElement('div'); slot.className = 'inline-scene'; steps[i].appendChild(slot); }
+        slot.appendChild(s);
+      } else tilt.appendChild(s);
+    });
+  };
+  arrange();
+
+  const auraPos = [['55%', '0%'], ['-5%', '10%'], ['50%', '45%'], ['5%', '50%']];
+  let current = -1;
+  const activate = (i) => {
+    if (i === current) return; current = i;
+    steps.forEach((st, k) => st.classList.toggle('on', k === i));
+    scenes.forEach((sc, k) => { sc.classList.toggle('on', k === i); if (k !== i) stopScene(sc); });
+    stage.style.setProperty('--ax', auraPos[i][0]); stage.style.setProperty('--ay', auraPos[i][1]);
+    play(scenes[i]);
+  };
+  const ioStep = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting && !mobile.matches) activate(+e.target.dataset.step); }), { rootMargin: '-45% 0px -45% 0px' });
+  steps.forEach((s) => ioStep.observe(s));
+  const ioScene = new IntersectionObserver((es) => es.forEach((e) => { if (mobile.matches && e.isIntersecting && !e.target.dataset.played) { e.target.dataset.played = 1; play(e.target); } }), { threshold: .45 });
+  scenes.forEach((s) => ioScene.observe(s));
+  mobile.addEventListener('change', () => { arrange(); current = -1; scenes.forEach((s) => play(s, true)); });
+  if (!mobile.matches) activate(0);
+
+  // the stage leans toward the pointer and a soft light follows it
+  if (!reduce) {
+    stageCol.addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      tilt.style.setProperty('--ry', ((x - .5) * 3).toFixed(2) + 'deg');
+      tilt.style.setProperty('--rx', ((.5 - y) * 2).toFixed(2) + 'deg');
+      scenes.forEach((s) => { const sc = s.querySelector('.screen'); sc.style.setProperty('--mx', (x * 100) + '%'); sc.style.setProperty('--my', (y * 100) + '%'); });
+    });
+    stageCol.addEventListener('pointerleave', () => { tilt.style.setProperty('--ry', '0deg'); tilt.style.setProperty('--rx', '0deg'); });
+  }
+})();
+</script>
+</body>
+</html>

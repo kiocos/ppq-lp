@@ -1,0 +1,566 @@
+{
+ "title": "Command Code - The best coding agent for open models",
+ "bodyBg": "rgb(0, 0, 0)",
+ "bodyColor": "rgb(250, 250, 250)",
+ "pageH": 11063,
+ "fonts": [
+  "Geist 100 900",
+  "Geist Mono 100 900",
+  "Geist Fallback: Arial normal",
+  "Geist Fallback: Helvetica normal",
+  "Geist Mono Fallback normal"
+ ],
+ "h1": [
+  {
+   "tag": "h1",
+   "text": "Meet the coding agent built for open models. Command Code.",
+   "font": "Geist",
+   "size": "52px",
+   "weight": "600",
+   "lh": "54.6px",
+   "ls": "-2.34px",
+   "color": "rgb(250, 250, 250)",
+   "w": 511,
+   "y": 271
+  }
+ ],
+ "h2": [
+  {
+   "tag": "h2",
+   "text": "If I were building GitHub for software built with AI, Command is what it would l",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 1060
+  },
+  {
+   "tag": "h2",
+   "text": "// b e s t c o d i n g a g e n t f o r o p e n m o d e l s .",
+   "font": "ui-monospace",
+   "size": "24px",
+   "weight": "500",
+   "lh": "32px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1054,
+   "y": 1237
+  },
+  {
+   "tag": "h2",
+   "text": "best coding agent for open models.",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 1268
+  },
+  {
+   "tag": "h2",
+   "text": "// Take a closer look.",
+   "font": "ui-monospace",
+   "size": "18px",
+   "weight": "500",
+   "lh": "28px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1102,
+   "y": 2181
+  },
+  {
+   "tag": "h2",
+   "text": "//command code desktop app",
+   "font": "ui-monospace",
+   "size": "24px",
+   "weight": "500",
+   "lh": "32px",
+   "ls": "-0.6px",
+   "color": "rgb(250, 250, 250)",
+   "w": 363,
+   "y": 2648
+  },
+  {
+   "tag": "h2",
+   "text": "// s t o p p a t c h i n g A I s l o p .",
+   "font": "ui-monospace",
+   "size": "24px",
+   "weight": "500",
+   "lh": "32px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1054,
+   "y": 3257
+  },
+  {
+   "tag": "h2",
+   "text": "stop patching AI slop.",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 3288
+  },
+  {
+   "tag": "h2",
+   "text": "Hello, taste. The meta neuro-symbolic AI model that pairs LLMs with your coding ",
+   "font": "Geist",
+   "size": "30px",
+   "weight": "400",
+   "lh": "36px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 170)",
+   "w": 1000,
+   "y": 3792
+  },
+  {
+   "tag": "h2",
+   "text": "// t a s t e - 1",
+   "font": "ui-monospace",
+   "size": "72px",
+   "weight": "500",
+   "lh": "72px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 359,
+   "y": 4518
+  },
+  {
+   "tag": "h2",
+   "text": "Subscribe. Be a GOAT.",
+   "font": "Geist",
+   "size": "56px",
+   "weight": "600",
+   "lh": "57.12px",
+   "ls": "-1.96px",
+   "color": "rgb(250, 250, 250)",
+   "w": 414,
+   "y": 5712
+  },
+  {
+   "tag": "h2",
+   "text": "Developers love it. Founders, too.",
+   "font": "Geist",
+   "size": "56px",
+   "weight": "600",
+   "lh": "58.8px",
+   "ls": "-1.12px",
+   "color": "rgb(250, 250, 250)",
+   "w": 713,
+   "y": 6471
+  },
+  {
+   "tag": "h2",
+   "text": "// t a k e c o m m a n d o f y o u r c o d e .",
+   "font": "ui-monospace",
+   "size": "24px",
+   "weight": "500",
+   "lh": "32px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1054,
+   "y": 7582
+  }
+ ],
+ "h3": [
+  {
+   "tag": "h3",
+   "text": "//Slop. Generic. Not yours. LLMs generate sloppy code. Not your patterns. Not yo",
+   "font": "Geist",
+   "size": "20px",
+   "weight": "600",
+   "lh": "28px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 478,
+   "y": 3424
+  },
+  {
+   "tag": "h3",
+   "text": "//Open models work best in Command Code. Free 1M tool call repairs per 1T tokens",
+   "font": "Geist",
+   "size": "20px",
+   "weight": "600",
+   "lh": "28px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 479,
+   "y": 3424
+  },
+  {
+   "tag": "h3",
+   "text": "Built to scale.",
+   "font": "Geist",
+   "size": "36px",
+   "weight": "500",
+   "lh": "36.72px",
+   "ls": "-1.08px",
+   "color": "rgb(250, 250, 250)",
+   "w": 263,
+   "y": 5773
+  },
+  {
+   "tag": "h3",
+   "text": "Code 10× faster. Built for your architecture. Not the internet's.",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 7821
+  },
+  {
+   "tag": "h3",
+   "text": "Reviews, in half. Cleaner code. First try.",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 7821
+  },
+  {
+   "tag": "h3",
+   "text": "Speed. 10× of it. Tuned to the way you work.",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 8460
+  },
+  {
+   "tag": "h3",
+   "text": "Bugs, slashed 5×. Fewer bugs. More ship.",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 8460
+  }
+ ],
+ "p": [
+  {
+   "tag": "p",
+   "text": "Command Code is the best coding agent for open models. Tool call repairs on ever",
+   "font": "Geist",
+   "size": "20px",
+   "weight": "400",
+   "lh": "28px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 270
+  },
+  {
+   "tag": "p",
+   "text": "Code 10× faster. Reviews, 2× quicker. Bugs 5× fewer.",
+   "font": "Geist",
+   "size": "18px",
+   "weight": "400",
+   "lh": "28px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 170)",
+   "w": 426,
+   "y": 533
+  },
+  {
+   "tag": "p",
+   "text": "Start with $1/mo or $10/mo, get up to $100 in credits.",
+   "font": "Geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "w": 426,
+   "y": 569
+  },
+  {
+   "tag": "p",
+   "text": "Trusted by 100K+ devs at teams you trust.",
+   "font": "Geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "20px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 170)",
+   "w": 143,
+   "y": 850
+  },
+  {
+   "tag": "p",
+   "text": "If I were building GitHub for software built with AI, Command is what it would l",
+   "font": "Geist",
+   "size": "14px",
+   "weight": "400",
+   "lh": "19.25px",
+   "ls": "-0.35px",
+   "color": "rgb(250, 250, 250)",
+   "w": 517,
+   "y": 1050
+  },
+  {
+   "tag": "p",
+   "text": "Ships. Fixes. Tests. Refactors. Learns you, all the while.",
+   "font": "Geist",
+   "size": "20px",
+   "weight": "400",
+   "lh": "25px",
+   "ls": "-0.5px",
+   "color": "rgb(161, 161, 170)",
+   "w": 515,
+   "y": 1369
+  },
+  {
+   "tag": "p",
+   "text": "Command Code is the best coding agent for open models. It builds software, repai",
+   "font": "Geist",
+   "size": "16px",
+   "weight": "400",
+   "lh": "24px",
+   "ls": "normal",
+   "color": "rgb(250, 250, 250)",
+   "w": 1,
+   "y": 1381
+  },
+  {
+   "tag": "p",
+   "text": "//Always learning. Every accept, reject, and edit is a signal — auto-generates i",
+   "font": "Geist",
+   "size": "20px",
+   "weight": "400",
+   "lh": "28px",
+   "ls": "-0.5px",
+   "color": "rgb(250, 250, 250)",
+   "w": 495,
+   "y": 1505
+  },
+  {
+   "tag": "p",
+   "text": "Code with your agent. Review changes, run commands, and preview your app in one ",
+   "font": "Geist",
+   "size": "24px",
+   "weight": "400",
+   "lh": "33px",
+   "ls": "-0.6px",
+   "color": "rgb(161, 161, 170)",
+   "w": 363,
+   "y": 2798
+  },
+  {
+   "tag": "p",
+   "text": "Available on macOS, Linux & Windows·Read docs",
+   "font": "Geist",
+   "size": "12px",
+   "weight": "400",
+   "lh": "16px",
+   "ls": "normal",
+   "color": "rgb(161, 161, 170)",
+   "w": 363,
+   "y": 3016
+  },
+  {
+   "tag": "p",
+   "text": "Command Code",
+   "font": "Geist",
+   "size": "10.5px",
+   "weight": "400",
+   "lh": "13.125px",
+   "ls": "normal",
+   "color": "rgb(255, 255, 255)",
+   "w": 42,
+   "y": 3087
+  },
+  {
+   "tag": "p",
+   "text": "Desktop preview",
+   "font": "Geist",
+   "size": "9px",
+   "weight": "400",
+   "lh": "11.25px",
+   "ls": "normal",
+   "color": "rgb(165, 153, 233)",
+   "w": 42,
+   "y": 3094
+  },
+  {
+   "tag": "p",
+   "text": "Root cause found in the first render. The sidebar painted before",
+   "font": "Geist",
+   "size": "13px",
+   "weight": "400",
+   "lh": "21.45px",
+   "ls": "normal",
+   "color": "rgb(255, 255, 255)",
+   "w": 334,
+   "y": 2823
+  },
+  {
+   "tag": "p",
+   "text": "the persisted theme resolved, then swapped tokens one frame later.",
+   "font": "Geist",
+   "size": "13px",
+   "weight": "400",
+   "lh": "21.45px",
+   "ls": "normal",
+   "color": "rgb(255, 255, 255)",
+   "w": 334,
+   "y": 2837
+  }
+ ],
+ "sections": [
+  {
+   "tag": "div",
+   "y": 2752,
+   "h": 280,
+   "pt": "0px",
+   "pb": "0px",
+   "bg": "rgba(0, 0, 0, 0)"
+  },
+  {
+   "tag": "div",
+   "y": 3032,
+   "h": 75,
+   "pt": "0px",
+   "pb": "0px",
+   "bg": "rgb(30, 30, 63)"
+  }
+ ],
+ "buttons": [
+  {
+   "text": "Docs",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "radius": "3.35544e+07px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "Features",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "radius": "3.35544e+07px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "About",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "radius": "3.35544e+07px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "Pricing",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "radius": "3.35544e+07px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "Contact",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "radius": "3.35544e+07px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "GOAT",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.71181 0.00361261 -0.0124171 / 0.8)",
+   "radius": "3.35544e+07px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "Sign Up",
+   "bg": "rgb(250, 250, 250)",
+   "color": "rgb(0, 0, 0)",
+   "radius": "100px",
+   "h": 36,
+   "font": "14px/500",
+   "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0"
+  },
+  {
+   "text": "Command Code raised $5M seed.",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.985098 0.0000447631 0.0000197291 / 0.8)",
+   "radius": "0px",
+   "h": 20,
+   "font": "14px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "GOAT\n$10/mo with up to $100 cr",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "oklab(0.985098 0.0000447631 0.0000197291 / 0.6)",
+   "radius": "0px",
+   "h": 16,
+   "font": "12px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "Download",
+   "bg": "rgb(46, 27, 156)",
+   "color": "rgb(255, 255, 255)",
+   "radius": "3.35544e+07px",
+   "h": 34,
+   "font": "14px/500",
+   "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0"
+  },
+  {
+   "text": "npm i -g command-code",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(161, 161, 170)",
+   "radius": "3.35544e+07px",
+   "h": 34,
+   "font": "16px/400",
+   "shadow": "none"
+  },
+  {
+   "text": "cmd.mp4",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(250, 250, 250)",
+   "radius": "100px",
+   "h": 44,
+   "font": "14px/500",
+   "shadow": "none"
+  },
+  {
+   "text": "$1/mo",
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(85, 106, 243)",
+   "radius": "0px",
+   "h": 18,
+   "font": "14px/600",
+   "shadow": "none"
+  }
+ ]
+}

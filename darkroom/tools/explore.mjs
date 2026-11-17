@@ -1,0 +1,20 @@
+// Look at the app's new-chat state and current privacy pane before recording
+import { openApp, APP, seedConversations } from '../../uniform/tools/app-common.mjs';
+import { conversations } from '../../uniform/tools/seed-data.mjs';
+const theme = process.argv[2] || 'dark';
+const { ctx, page } = await openApp({ theme, dpr: 1 });
+await page.goto(APP + '/chat', { waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(4000);
+await page.evaluate((theme) => { localStorage.setItem('showPrivacyPane', 'false'); localStorage.setItem('theme', theme); }, theme);
+await seedConversations(page, conversations, null);
+await page.reload({ waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(7000);
+const d = page.getByRole('button', { name: 'Dismiss' }); if (await d.count()) await d.first().click().catch(() => {});
+await page.getByText('New chat', { exact: true }).first().click().catch((e) => console.log('no new chat', e.message));
+await page.waitForTimeout(2000);
+await page.screenshot({ path: '/tmp/dr-newchat-' + theme + '.png' });
+await page.getByText('Reply to rent increase', { exact: true }).first().click(); await page.waitForTimeout(2000);
+await page.getByText('Verified', { exact: true }).first().click().catch(() => {}); await page.waitForTimeout(3500);
+await page.screenshot({ path: '/tmp/dr-privacy-' + theme + '.png' });
+console.log(await page.evaluate(() => [...document.querySelectorAll('*')].map(e => e.childNodes.length === 1 && e.textContent).filter(t => t && /v0\.\d+|Build/.test(t)).slice(0, 5)));
+await ctx.close();
