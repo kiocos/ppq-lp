@@ -10,7 +10,7 @@ import { C, F, CIPHER, PCR0, HEX, Caption, Fonts, clamp, ease, easeIO, keys, ler
  * Order: opening title → you type → before sending, the browser checks the enclave's fingerprint (PCR0) against
  * the published one, step by step, including a modified build that fails → encrypted → PayPerQ relays it (sees
  * only the envelope) → the camera follows it into the enclave, where it is decrypted → the provider gets the
- * words, not your IP (pixelated out), held long enough to read → end card.
+ * words, and only from PayPerQ: your IP never reaches it, held long enough to read → end card.
  */
 export const MF_OPEN = 5;
 export const MF_DURATION = MF_OPEN + 46;
@@ -30,7 +30,6 @@ const SFX: Array<[number, string, number]> = [
   [780, 'scramble', 1],     // 0:26.0 the words encrypt, left to right
   [1051, 'pressure', 1],    // peaks at 0:35.7 as the message passes the enclave wall (wall flash)
   [1080, 'unlock', 1],      // 0:36.0 decrypted: the pill turns orange
-  [1285, 'ticks-pixel', 1], // 0:42.8 your IP pixelates out in 4 steps
   [1410, 'scramble', 0.14], // 0:47.0 end title decrypts (the music is nearly out here)
 ];
 
@@ -369,7 +368,6 @@ export const MosaicFilm: React.FC<{ portrait?: boolean }> = ({ portrait = false 
   const heat = ease(ramp(t, 31.4, 32.2)) * (1 - ease(ramp(t, 34.6, 35.2)));
   const provO = ramp(t, 34.6, 35.2);
   const provK = ramp(t, 36.4, 37.3);
-  const provPix = [1, 2, 3, 4, 6][Math.min(4, Math.floor(ramp(t, 37.7, 38.3) * 5))]; // your IP pixelates out
 
   const world = (
     <div style={{ position: 'absolute', left: 0, top: 0, transformOrigin: '0 0', transform: worldTf, opacity: worldO }}>
@@ -401,8 +399,8 @@ export const MosaicFilm: React.FC<{ portrait?: boolean }> = ({ portrait = false 
         rows={[['ip', '203.0.113.7', 'plain'], ['model', 'claude-sonnet-5', 'plain'], ['tokens', '1,840', 'plain'], ['content', '768bce6e3b5a37…', 'cipher']]} />
       {/* what the provider sees */}
       <VLine x={PX + PW / 2} y1={LANE + PHM / 2 + 4} y2={LANE + PHM / 2 + 40} k={ease(ramp(t, 36.3, 36.6))} o={provK > 0 ? 1 : 0} />
-      <Note x={PX + PW / 2 - 130} y={LANE + PHM / 2 + 40} fs={18} k={provK} frame={frame} o={ramp(t, 36.3, 36.5) * (1 - ramp(t, 41.4, 41.7))} pix={provPix}
-        rows={[['from', 'PayPerQ', 'plain'], ['your ip', '203.0.113.7', 'pixel']]} />
+      <Note x={PX + PW / 2 - 130} y={LANE + PHM / 2 + 40} fs={18} k={provK} frame={frame} o={ramp(t, 36.3, 36.5) * (1 - ramp(t, 41.4, 41.7))}
+        rows={[['from', 'PayPerQ', 'plain']]} /> {/* your IP never reaches the provider, not even redacted */}
     </div>
   );
 
@@ -410,7 +408,7 @@ export const MosaicFilm: React.FC<{ portrait?: boolean }> = ({ portrait = false 
     <AbsoluteFill style={{ background: C.bg, fontFamily: F.body }}>
       <Fonts />
       {/* soundtrack (ElevenLabs, 50.96 s), the user's pick, Nov 17 */}
-      <Audio src={staticFile('soundtrack.wav')} />
+      <Audio src={staticFile('soundtrack.wav')} volume={0.5} />
       {SFX.map(([f, name, v], i) => <Sequence key={i} from={f} layout="none"><Audio src={staticFile(`sfx/${name}.wav`)} volume={v} /></Sequence>)}
       {T < MF_OPEN + 0.2 && <Title T={T} t={T} frame={frame} portrait={portrait} kind="open" />}
       {worldO > 0 && world}
